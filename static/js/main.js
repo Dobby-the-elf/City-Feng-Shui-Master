@@ -19,7 +19,6 @@ var note = 0
 mapclick = 0
 points_list.list = [];
 
-
 // Case 1: 建立簡單的通知
 var notifyConfig = {
 	body: "\\ ^o^ /",
@@ -78,8 +77,8 @@ function sendNotify(msg) {
 // document.getElementById('geojson').disabled=true;　
 document.getElementById("latlng").style.height = (document.body.clientHeight - 470) + "px";
 p = document.getElementById("time-slider")
-
 document.getElementById("time-indicator-container").style.margin = (p.clientwidth) / 14 + "px";
+
 $(document).ready(function () {
 	var burger = $('.pullbtn');             //三條線
 	var menu = $('.panel');                 //側欄
@@ -88,40 +87,43 @@ $(document).ready(function () {
 		burger.toggleClass('pullbtn_open');
 		menu.toggleClass('menu--open');
 	});
+	let script = document.createElement('script');
+	script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyCCYcEhvSf0iUKUyS-ntyEkW7K_uBmHWDY&libraries=visualization&callback=initMap";
+	script.async = true;
+	document.head.appendChild(script);
+	menu.toggleClass('menu--open');
+	// document.querySelector('#map:nth-child(3)').childNodes[1].style.opacity = "0.2";
 	if (note == 0) {
 		setTimeout(function () {
-			opensum();
-		}, 4000);//300milliseconds	
+			// document.querySelector('#map').childNodes[1].style.opacity = "0";
+			// opensum();
+		}, 1000);//300milliseconds	
 	}
 	else {
 		setTimeout(function () {
-			opensum();
+			// opensum();
 		}, 1000);//300milliseconds
 	}
 
 });
 
-var modal = document.getElementById("modal");
-function openModal() {//打開權重設定視窗
-	modal.classList.add("display");
-	setTimeout(function () {
-		modal.classList.add("transition");
-	}, 20);//20milliseconds
-}
-function closeModal() {//關掉權重設定視窗
-	modal.classList.remove("transition");
-	document.getElementById("container").innerHTML = ""
-	document.getElementById("ms").innerHTML = ""
-	document.getElementById("ms").innerHTML = '<div id="container" class="example-container"></div><button class="modalbtn" id="closebtn" onclick="closeModal()">&#10006</button>'
-	setTimeout(function () {
-		modal.classList.remove("display");
-	}, 300);//300milliseconds
+// var modal = document.getElementById("modal");
+// function openModal() {//打開權重設定視窗
+// 	modal.classList.add("display");
+// 	setTimeout(function () {
+// 		modal.classList.add("transition");
+// 	}, 20);//20milliseconds
+// }
+// function closeModal() {//關掉權重設定視窗
+// 	modal.classList.remove("transition");
+// 	document.getElementById("container").innerHTML = ""
+// 	document.getElementById("ms").innerHTML = ""
+// 	document.getElementById("ms").innerHTML = '<div id="container" class="example-container"></div><button class="modalbtn" id="closebtn" onclick="closeModal()">&#10006</button>'
+// 	setTimeout(function () {
+// 		modal.classList.remove("display");
+// 	}, 300);//300milliseconds
 
-}
-
-
-
-
+// }
 
 
 function opensum() {
@@ -135,15 +137,10 @@ function opensum() {
 		else if (i == 3) { atten = "道路安全" }
 		else if (i == 4) { atten = "天氣" }
 
-
-
-
 		if (mapclick == 0) {
-
 			document.getElementById("ms").innerHTML += '<font color="#000000">您現在位於</font><font color="#3b3bff">台南市安平區建平里</font>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<font color="#000000">需多加注意</font><font color="#3b3bff">' + atten + "</font>"
 		}
 		else {
-
 			var geocoder = new google.maps.Geocoder();
 
 			// google.maps.LatLng 物件
@@ -155,7 +152,6 @@ function opensum() {
 					// 如果有資料就會回傳
 					if (results) {
 						document.getElementById("ms").innerHTML += '<font color="#000000">您現在位於</font><font color="#3b3bff">' + results[0].formatted_address.split('區', 2)[0] + '區</font>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<font color="#000000">需多加注意</font><font color="#3b3bff">' + atten + "</font>"
-
 					}
 				}
 				// 經緯度資訊錯誤
@@ -166,7 +162,6 @@ function opensum() {
 		}
 
 		var chart = new dvxCharts.Chart({
-
 			axes: [
 				{
 					type: 'categoryAngle',
@@ -199,7 +194,6 @@ function opensum() {
 
 	}
 	else if (mapclick == 1) {
-
 		$.ajax({
 			url: '/get_sum',
 			data: { "lat": lat, "lng": lng, "t": $("#time4").val() },
@@ -214,15 +208,10 @@ function opensum() {
 				else if (i == 3) { atten = "道路安全" }
 				else if (i == 4) { atten = "天氣" }
 
-
-
-
 				if (mapclick == 0) {
-
 					document.getElementById("ms").innerHTML += '<font color="#000000">您現在位於</font><font color="#3b3bff">台南市安平區建平里</font>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<font color="#000000">需多加注意</font><font color="#3b3bff">' + atten + "</font>"
 				}
 				else {
-
 					var geocoder = new google.maps.Geocoder();
 
 					// google.maps.LatLng 物件
@@ -234,7 +223,6 @@ function opensum() {
 							// 如果有資料就會回傳
 							if (results) {
 								document.getElementById("ms").innerHTML += '<font color="#000000">您現在位於</font><font color="#3b3bff">' + results[0].formatted_address.split('區', 2)[0] + '區</font>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<font color="#000000">需多加注意</font><font color="#3b3bff">' + atten + "</font>"
-
 							}
 						}
 						// 經緯度資訊錯誤
@@ -245,7 +233,6 @@ function opensum() {
 				}
 
 				var chart = new dvxCharts.Chart({
-
 					axes: [
 						{
 							type: 'categoryAngle',
@@ -287,9 +274,6 @@ function getRandom(min, max) {
 };
 
 function opensubrecord() {
-
-
-
 	sss = '<table border="1" id="record"><tr><td><font color="#5d0017">名稱</font></td>	<td><font color="#5d0017">訂閱時間</font></td><td><font color="#5d0017">通知時間</font></td><td><font color="#5d0017">訂閱區域</font></td>　<td></td><td></td></tr><tr><td><font color="#000000">我的訂閱1</font></td>	<td><font color="#000000">星期一 17~19</font></td><td><font color="#000000">30分鐘前</font></td>　<td><button class="button" id="subsrea" >詳細</button></td><td><button class="button" id="set" >修改</button></td><td><button class="button" id="del" >刪除</button></td></tr></table> '
 	document.getElementById("container").innerHTML = sss
 	openModal()
@@ -328,9 +312,7 @@ function save_w() {   //儲存權重
 			},
 		});
 		closeModal()
-
 		cleanradio()
-
 	}
 	else { alert("請填完所有項目") }
 }
@@ -346,9 +328,7 @@ function cancel_s() {    //離開權重視窗，不存
 	setTimeout(function () {
 		//your code to be executed after 1 second
 		details.forEach((detail) => {
-
 			detail.removeAttribute("open");
-
 		});
 
 	}, 100);
@@ -368,9 +348,7 @@ function togglemove() {//選遷移分行推薦
 	selector = 0;
 	mapclick = 0
 	details.forEach((detail) => {
-
 		detail.removeAttribute("open");
-
 	});
 }
 function togglenew() {//選地區評分
@@ -414,7 +392,6 @@ $(document).on('input', '#time-slider', function () {
 	clearL();
 
 	for (var h = 0; h < area_properties.length; h++) {
-
 		if (area_properties[h].fill[value] == "#930509") {
 			points_list.list.push(
 				{
@@ -423,7 +400,6 @@ $(document).on('input', '#time-slider', function () {
 					points: area_properties[h]
 				})
 		}
-
 	}
 	showlist("#latlng");
 });
@@ -576,7 +552,6 @@ function circle() {                     //產生圈選方塊 PS:因為本來是�
 	circlearea = new google.maps.Rectangle({
 		center: map.getCenter(),
 		map: map,
-
 		bounds: {
 			north: map.getCenter().lat() + zoomList[zoomLevel].value / 111000,
 			south: map.getCenter().lat() - zoomList[zoomLevel].value / 111000,
@@ -592,7 +567,7 @@ function circle() {                     //產生圈選方塊 PS:因為本來是�
 	});
 }
 
-function circlesearch() {                                         //圈選方塊預測 PS:因為本來是圓形所以命名都是circle
+function circlesearch() {                               //圈選方塊預測 PS:因為本來是圓形所以命名都是circle
 	clearL();
 	document.getElementById("latlng").innerHTML = "";
 	map.data.forEach(function (feature) {
@@ -641,9 +616,7 @@ function circlesearch() {                                         //圈選方塊
 	setTimeout(function () {
 		//your code to be executed after 1 second
 		details.forEach((detail) => {
-
 			detail.removeAttribute("open");
-
 		});
 		alert("儲存成功")
 	}, 100);
@@ -655,23 +628,17 @@ function circlesearch() {                                         //圈選方塊
 var rad = document.getElementsByName("select_mode");    //點擊radio
 
 for (var i = 0; i < rad.length; i++) {
-
-
-
 	rad[i].addEventListener('click', function () {
 		if (this.value == 'mapclick') {
 			cleanmap()
-
 			mapclick = 1
 		}
 		else if (this.value == 'enteraddr') {
 			cleanmap()
-
 			mapclick = 2
 		}
 		else {
 			cleanmap()
-
 			mapclick = 0
 		}
 		if (this.value == 'now') {
@@ -699,18 +666,13 @@ for (var i = 0; i < rad.length; i++) {
 var rad1 = document.getElementsByName("select_mode1");    //點擊radio
 
 for (var i = 0; i < rad1.length; i++) {
-
-
-
 	rad1[i].addEventListener('click', function () {
 		if (this.value == 'mapclick') {
 			cleanmap()
-
 			mapclick = 1
 		}
 		else {
 			cleanmap()
-
 			mapclick = 0
 		}
 		if (this.value == 'now') {
@@ -721,12 +683,10 @@ for (var i = 0; i < rad1.length; i++) {
 					url: 'https://img.icons8.com/plasticine/2x/street-view.png',
 					scaledSize: new google.maps.Size(60, 60)
 				}
-
 			});
 			map.setZoom(15);
 			map.panTo({ lat: 22.991915, lng: 120.184974 })
 		}
-
 		document.getElementById('address').value = "";
 	})
 }
@@ -734,7 +694,7 @@ for (var i = 0; i < rad1.length; i++) {
 
 function initMap() {                                            //map
 	geocoder = new google.maps.Geocoder();
-	map = new google.maps.Map(document.getElementById('map'), {
+	map = new google.maps.Map({
 		center: { lat: 23.037850, lng: 120.239751 },
 		zoom: 11,
 		streetViewControl: false,
@@ -743,16 +703,20 @@ function initMap() {                                            //map
 
 	infowindow_grid = new google.maps.InfoWindow()
 	map.data.addListener('click', function (event) {
+		map.setZoom(12);
+		map.panTo({ lat: event.feature.i.center.lat, lng: event.feature.i.center.lng, zoom: 12 }) // last one is zoom level
+		document.getElementById('map').style.background = " #484848;"
 		if (true) {
 			map.data.overrideStyle(event.feature, { fillColor: "#555555", fillOpacity: 1 });
 			setTimeout(function () {
 				map.data.revertStyle();
 			}, 100);
-			infowindow_grid.setPosition(event.feature.j.center);
-			city_grid_ID = event.feature.j.ID
-			console.log(event.feature)
+			console.log("lat:" + String(event.feature.i.center.lat) + ", " + "lng:" + String(event.feature.i.center.lng))
+			console.log(event.feature);
+			infowindow_grid.setPosition(event.feature.i.center);
+			city_grid_ID = event.feature.i.ID
 			if (selector == 1) {
-				infowindow_grid.setContent("ID:" + event.feature.j.ID + "<br>位置:" + event.feature.j.area3)
+				infowindow_grid.setContent("lat:" + String(event.feature.i.center.lat).substr(0, 6) + "<br>" + "lng:" + String(event.feature.i.center.lng).substr(0, 7) + "<br>" + "ID:" + event.feature.i.ID + "&emsp;" + "All_id:" + event.feature.i.All_id + "<br>位置:" + event.feature.i.area3)
 				infowindow_grid.open(map)
 			}
 			else {
@@ -763,15 +727,11 @@ function initMap() {                                            //map
 		}
 	});
 	map.addListener('click', function (event) {
-
-
 		if (mapclick == 1) {
-
 			if (marker != null) {
 				marker.setMap(null)
 			}
 			placeMarkerAndPanTo2(event.latLng, map);
-
 		}
 
 	});
@@ -783,12 +743,12 @@ function initMap() {                                            //map
 
 
 
-function selectarea() {                                                        //預測
+function selectWeight() {                                //預測
 	a = 0
 	if (a == 1) { alert("請選擇區域選取方式"); return; }
 	cleanmap();
 	if (a == 0) {                                        //依城市
-		// if ($("#SelectArea").val() != null) {
+		// if ($("#selectWeight").val() != null) {
 		let weightData = [];
 		weightData.push($("#weight1").val());
 		weightData.push($("#weight2").val());
@@ -799,7 +759,7 @@ function selectarea() {                                                        /
 		$.ajax({
 			url: "/get_grid",
 			data: {
-				"mydata": $("#SelectArea").val(),
+				"mydata": $("#selectWeight").val(),
 				"myweights": JSON.stringify(weightData)
 			},
 			success: function (data) {
@@ -832,7 +792,6 @@ function selectarea() {                                                        /
 				var number_count = 0
 				var last_v = 4
 				for (var h = 0; h < area_properties.length; h++) {
-
 					if (area_properties[h].fill[0] == "#930509") {
 						points_list.list.push(
 							{
@@ -846,16 +805,11 @@ function selectarea() {                                                        /
 
 				showlist("#latlng");
 				if (first == 0) {
-
 					// document.getElementById('geojson').disabled=false;　// 變更顯示分色圖按鈕為可用
-
-
 					first = 1;
 				}
 				else {
 					//document.getElementById('geojson').disabled=false;　// 變更欄位為可用
-
-
 				}
 				map.data.setStyle(function (feature) {
 					if (feature.getProperty('fill')[0] == "#EEEEEE") { opac = 0 }
@@ -894,8 +848,6 @@ function selectarea() {                                                        /
 var item_html = "<ul id={{id}} class='points'><div class='latlng'>{{latlng}}&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</div><div id={{del_id}} data-delid={{del_item_id}} class='del_btn'>?</div><br><div class='latlng'>{{latlng1}}</ul>";
 //刪除並重新產生清單中所有項目
 function showlist(id_name) {                              //將清單顯示於頁面
-
-
 	if (id_name == "#latlng2") {
 		$(id_name).html("");
 		$(id_name).append(current_item_html)
@@ -944,7 +896,6 @@ function geojsoncolor() {                                                 //顯�
 			if (feature.getProperty('fill')[$('#time-slider').val()] == "#EEEEEE") { opac = 0 }
 			else { opac = 0.6 }
 			return {
-
 				fillColor: feature.getProperty('fill')[$('#time-slider').val()],
 				fillOpacity: opac,
 				strokeWeight: 0.2
@@ -956,7 +907,6 @@ function geojsoncolor() {                                                 //顯�
 	}
 	else {
 		document.querySelector('#geojson').innerHTML = "顯示分色圖";
-
 		//map.data.setStyle({visible: false});
 		map.data.setStyle(function (feature) {
 			return {
@@ -988,10 +938,7 @@ function cleanmap() {
 	}
 	if (first == 1) {
 		// document.querySelector('#geojson').innerHTML = "關閉分色圖";
-
 		// document.getElementById('geojson').disabled=true;
-
-
 	}
 
 	if (markers != null) {                                                     //清空分行MARK
@@ -1039,7 +986,6 @@ function cleanradio() {                                     //重製radio button
 
 
 function placeMarkerAndPanTo2(latLng, map) {
-
 	marker = new google.maps.Marker({
 		position: latLng,
 		map: map
@@ -1063,7 +1009,7 @@ function get_f(ID) {                                   //查看外部資料
 	var w = window.open('');
 	$.ajax({
 		url: '/new',
-		data: { "area": $("#SelectArea").val(), "city_grid_ID": city_grid_ID },
+		data: { "area": $("#selectWeight").val(), "city_grid_ID": city_grid_ID },
 		success: function (data) {
 			w.location = data;
 		}

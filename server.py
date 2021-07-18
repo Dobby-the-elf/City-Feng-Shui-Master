@@ -8,7 +8,8 @@ import json
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 import configparser
 import time
-
+import math
+import numpy as np
 
 # config 初始化
 config = configparser.ConfigParser()
@@ -293,69 +294,51 @@ def get_grid():
     if totalWeight == 0:
         weights = [0,25, 0.25, 0.25, 0.25]
         totalWeight=1
+    gain = (1.6 + np.var(weights)/totalWeight/8)
     for i,weight in enumerate(weights):
         # weights[i]=weight/totalWeight
-        weights[i]=weight/max(weights)
+        weights[i]=weight/max(weights)*gain
         print(weights[i])
-
     # for location in [type_event]:
     all_grid_df = pd.read_csv(
         'static/data/City_grids/500/all.csv', encoding='utf-8')
     grid_df = all_grid_df[(all_grid_df['all_grid_id'] >= 15177) & (
         all_grid_df['all_grid_id'] <= 18199)]
-    event = pd.read_csv("static/data/event_365.csv")
+    event = pd.read_csv("static/data/event_n.csv")
+    cols = ['event1_num','event2_num','event3_num','event4_num']
+    max_complain=[]
+    for col in cols:
+        event[col] = event[col].apply(lambda x: 0 if x < 0 else x)
+        event[col] = event[col].apply(lambda x: (0.5*math.log(1000*x+1)) if x == x else "")
+        max_complain.append(max(event[col]))
+    # print(max_complain)
     feature_list = []
-    for index, row in grid_df.iterrows():#台南的各個區域
-        color_time = []
+    for index, row in grid_df.iterrows(): #台南的各個區域 dim ~= 3000
         color_level = []
+        color_time = []
         event_id = event[event["grid_id"] == row["grid_id"]]
-        for index1, row1 in event_id.iterrows():#某區域在各個時間的4個事件數量
+        for index1, row1 in event_id.iterrows(): #某區域在各個時間的4個事件數量 dim will be 1
             type_events = ["event1","event2","event3","event4"]
-            color_level.append(0)
-            for idx,type_event in enumerate(type_events):
-                if type_event == "event1":
-                    gap = [50, 100, 200, 350, 500]
-                elif type_event == "event2":
-                    gap = [50, 75, 150, 250, 400]
-                elif type_event == "event3":
-                    gap = [50, 75, 150, 250, 400]
-                elif type_event == "event4":
-                    gap = [50, 75, 100, 150, 200]
+            color_level.append(0.)
+            for idx,type_event in enumerate(type_events): # dim = 4
+                # gap = [0.8*max_complain[idx], 0.8*max_complain[idx], 0.8*max_complain[idx], 0.8*max_complain[idx], 0.8*max_complain[idx]]
+                # gap = [0.15,0.3,0.45,0.6,7.5]
+                # gap = list(map((lambda x: x*max_complain[idx]),gap))
                 collumns = type_event+"_num"
-                if row1[collumns] == 0:
-                    color_level[-1] += 0 * weights[idx]
-                    # color_time.append("#EEEEEE")
-                elif row1[collumns] <= gap[0]:
-                    color_level[-1] += 1 * weights[idx]
-                    # color_time.append("#f3fb19")
-                elif row1[collumns] <= gap[1]:
-                    color_level[-1] += 2 * weights[idx]
-                    # color_time.append("#f7a413")
-                elif row1[collumns] <= gap[2]:
-                    color_level[-1] += 3 * weights[idx]
-                    # color_time.append("#ef5e0e")
-                elif row1[collumns] <= gap[3]:
-                    color_level[-1] += 4 * weights[idx]
-                    # color_time.append("#ec513f")
-                elif row1[collumns] <= gap[4]:
-                    color_level[-1] += 5 * weights[idx]
-                    # color_time.append("#d93e41")
-                else:
-                    color_level[-1] += 6 * weights[idx]
-                    # color_time.append("#930509")
-        # print(color_level)
+                color_level[-1] += row1[collumns] / max_complain[idx] * weights[idx]
+        # print((color_level))
         for level in color_level:
-            if level >= 0 and level < 1:
+            if level <= 0.5:
                 color_time.append("#EEEEEE")
-            elif level >= 1 and level < 2:
+            elif level <= 1.5:
                 color_time.append("#f3fb19")
-            elif level >= 2 and level < 3:
+            elif level <= 2.5:
                 color_time.append("#f7a413")
-            elif level >= 3 and level < 4:
+            elif level <= 3.5:
                 color_time.append("#ef5e0e")
-            elif level >= 4 and level < 5:
+            elif level <= 4.5:
                 color_time.append("#ec513f")
-            elif level >= 5 and level < 6:
+            elif level <= 5.5:
                 color_time.append("#d93e41")
             else:
                 color_time.append("#930509")
