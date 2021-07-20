@@ -9,9 +9,9 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/dvxCharts.chart.min.css') }}" />
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='themes/base/styles.css') }}"  />
-    <script src="{{ url_for('static', filename='js/dvxCharts.chart.min.js') }}" type="text/javascript"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='themes/base/styles.css') }}"  />
+		<script src="{{ url_for('static', filename='js/dvxCharts.chart.min.js') }}" type="text/javascript"></script>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	</head>
 	<style>
         .example-container {
@@ -102,7 +102,7 @@
 								<form name="myForm">
 									
 									
-									<!-- <select name="area" id="SelectArea" onclick=cleanmap()>
+									<!-- <select name="area" id="selectWeight" onclick=cleanmap()>
 						
 									<option value="event1" selected>道路安全</option>
 									<option value="event2">噪音污染</option>
@@ -132,7 +132,7 @@
 										<button class="button" type="button" onclick="add(event)"> + </button>
 										<div style="display: inline-block;">50</div>
 									</div>
-									<button class="button" id="selectareabtn" type="button" onclick="selectarea()">產生預測</button>
+									<button class="button" id="selectWeightbtn" type="button" onclick="selectWeight()">產生預測</button>
 									</form>
 									<br>
 									<h4 >區域預測彙報:										</h4>
@@ -332,8 +332,9 @@
 				</div>
 			<div class="load_mask"><!-- Place at bottom of page --></div>
 		</section>
-		<script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDZ_ffMr_1VaSrstpoVAD99R0bjyq_lySM&libraries=visualization&callback=initMap"></script>
-	</body>
-	<script src="{{ url_for('static', filename='js/main.js') }}" type="text/javascript"></script>
+		<!-- <script async defer
+			src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDZ_ffMr_1VaSrstpoVAD99R0bjyq_lySM&libraries=visualization&callback=initMap"></script>-->
+		</body> 
+		<script src="{{ url_for('static', filename='js/main.js') }}" type="text/javascript"></script>
+		<!-- <script src="{{ url_for('static', filename='js/main.js') }}" type="module"></script> -->
 </html>
