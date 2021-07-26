@@ -88,7 +88,7 @@ $(document).ready(function () {
 		menu.toggleClass('menu--open');
 	});
 	let script = document.createElement('script');
-	script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyCCYcEhvSf0iUKUyS-ntyEkW7K_uBmHWDY&libraries=visualization&callback=initMap";
+	script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyCCYcEhvSf0iUKUyS-ntyEkW7K_uBmHWDY&libraries=visualization,places&callback=initMap";
 	script.async = true;
 	document.head.appendChild(script);
 	menu.toggleClass('menu--open');
@@ -97,12 +97,12 @@ $(document).ready(function () {
 		setTimeout(function () {
 			// document.querySelector('#map').childNodes[1].style.opacity = "0";
 			// opensum();
-		}, 1000);//300milliseconds	
+		}, 3000);
 	}
 	else {
 		setTimeout(function () {
 			// opensum();
-		}, 1000);//300milliseconds
+		}, 1000);
 	}
 
 });
@@ -461,112 +461,6 @@ details.forEach((targetDetail) => {
 
 
 
-
-function circle() {                     //產生圈選方塊 PS:因為本來是圓形所以命名都是circle
-	if (circlearea) {
-		circlearea.setMap(null);
-	}
-	var zoomLevel = map.getZoom();
-	var zoomList = [{
-		text: "10000KM",
-		value: 10000 * 1000
-	}, {
-		text: "5000KM",
-		value: 5000 * 1000
-	}, {
-		text: "2000KM",
-		value: 2000 * 1000
-	}, {
-		text: "1000KM",
-		value: 1000 * 1000
-	}, {
-		text: "500KM",
-		value: 500 * 1000
-	}, {
-		text: "200KM",
-		value: 200 * 1000
-	}, {
-		text: "200KM",
-		value: 200 * 1000
-	}, {
-		text: "100KM",
-		value: 100 * 1000
-	}, {
-		text: "50KM",
-		value: 50 * 1000
-	}, {
-		text: "20KM",
-		value: 20 * 1000
-	}, {
-		text: "10KM",
-		value: 10 * 1000
-	}, {
-		text: "5KM",
-		value: 5000
-	}, {
-		text: "2KM",
-		value: 2000
-	}, {
-		text: "1KM",
-		value: 1000
-	}, {
-		text: "500m",
-		value: 500
-	}, {
-		text: "200m",
-		value: 200
-	}, {
-		text: "200m",
-		value: 200
-	}, {
-		text: "100m",
-		value: 100
-	}, {
-		text: "50m",
-		value: 50
-	}, {
-		text: "20m",
-		value: 20
-	}, {
-		text: "10m",
-		value: 10
-	}, {
-		text: "5m",
-		value: 5
-	}, {
-		text: "2m",
-		value: 2
-	}, {
-		text: "1m",
-		value: 1
-	}, {
-		text: "1m",
-		value: 1
-	}, {
-		text: "1m",
-		value: 1
-	}, {
-		text: "1m",
-		value: 1
-	}];
-	circlearea = new google.maps.Rectangle({
-		center: map.getCenter(),
-		map: map,
-		bounds: {
-			north: map.getCenter().lat() + zoomList[zoomLevel].value / 111000,
-			south: map.getCenter().lat() - zoomList[zoomLevel].value / 111000,
-			east: map.getCenter().lng() + zoomList[zoomLevel].value / 111000,
-			west: map.getCenter().lng() - zoomList[zoomLevel].value / 111000
-		},
-		fillColor: '#FF6600',
-		fillOpacity: 0.3,
-		strokeColor: "#FF0000",
-		strokeWeight: 0,
-		editable: true,
-		draggable: true
-	});
-}
-
 function circlesearch() {                               //圈選方塊預測 PS:因為本來是圓形所以命名都是circle
 	clearL();
 	document.getElementById("latlng").innerHTML = "";
@@ -694,51 +588,117 @@ for (var i = 0; i < rad1.length; i++) {
 
 function initMap() {                                            //map
 	geocoder = new google.maps.Geocoder();
-	map = new google.maps.Map({
+
+	map = new google.maps.Map(document.getElementById('map'), {
 		center: { lat: 23.037850, lng: 120.239751 },
+		// center: { lat: lat, lng: lng },
 		zoom: 11,
 		streetViewControl: false,
-		zoomControl: false
+		zoomControl: true
+	});
+
+	navigator.geolocation.getCurrentPosition(function (position) {
+		lat = position.coords.latitude;
+		lng = position.coords.longitude;
+		map.setZoom(15)
+		map.panTo({ lat: lat, lng: lng })
+		addMarker({ lat: lat, lng: lng }, map);
+	});
+
+	map.addListener("bounds_changed", () => {
+		searchBox.setBounds(map.getBounds());
+	});
+
+	const input = document.getElementById('pac-input')
+	const searchBox = new google.maps.places.SearchBox(input);
+	map.controls[google.maps.ControlPosition.TOP_CENTER].push(input);
+
+	searchBox.addListener("places_changed", () => {
+		const places = searchBox.getPlaces();
+		console.log(places);
+		if (places.length == 0) return;
+		markers.forEach((marker) => { marker.setMap(null); });
+		markers = [];
+		// For each place, get the icon, name and location.
+		const bounds = new google.maps.LatLngBounds();
+		places.forEach((place) => {
+			if (!place.geometry || !place.geometry.location) {
+				console.log("Returned place contains no geometry");
+				return;
+			}
+			// const icon = {
+			// 	url: place.icon,
+			// 	size: new google.maps.Size(71, 71),
+			// 	origin: new google.maps.Point(0, 0),
+			// 	anchor: new google.maps.Point(17, 34),
+			// 	scaledSize: new google.maps.Size(25, 25),
+			// };
+			markers.push(
+				new google.maps.Marker({
+					map,
+					// icon,
+					title: place.name,
+					position: place.geometry.location,
+				})
+			);
+
+			if (place.geometry.viewport) {
+				bounds.union(place.geometry.viewport);
+			} else {
+				bounds.extend(place.geometry.location);
+			}
+		});
+		map.fitBounds(bounds);
 	});
 
 	infowindow_grid = new google.maps.InfoWindow()
 	map.data.addListener('click', function (event) {
-		map.setZoom(12);
-		map.panTo({ lat: event.feature.i.center.lat, lng: event.feature.i.center.lng, zoom: 12 }) // last one is zoom level
+		deleteMarkers()
+		lat = event.feature.i.center.lat;
+		lng = event.feature.i.center.lng;
+		console.log(event.feature.i);
+		addMarker({ lat: lat - 0.002, lng: lng }, map);
+		map.panTo({ lat: lat, lng: lng }, map);
 		document.getElementById('map').style.background = " #484848;"
 		if (true) {
 			map.data.overrideStyle(event.feature, { fillColor: "#555555", fillOpacity: 1 });
 			setTimeout(function () {
 				map.data.revertStyle();
 			}, 100);
-			console.log("lat:" + String(event.feature.i.center.lat) + ", " + "lng:" + String(event.feature.i.center.lng))
+			console.log("lat:" + String(lat) + ", " + "lng:" + String(lng))
 			console.log(event.feature);
-			infowindow_grid.setPosition(event.feature.i.center);
+			infowindow_grid.setPosition({ lat: lat + 0.002, lng: lng });//設在中間會擋住 pin
 			city_grid_ID = event.feature.i.ID
 			if (selector == 1) {
-				infowindow_grid.setContent("lat:" + String(event.feature.i.center.lat).substr(0, 6) + "<br>" + "lng:" + String(event.feature.i.center.lng).substr(0, 7) + "<br>" + "ID:" + event.feature.i.ID + "&emsp;" + "All_id:" + event.feature.i.All_id + "<br>位置:" + event.feature.i.area3)
+				infowindow_grid.setContent("lat:" + String(lat).substr(0, 6) + "<br>" + "lng:" + String(lng).substr(0, 7) + "<br>" + "ID:" + event.feature.i.ID + "&emsp;" + "All_id:" + event.feature.i.All_id + "<br>位置:" + event.feature.i.area3)
 				infowindow_grid.open(map)
 			}
 			else {
 				placeMarkerAndPanTo(event.latLng, map);
 			}
-
-			;
 		}
 	});
 	map.addListener('click', function (event) {
-		if (mapclick == 1) {
-			if (marker != null) {
-				marker.setMap(null)
-			}
-			placeMarkerAndPanTo2(event.latLng, map);
-		}
-
+		addMarker(event.latLng, map);
+		// placeMarkerAndPanTo2(event.latLng, map);
 	});
 }
-
-
-
+function addMarker(location, map) {
+	// Add the marker at the clicked location, and add the next-available label
+	// from the array of alphabetical characters.
+	let marker = new google.maps.Marker({
+		position: location,
+		// label: labels[labelIndex++ % labels.length],
+		map: map,
+	});
+	markers.push(marker);
+}
+function deleteMarkers() {
+	markers.forEach(function (e) {
+		e.setMap(null);
+	});
+	markers = [];
+}
 
 
 
@@ -754,6 +714,8 @@ function selectWeight() {                                //預測
 		weightData.push($("#weight2").val());
 		weightData.push($("#weight3").val());
 		weightData.push($("#weight4").val());
+		weightData.push($("#weight5").val());
+		weightData.push($("#weight6").val());
 		console.log('chosen weight is', weightData);
 
 		$.ajax({
@@ -1058,6 +1020,114 @@ function openPostWindow(url, data, name)             //以POST開啟新分頁
 	tempForm.submit();
 	document.body.removeChild(tempForm);
 }
+
+
+
+function circle() {                     //產生圈選方塊 PS:因為本來是圓形所以命名都是circle
+	if (circlearea) {
+		circlearea.setMap(null);
+	}
+	var zoomLevel = map.getZoom();
+	var zoomList = [{
+		text: "10000KM",
+		value: 10000 * 1000
+	}, {
+		text: "5000KM",
+		value: 5000 * 1000
+	}, {
+		text: "2000KM",
+		value: 2000 * 1000
+	}, {
+		text: "1000KM",
+		value: 1000 * 1000
+	}, {
+		text: "500KM",
+		value: 500 * 1000
+	}, {
+		text: "200KM",
+		value: 200 * 1000
+	}, {
+		text: "200KM",
+		value: 200 * 1000
+	}, {
+		text: "100KM",
+		value: 100 * 1000
+	}, {
+		text: "50KM",
+		value: 50 * 1000
+	}, {
+		text: "20KM",
+		value: 20 * 1000
+	}, {
+		text: "10KM",
+		value: 10 * 1000
+	}, {
+		text: "5KM",
+		value: 5000
+	}, {
+		text: "2KM",
+		value: 2000
+	}, {
+		text: "1KM",
+		value: 1000
+	}, {
+		text: "500m",
+		value: 500
+	}, {
+		text: "200m",
+		value: 200
+	}, {
+		text: "200m",
+		value: 200
+	}, {
+		text: "100m",
+		value: 100
+	}, {
+		text: "50m",
+		value: 50
+	}, {
+		text: "20m",
+		value: 20
+	}, {
+		text: "10m",
+		value: 10
+	}, {
+		text: "5m",
+		value: 5
+	}, {
+		text: "2m",
+		value: 2
+	}, {
+		text: "1m",
+		value: 1
+	}, {
+		text: "1m",
+		value: 1
+	}, {
+		text: "1m",
+		value: 1
+	}, {
+		text: "1m",
+		value: 1
+	}];
+	circlearea = new google.maps.Rectangle({
+		center: map.getCenter(),
+		map: map,
+		bounds: {
+			north: map.getCenter().lat() + zoomList[zoomLevel].value / 111000,
+			south: map.getCenter().lat() - zoomList[zoomLevel].value / 111000,
+			east: map.getCenter().lng() + zoomList[zoomLevel].value / 111000,
+			west: map.getCenter().lng() - zoomList[zoomLevel].value / 111000
+		},
+		fillColor: '#FF6600',
+		fillOpacity: 0.3,
+		strokeColor: "#FF0000",
+		strokeWeight: 0,
+		editable: true,
+		draggable: true
+	});
+}
+
 
 function minus(e) {
 	e.preventDefault();

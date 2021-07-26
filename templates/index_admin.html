@@ -109,26 +109,38 @@
 									<option value="event3">空氣汙染</option>
 									<option value="event4">工程施工</option>
 									</select> -->
-									<div>道路安全
+									<div>交通違規
 										<button class="button" type="button" onclick="minus(event)"> - </button>
 										<input id='weight1' value='50' type='range' min='0' max='100' onChange="changeWeight(event)"></input>
 										<button class="button" type="button" onclick="add(event)"> + </button>
 										<div style="display: inline-block;">50</div>
 									</div>
-									<div>噪音污染
+									<div>自然環境
 										<button class="button" type="button" onclick="minus(event)"> - </button>
 										<input id='weight2' value='50' type='range' min='0' max='100' onChange="changeWeight(event)"></input>
 										<button class="button" type="button" onclick="add(event)"> + </button>
 										<div style="display: inline-block;">50</div>
 									</div>
-									<div>空氣汙染
+									<div>土地價格
 										<button class="button" type="button" onclick="minus(event)"> - </button>
 										<input id='weight3' value='50' type='range' min='0' max='100' onChange="changeWeight(event)"></input>
 										<button class="button" type="button" onclick="add(event)"> + </button>
 										<div style="display: inline-block;">50</div></div>
-									<div>工程施工
+									<div>人口分布
 										<button class="button" type="button" onclick="minus(event)"> - </button>
 										<input id='weight4' value='50' type='range' min='0' max='100' onChange="changeWeight(event)"></input>
+										<button class="button" type="button" onclick="add(event)"> + </button>
+										<div style="display: inline-block;">50</div>
+									</div>
+									<div>生活機能
+										<button class="button" type="button" onclick="minus(event)"> - </button>
+										<input id='weight5' value='50' type='range' min='0' max='100' onChange="changeWeight(event)"></input>
+										<button class="button" type="button" onclick="add(event)"> + </button>
+										<div style="display: inline-block;">50</div>
+									</div>
+									<div>公共安全
+										<button class="button" type="button" onclick="minus(event)"> - </button>
+										<input id='weight6' value='50' type='range' min='0' max='100' onChange="changeWeight(event)"></input>
 										<button class="button" type="button" onclick="add(event)"> + </button>
 										<div style="display: inline-block;">50</div>
 									</div>
@@ -296,7 +308,11 @@
 					</div> -->
 
 				</div>
+				
+				<input id="pac-input" class="controls" type="text" placeholder="Search Box" style='width:500px'>
 				<div id="map"></div>
+				
+				
 				<div class="modal" id="modal">
 				  <div class="wrapper">
 					<div class="message">
@@ -317,7 +333,7 @@
 				
 			</div>
 			<div id="time-slider-container">
-					<input type="range" id="time-slider" min="0" max="6" value="0" step="1" />
+					<input type="range" id="time-slider" min="0" max="6" value="0" step="1"/>
 					<div id="time-indicator-container">
 	
 						<div>+1  h</div>
@@ -333,7 +349,7 @@
 			<div class="load_mask"><!-- Place at bottom of page --></div>
 		</section>
 		<!-- <script async defer
-			src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDZ_ffMr_1VaSrstpoVAD99R0bjyq_lySM&libraries=visualization&callback=initMap"></script>-->
+			src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDZ_ffMr_1VaSrstpoVAD99R0bjyq_lySM&libraries=visualization&callback=initMap"></script> -->
 		</body> 
 		<script src="{{ url_for('static', filename='js/main.js') }}" type="text/javascript"></script>
 		<!-- <script src="{{ url_for('static', filename='js/main.js') }}" type="module"></script> -->
