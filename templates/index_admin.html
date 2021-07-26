@@ -1,356 +1,55 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
-
 <html>
-	<head>
-		<meta charset="UTF-8" />
-		<title>	官民共治-城市潛在痛點預警平台</title>
-		<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}"/>
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-		<script src="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.js"></script>
-		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/dvxCharts.chart.min.css') }}" />
-		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='themes/base/styles.css') }}"  />
-		<script src="{{ url_for('static', filename='js/dvxCharts.chart.min.js') }}" type="text/javascript"></script>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-	</head>
-	<style>
-        .example-container {
-            width: 100%;
-            max-width: 500px;
-            height: 300px;
-        }
-    </style>
-    
-    <style>
-        .mySeries1 .dvx-chart-series-data-group {
-            fill: rgba(252,180,65,0.75);
-        }
 
-        .mySeries2 .dvx-chart-series-data-group {
-            fill: rgba(252,180,65,0);
-        }
-    </style>
-	<body>
-		<section id="header">
-		<a  href="record_admin">查看待處理回報</a>
-		<a id="user">Hello,admin</a>
-		<a class="nav-link" href="/logout">登出</a>
-			
-			<br>
-		</section>
-		<section id="banner">
-			<div id="border1">
-				<h1>	官民共治-城市潛在痛點預警平台</h1>
-       
-				<div id = "pic">
-          <img src="{{ url_for('static', filename='images/002.png') }}" alt="city2" id="city2">
-					<img src="{{ url_for('static', filename='images/001.png') }}" alt="city1" id="bus">
-					<img src="{{ url_for('static', filename='images/stop.png') }}" alt="bus_stop" id="stop">
-          <img src="{{ url_for('static', filename='images/003.png') }}" alt="city3" id="city3">
-				</div>
-			</div>
-		</section>
-		<section id="instr">
-			<h1 id="intro">結合資料科學與人工智慧建立城市潛在痛點預警平台</h1>
-			<h1 id="ex">預測城市脈動、回報城市大小事、提升生活品質</h1>
-		<!--<button class="button" id="testbn" onclick="test1()">test</button><br>-->
-		</section>
-		<section id="display">
-			<div id="border2">
-				
-				<!--<div id="heatmap">
-					<div class="dropbtn">熱度圖</div>
-					<div class="content">
-						<a href="#" onclick="handler1(); return false;" id="btn1">噪音</a>
-						<a href="#" onclick="handler2(); return false;" id="btn2">違規</a>
-						<a href="#" onclick="handler3(); return false;" id="btn3">事故</a>
-						<a href="#" onclick="handler4(); return false;" id="btn4">犯罪</a>
-						<a href="#" onclick="handler5(); return false;" id="btn5">垃圾</a>
-					</div>
-				</div>-->
-				<!-- <div id="POI">
-					<div class="dropbtn">POI</div>
-					<div class="content">
-						<label class="list"><input type="checkbox" id="q1" value="1" ><span class="checkmark"></span>藝術文化</label><br>
-						<label class="list"><input type="checkbox" id="q2" value="2" ><span class="checkmark"></span>學習教育</label><br>
-						<label class="list"><input type="checkbox" id="q4" value="4" ><span class="checkmark"></span>飲食相關</label><br>
-						<label class="list"><input type="checkbox" id="q5" value="5"><span class="checkmark"></span>夜生活場所</label><br>
-						<label class="list"><input type="checkbox" id="q6" value="6"><span class="checkmark"></span>戶外活動</label><br>
-						<label class="list"><input type="checkbox" id="q7" value="7"><span class="checkmark"></span>企業與辦公機構</label><br>
-						<label class="list"><input type="checkbox" id="q9"  value="9"><span class="checkmark"></span>消費服務</label><br>
-						<label class="list"><input type="checkbox" id="q10" value="10"><span class="checkmark"></span>旅遊交通</label><br> 
-					</div>
-				</div> -->
-				<div id="pull">
-          <div id= "clickme">click</div>
-					<button class="pullbtn">
-						<span class="btn__line"></span>
-						<span class="btn__line"></span>
-						<span class="btn__line"></span>
-					</button>
-				</div>
-				<div class="panel">
-					<div class="top-buttons">
-						<button id="newmode" class="selected" onclick="togglenew()">事件發生風險預測</button>    
-						<button id="movemode" onclick="togglemove()">訂閱</button>
-					</div>
-					<div class="outer-container" id="outer-slider" style="transform: translate(0px, 0px);">
-						<div class="container vertical-align">
-							<div class="card">
-								<div id="pointlist">
-								<h4 >查詢類型選擇:	</h4>
-								<form name="myForm">
-									
-									
-									<!-- <select name="area" id="selectWeight" onclick=cleanmap()>
-						
-									<option value="event1" selected>道路安全</option>
-									<option value="event2">噪音污染</option>
-									<option value="event3">空氣汙染</option>
-									<option value="event4">工程施工</option>
-									</select> -->
-									<div>交通違規
-										<button class="button" type="button" onclick="minus(event)"> - </button>
-										<input id='weight1' value='50' type='range' min='0' max='100' onChange="changeWeight(event)"></input>
-										<button class="button" type="button" onclick="add(event)"> + </button>
-										<div style="display: inline-block;">50</div>
-									</div>
-									<div>自然環境
-										<button class="button" type="button" onclick="minus(event)"> - </button>
-										<input id='weight2' value='50' type='range' min='0' max='100' onChange="changeWeight(event)"></input>
-										<button class="button" type="button" onclick="add(event)"> + </button>
-										<div style="display: inline-block;">50</div>
-									</div>
-									<div>土地價格
-										<button class="button" type="button" onclick="minus(event)"> - </button>
-										<input id='weight3' value='50' type='range' min='0' max='100' onChange="changeWeight(event)"></input>
-										<button class="button" type="button" onclick="add(event)"> + </button>
-										<div style="display: inline-block;">50</div></div>
-									<div>人口分布
-										<button class="button" type="button" onclick="minus(event)"> - </button>
-										<input id='weight4' value='50' type='range' min='0' max='100' onChange="changeWeight(event)"></input>
-										<button class="button" type="button" onclick="add(event)"> + </button>
-										<div style="display: inline-block;">50</div>
-									</div>
-									<div>生活機能
-										<button class="button" type="button" onclick="minus(event)"> - </button>
-										<input id='weight5' value='50' type='range' min='0' max='100' onChange="changeWeight(event)"></input>
-										<button class="button" type="button" onclick="add(event)"> + </button>
-										<div style="display: inline-block;">50</div>
-									</div>
-									<div>公共安全
-										<button class="button" type="button" onclick="minus(event)"> - </button>
-										<input id='weight6' value='50' type='range' min='0' max='100' onChange="changeWeight(event)"></input>
-										<button class="button" type="button" onclick="add(event)"> + </button>
-										<div style="display: inline-block;">50</div>
-									</div>
-									<button class="button" id="selectWeightbtn" type="button" onclick="selectWeight()">產生預測</button>
-									</form>
-									<br>
-									<h4 >區域預測彙報:										</h4>
-									地點：<input type="radio" name="select_mode" value="now">目前位置
-						<input type="radio" name="select_mode" value="mapclick">地圖點選<br/>
-						彙報預測時間:
-		<select name="time4" id="time4" >
-									<option value="0" selected>1小時後</option>
-									<option value="30">2小時後</option>
-									<option value="30">3小時後</option>
-									<option value="40">4小時後</option>
-									<option value="30">5小時後</option>
-									<option value="30">6小時後</option>
-									<option value="30">7小時後</option>
-									<option value="40">8小時後</option>
-									<option value="30">9小時後</option>
-									<option value="30">10小時後</option>
-									<option value="30">11小時後</option>
-									<option value="50">12小時後</option>
-									<option value="30">15小時後</option>
-									<option value="30">18小時後</option>
-									<option value="30">21小時後</option>
-									<option value="50">1天後</option>
-									<option value="50">30小時後</option>
-									<option value="50">36小時後</option>
-									<option value="50">42小時後</option>
-									<option value="50">2天後</option>
+<head>
+	<meta charset="UTF-8" />
+	<title> 官民共治-城市潛在痛點預警平台</title>
+	<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/dvxCharts.chart.min.css') }}" />
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='themes/base/styles.css') }}" />
+	<script src="{{ url_for('static', filename='js/dvxCharts.chart.min.js') }}" type="text/javascript"></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+</head>
 
-									</select><br>
-									<button class="button" id="sum"  onclick="opensum()">產生彙報</button>
-									<!-- <button class="button" id="weight_change" onclick="openModal()">回報事件</button><br> -->
+<body>
+	<div id='header'>
+		<div id='avatar-container'>
+			<img src="{{ url_for('static', filename='images/002.png') }}" alt="city2" id="team-avatar">
+		</div>
+		<div id='team-name'>城市風水師</div>
+		<div id='searcher-container'>
+			<img src="{{ url_for('static', filename='figma/searcher.svg') }}">
+			<input id="pac-input" class="controls" type="text" placeholder="輸入地址/地標/區域">
+		</div>
+		<div id='weight-box' class='round-box'>
+			<img id='weight-adjust' src="{{ url_for('static', filename='figma/weight-adjust.svg') }}">
+			&nbsp;&nbsp;權重調整
+			<button onclick="openWeights()" style="outline: none;border-width: 0;background-color: rgba(0,0,0,0);">
+				<img id='arrow' src="{{ url_for('static', filename='figma/arrow.svg') }}">
+			</button>
+		</div>
+		<div id='forecaster' class='round-box' role="button" onclick="goPredict()">宜居地預測</div>
+	</div>
+	<div id="weightSelect">
+		<div class="weight">價格</div>
+		<div class="weight">人口</div>
+		<div class="weight">機能</div>
+		<div class="weight">安全</div>
+		<div class="weight">交通</div>
+		<div class="weight">環境</div>
+	</div>
+	<!-- <div id="map"></div> -->
 
-										<h4 id="list">高風險區域：
-										<!-- <button id="geojson" onclick="geojsoncolor()">關閉分色圖</button> -->
-
-										</h4>
-										
-										<div id="latlng" class="flowbox"></div>
-										<!--<div><span id="save">送出</span></div>-->
-									</div>
-								
-							</div>
-						</div>
-						<div class="container">
-							<div class="container-wrapper" id="slider">
-								<div class="card">
-									<div id="search">
-									
-						<br/><br/><h3>區域訂閱：</h3>
-							 <details>
-							 
-        <summary>新增訂閱</summary>
-		1.框選訂閱範圍<br>
-2.設定訂閱時間:
-<select name="time0" id="time0" >
-						
-									<option value="0" selected>星期一</option>
-									<option value="1">星期二</option>
-									<option value="2">星期三</option>
-									<option value="3">星期四</option>
-									<option value="4">星期五</option>
-									<option value="5">星期六</option>
-									<option value="6">星期日</option>
-
-						
-									</select>
-		<select name="time1" id="time1" >
-						
-									<option value="0" selected>00</option>
-									<option value="1">01</option>
-									<option value="2">02</option>
-									<option value="3">03</option>
-									<option value="4">04</option>
-									<option value="5">05</option>
-									<option value="6">06</option>
-									<option value="7">07</option>
-									<option value="8">08</option>
-									<option value="9">09</option>
-									<option value="10">10</option>
-									<option value="11">11</option>
-									<option value="12">12</option>
-									<option value="13">13</option>
-									<option value="14">14</option>
-									<option value="15">15</option>
-									<option value="16">16</option>
-									<option value="17">17</option>
-									<option value="18">18</option>
-									<option value="19">19</option>
-									<option value="20">20</option>
-									<option value="21">21</option>
-									<option value="22">22</option>
-									<option value="23">23</option>
-									</select>to
-		<select name="time2" id="time2" >
-									<<option value="0" selected>00</option>
-									<option value="1">01</option>
-									<option value="2">02</option>
-									<option value="3">03</option>
-									<option value="4">04</option>
-									<option value="5">05</option>
-									<option value="6">06</option>
-									<option value="7">07</option>
-									<option value="8">08</option>
-									<option value="9">09</option>
-									<option value="10">10</option>
-									<option value="11">11</option>
-									<option value="12">12</option>
-									<option value="13">13</option>
-									<option value="14">14</option>
-									<option value="15">15</option>
-									<option value="16">16</option>
-									<option value="17">17</option>
-									<option value="18">18</option>
-									<option value="19">19</option>
-									<option value="20">20</option>
-									<option value="21">21</option>
-									<option value="22">22</option>
-									<option value="23">23</option>
-									</select><br>
-		3.設定通知時間:
-		<select name="time3" id="time3" >
-									<option value="0" selected>10分鐘前</option>
-									<option value="10">30分鐘前</option>
-									<option value="20">1小時前</option>
-									<option value="30">2小時前</option>
-									<option value="40">4小時前</option>
-									<option value="40">8小時前</option>
-									<option value="50">12小時前</option>
-									<option value="50">1天前</option>
-									</select><br>
-		<button class="button" id="save_w" onclick="circlesearch()">儲存</button>
-<button class="button" id="cancel_s" onclick="cancel_s()">取消</button>
-    </details>
-	<br>
-						<button class="button" id="admmin" onclick=opensubrecord() >已訂閱列表</button>
-						
-						
-						
-						
-								</div>
-								
-							
-								
-								
-								<!--<div id="setR">
-									<label>選擇半徑大小</label><br>
-									<input type="range" id="rRange"  name="radius" max="1000" min="1">
-									<input type="text" readonly="readonly" id="radius">
-								</div>-->
-								<!--<div id="setting">
-									<button type="submit" id="set">產生</button>
-								</div>-->
-									
-								</div>
-							</div>
-						</div>
-					</div>
-					
-					<!-- <div id="result">
-						<span id="line"></span>
-					</div> -->
-
-				</div>
-				
-				<input id="pac-input" class="controls" type="text" placeholder="Search Box" style='width:500px'>
-				<div id="map"></div>
-				
-				
-				<div class="modal" id="modal">
-				  <div class="wrapper">
-					<div class="message">
-					<div  id="ms">
-					<div id="container" class="example-container">
-					
-					
-					</div>
-					
-
-					<button class="modalbtn" id="closebtn" onclick="closeModal()">&#10006</button>
-					
-					
-						
-					</div>
-				  </div>
-				</div>
-				
-			</div>
-			<div id="time-slider-container">
-					<input type="range" id="time-slider" min="0" max="6" value="0" step="1"/>
-					<div id="time-indicator-container">
-	
-						<div>+1  h</div>
-						<div>+2  h</div>
-						<div>+4  h</div>
-						<div>+6  h</div>
-						<div>+12 h</div>
-						<div>+18 h</div>
-						<div>+1  D</div>
-						<div>+2  D</div>
-					  </div>
-				</div>
-			<div class="load_mask"><!-- Place at bottom of page --></div>
-		</section>
-		<!-- <script async defer
+	<div class="load_mask">
+		<!-- Place at bottom of page -->
+	</div>
+	<!-- <script async defer
 			src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDZ_ffMr_1VaSrstpoVAD99R0bjyq_lySM&libraries=visualization&callback=initMap"></script> -->
-		</body> 
-		<script src="{{ url_for('static', filename='js/main.js') }}" type="text/javascript"></script>
-		<!-- <script src="{{ url_for('static', filename='js/main.js') }}" type="module"></script> -->
+</body>
+<script src="{{ url_for('static', filename='js/main.js') }}" type="text/javascript"></script>
+<!-- <script src="{{ url_for('static', filename='js/main.js') }}" type="module"></script> -->
+
 </html>

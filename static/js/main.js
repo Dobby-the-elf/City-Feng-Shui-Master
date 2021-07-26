@@ -75,9 +75,9 @@ function sendNotify(msg) {
 
 
 // document.getElementById('geojson').disabled=true;　
-document.getElementById("latlng").style.height = (document.body.clientHeight - 470) + "px";
-p = document.getElementById("time-slider")
-document.getElementById("time-indicator-container").style.margin = (p.clientwidth) / 14 + "px";
+// document.getElementById("latlng").style.height = (document.body.clientHeight - 470) + "px";
+// p = document.getElementById("time-slider")
+// document.getElementById("time-indicator-container").style.margin = (p.clientwidth) / 14 + "px";
 
 $(document).ready(function () {
 	var burger = $('.pullbtn');             //三條線
@@ -611,7 +611,7 @@ function initMap() {                                            //map
 
 	const input = document.getElementById('pac-input')
 	const searchBox = new google.maps.places.SearchBox(input);
-	map.controls[google.maps.ControlPosition.TOP_CENTER].push(input);
+	// map.controls[google.maps.ControlPosition.TOP_CENTER].push(input);
 
 	searchBox.addListener("places_changed", () => {
 		const places = searchBox.getPlaces();
@@ -1148,4 +1148,14 @@ function add(e) {
 function changeWeight(e) {
 	e.target.parentNode.childNodes[7].innerText = e.target.parentNode.childNodes[3].value;
 	// console.log(e.target.parentNode.childNodes[7].innerText)
+}
+
+function openWeights() {
+	alert("opened")
+	console.log(document.querySelectorAll('.weight'));
+	document.querySelectorAll('.weight').forEach((weight) => { weight.innerText = 'hello' })
+}
+
+function goPredict() {
+	alert("predict")
 }
