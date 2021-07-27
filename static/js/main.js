@@ -26,31 +26,25 @@ let weights = [0, 0, 0, 0, 0, 0]
 // document.getElementById("time-indicator-container").style.margin = (p.clientwidth) / 14 + "px";
 
 $(document).ready(function () {
-	var burger = $('.pullbtn');             //三條線
-	var menu = $('.panel');                 //側欄
-	burger.click(function () {                //點擊三條線                           位移為css hover
-		document.getElementById("clickme").style.opacity = "0";
-		burger.toggleClass('pullbtn_open');
-		menu.toggleClass('menu--open');
-	});
-	let script = document.createElement('script');
-	script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyCCYcEhvSf0iUKUyS-ntyEkW7K_uBmHWDY&libraries=visualization,places&callback=initMap";
-	script.async = true;
-	document.head.appendChild(script);
-	document.querySelector('#weightSelect').style.opacity = '0'
-	document.querySelectorAll('.weight').forEach((weight, i) => {
-		for (let j = 0; j < 5; j++) {
-			let image = document.createElement("img");
-			image.id = String(i) + String(j)
-			image.className = 'heart'
-			image.src = `../../static/figma/heart-line.svg`;
-			image.style.marginLeft = "2%";
-			image.style.width = "20px";
-			image.style.height = "2.5vh";
-			// image.onmouseover = () => { console.log(image.id); }
-			weight.appendChild(image)
-		}
-	})
+	// let script = document.createElement('script');
+	// script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyCCYcEhvSf0iUKUyS-ntyEkW7K_uBmHWDY&libraries=visualization,places&callback=initMap";
+	// script.async = true;
+	// document.head.appendChild(script);
+	// document.querySelector('#weightSelect').style.opacity = '0'
+	// document.querySelectorAll('.weight').forEach((weight, i) => {
+	// 	for (let j = 0; j < 5; j++) {
+	// 		let image = document.createElement("img");
+	// 		image.id = String(i) + String(j)
+	// 		image.className = 'heart'
+	// 		image.src = `../../static/figma/heart-line.svg`;
+	// 		image.style.marginLeft = "2%";
+	// 		image.style.width = "20px";
+	// 		image.style.height = "2.5vh";
+	// 		// image.onmouseover = () => { console.log(image.id); }
+	// 		weight.appendChild(image)
+	// 	}
+	// })
+	//------------------------------------------------------------------------------
 	document.querySelector('#weightSelect').addEventListener('click', (e) => {
 		try {
 			if (e.target.src.includes("/static/figma/heart")) {
@@ -129,7 +123,6 @@ $(document).ready(function () {
 	// 	console.log("hover");
 	// }, false);
 
-	menu.toggleClass('menu--open');
 	// document.querySelector('#map:nth-child(3)').childNodes[1].style.opacity = "0.2";
 	if (note == 0) {
 		setTimeout(function () {
@@ -145,25 +138,6 @@ $(document).ready(function () {
 
 });
 
-// var modal = document.getElementById("modal");
-// function openModal() {//打開權重設定視窗
-// 	modal.classList.add("display");
-// 	setTimeout(function () {
-// 		modal.classList.add("transition");
-// 	}, 20);//20milliseconds
-// }
-// function closeModal() {//關掉權重設定視窗
-// 	modal.classList.remove("transition");
-// 	document.getElementById("container").innerHTML = ""
-// 	document.getElementById("ms").innerHTML = ""
-// 	document.getElementById("ms").innerHTML = '<div id="container" class="example-container"></div><button class="modalbtn" id="closebtn" onclick="closeModal()">&#10006</button>'
-// 	setTimeout(function () {
-// 		modal.classList.remove("display");
-// 	}, 300);//300milliseconds
-
-// }
-
-
 
 function initMap() {                                            //map
 	geocoder = new google.maps.Geocoder();
@@ -173,8 +147,19 @@ function initMap() {                                            //map
 		// center: { lat: lat, lng: lng },
 		zoom: 11,
 		streetViewControl: false,
-		zoomControl: true
+		zoomControl: true,
+		zoomControlOptions: {
+			position: google.maps.ControlPosition.LEFT_BOTTOM,
+		},
+		mapTypeControl: false,
 	});
+
+	// var myMarker = new google.maps.Marker({
+	// 	map: map,
+	// 	animation: google.maps.Animation.DROP,
+	// 	position: { lat: 23.037850, lng: 120.239751 }
+	// });
+	// addYourLocationButton(map, myMarker);
 
 	navigator.geolocation.getCurrentPosition(function (position) {
 		lat = position.coords.latitude;
@@ -258,6 +243,7 @@ function initMap() {                                            //map
 		}
 	});
 	map.addListener('click', function (event) {
+		closeWeights();
 		addMarker(event.latLng, map);
 		// placeMarkerAndPanTo2(event.latLng, map);
 	});
@@ -278,9 +264,6 @@ function deleteMarkers() {
 	});
 	markers = [];
 }
-
-
-
 
 function goPredict() {                                //預測
 	a = 0
@@ -480,7 +463,7 @@ function changeWeight(e) {
 	// console.log(e.target.parentNode.childNodes[7].innerText)
 }
 
-function openWeights() {
+function toggleWeights() {
 	// console.log(document.querySelectorAll('.weight'));
 	// console.log(document.querySelector('#weightSelect').style.display);
 	if (document.querySelector('#weightSelect').style.height == '25vh') {
@@ -493,4 +476,24 @@ function openWeights() {
 		document.querySelector('#weightSelect').style.opacity = '1'
 		document.querySelector('#weightSelect').style.transition = 'all 0.35s ease-in;';
 	}
+}
+
+function closeWeights() {
+	// console.log(document.querySelectorAll('.weight'));
+	// console.log(document.querySelector('#weightSelect').style.display);
+	if (document.querySelector('#weightSelect').style.height == '25vh') {
+		document.querySelector('#weightSelect').style.height = '0'
+		document.querySelector('#weightSelect').style.opacity = '0'
+		document.querySelector('#weightSelect').style.transition = 'all 0.25s ease-out';
+	}
+}
+
+function toggleAnalysis() {
+	if (document.querySelector('#analysis-image img').src.includes("/static/figma/analysis1")) {
+		document.querySelector('#analysis-image img').src = `../../static/figma/analysis2.svg`;
+	}
+	else {
+		document.querySelector('#analysis-image img').src = `../../static/figma/analysis1.svg`;
+	}
+
 }
