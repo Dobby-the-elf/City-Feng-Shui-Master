@@ -304,8 +304,28 @@ input[type="range"]::-webkit-slider-thumb {
 	flex-direction: row;
 }
 #radar-area {
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+	flex-direction: column;
 	height: 25%;
 	margin-top: 5px;
+}
+#radar-container {
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+	flex-direction: column;
+	height: 100%;
+	width: 50%;
+}
+#line-chart-container {
+	position: absolute;
+	float: right;
+	top: 35vh;
+	height: 33vh;
+	width: 19vw;
+	z-index: 100;
 }
 #poem-area {
 	height: 30%;

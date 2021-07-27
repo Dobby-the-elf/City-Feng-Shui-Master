@@ -1,5 +1,7 @@
 var grid = [];
 var map;
+var radarChart;
+var lineChart;
 var circlearea;
 var area
 var area_properties = []
@@ -19,6 +21,8 @@ var note = 0
 mapclick = 0
 points_list.list = [];
 let weights = [0, 0, 0, 0, 0, 0]
+let radarData = [0.5, 1, 0.5, 1, 0.5, 1]
+let lineData = [65, 59, 80, 81, 56, 55, 40]
 
 // document.getElementById('geojson').disabled=true;　
 // document.getElementById("latlng").style.height = (document.body.clientHeight - 470) + "px";
@@ -44,7 +48,10 @@ $(document).ready(function () {
 	// 		weight.appendChild(image)
 	// 	}
 	// })
-	//------------------------------------------------------------------------------
+	// drawRadar();
+	drawChart();
+
+	//-----------------------------------------------------------------------------------------------------------
 	document.querySelector('#weightSelect').addEventListener('click', (e) => {
 		try {
 			if (e.target.src.includes("/static/figma/heart")) {
@@ -100,6 +107,7 @@ $(document).ready(function () {
 	// 		}
 	// 	})
 	// })
+
 	document.querySelectorAll('.weight').forEach((heart) => {
 		heart.addEventListener("mouseleave", (e) => {
 			// console.log("leave");
@@ -117,6 +125,7 @@ $(document).ready(function () {
 			}
 		})
 	})
+	//------------------------------------------------------------------------------------------------
 
 	// document.querySelectorAll('.heart')[0].addEventListener("mouseenter", function (event) {
 	// 	// highlight the mouseenter target
@@ -441,6 +450,99 @@ function geojsoncolor() {                                                 //顯�
 	}
 }
 
+function drawRadar() {
+	const data = {
+		labels: [
+			'價格',
+			'人口',
+			'機能',
+			'安全',
+			'交通',
+			'環境'
+		],
+		datasets: [{
+			label: 'My First Dataset',
+			data: radarData,
+			fill: true,
+			borderWidth: 0,
+			backgroundColor: 'rgba(161, 196, 253,0.68)',
+			borderColor: 'rgb(161, 196, 253)',
+			pointBackgroundColor: 'rgba(161, 196, 253,0)',
+			pointBorderColor: '#fff',
+			pointHoverBackgroundColor: '#fff',
+			pointHoverBorderColor: 'rgb(161, 196, 253)'
+		}]
+	};
+	const config = {
+		type: 'radar',
+		data: data,
+		options: {
+			elements: {
+				line: {
+					borderWidth: 3
+				}
+			},
+			scales: {
+				r: {
+					suggestedMin: 0,
+					suggestedMax: 1,
+					ticks: {
+						display: false,
+					}
+				},
+			},
+			plugins: {
+				legend: {
+					display: false,
+				}
+			}
+		},
+	};
+	radarChart = new Chart(
+		document.getElementById('radar'),
+		config
+	);
+}
+
+function drawChart() {
+	const data = {
+		labels: ['-12', '-6', '-3', '0', '+3', '+6', '+12'],
+		datasets: [{
+			label: 'My First Dataset',
+			data: lineData,
+			fill: false,
+			borderColor: 'rgb(75, 192, 192)',
+			tension: 0.1
+		}]
+	};
+	const config = {
+		type: 'line',
+		data: data,
+		options: {
+			elements: {
+				line: {
+					borderWidth: 3
+				}
+			},
+			// scales: {
+			// 	r: {
+			// 		ticks: {
+			// 			// display: false,
+			// 		}
+			// 	},
+			// },
+			plugins: {
+				legend: {
+					display: false,
+				}
+			}
+		},
+	};
+	lineChart = new Chart(
+		document.getElementById('line-chart'),
+		config
+	);
+}
 
 function minus(e) {
 	e.preventDefault();
@@ -491,6 +593,7 @@ function closeWeights() {
 function toggleAnalysis() {
 	if (document.querySelector('#analysis-image img').src.includes("/static/figma/analysis1")) {
 		document.querySelector('#analysis-image img').src = `../../static/figma/analysis2.svg`;
+		document.querySelector('#radar-container').style.opacity = '0'
 	}
 	else {
 		document.querySelector('#analysis-image img').src = `../../static/figma/analysis1.svg`;
