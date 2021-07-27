@@ -332,7 +332,7 @@ def get_grid():
         "event5_num",
         "event6_num",
     ]
-    max_complain = []
+    # max_complain = []
     # for col in cols:
     #     event[col] = event[col].apply(lambda x: 0 if x < 0 else x)
     #     event[col] = event[col].apply(
