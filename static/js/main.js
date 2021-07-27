@@ -91,6 +91,20 @@ $(document).ready(function () {
 	script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyCCYcEhvSf0iUKUyS-ntyEkW7K_uBmHWDY&libraries=visualization,places&callback=initMap";
 	script.async = true;
 	document.head.appendChild(script);
+	document.querySelector('#weightSelect').style.opacity = '0'
+	document.querySelector('#weightSelect').addListener('click', (event) => {
+
+	})
+	document.querySelectorAll('.weight').forEach((weight) => {
+		for (let i = 0; i < 5; i++) {
+			let image = document.createElement("img");
+			image.src = `../../static/figma/heart-line.svg`;
+			image.style.marginLeft = "2%";
+			image.style.width = "20px";
+			image.style.height = "2.5vh";
+			weight.appendChild(image)
+		}
+	})
 	menu.toggleClass('menu--open');
 	// document.querySelector('#map:nth-child(3)').childNodes[1].style.opacity = "0.2";
 	if (note == 0) {
@@ -124,6 +138,124 @@ $(document).ready(function () {
 // 	}, 300);//300milliseconds
 
 // }
+
+
+
+function initMap() {                                            //map
+	geocoder = new google.maps.Geocoder();
+
+	map = new google.maps.Map(document.getElementById('map'), {
+		center: { lat: 23.037850, lng: 120.239751 },
+		// center: { lat: lat, lng: lng },
+		zoom: 11,
+		streetViewControl: false,
+		zoomControl: true
+	});
+
+	navigator.geolocation.getCurrentPosition(function (position) {
+		lat = position.coords.latitude;
+		lng = position.coords.longitude;
+		map.setZoom(15)
+		map.panTo({ lat: lat, lng: lng })
+		addMarker({ lat: lat, lng: lng }, map);
+	});
+
+	map.addListener("bounds_changed", () => {
+		searchBox.setBounds(map.getBounds());
+	});
+
+	const input = document.getElementById('pac-input')
+	const searchBox = new google.maps.places.SearchBox(input);
+	// map.controls[google.maps.ControlPosition.TOP_CENTER].push(input);
+
+	searchBox.addListener("places_changed", () => {
+		const places = searchBox.getPlaces();
+		console.log(places);
+		if (places.length == 0) return;
+		markers.forEach((marker) => { marker.setMap(null); });
+		markers = [];
+		// For each place, get the icon, name and location.
+		const bounds = new google.maps.LatLngBounds();
+		places.forEach((place) => {
+			if (!place.geometry || !place.geometry.location) {
+				console.log("Returned place contains no geometry");
+				return;
+			}
+			// const icon = {
+			// 	url: place.icon,
+			// 	size: new google.maps.Size(71, 71),
+			// 	origin: new google.maps.Point(0, 0),
+			// 	anchor: new google.maps.Point(17, 34),
+			// 	scaledSize: new google.maps.Size(25, 25),
+			// };
+			markers.push(
+				new google.maps.Marker({
+					map,
+					// icon,
+					title: place.name,
+					position: place.geometry.location,
+				})
+			);
+
+			if (place.geometry.viewport) {
+				bounds.union(place.geometry.viewport);
+			} else {
+				bounds.extend(place.geometry.location);
+			}
+		});
+		map.fitBounds(bounds);
+	});
+
+	infowindow_grid = new google.maps.InfoWindow()
+	map.data.addListener('click', function (event) {
+		deleteMarkers()
+		lat = event.feature.i.center.lat;
+		lng = event.feature.i.center.lng;
+		console.log(event.feature.i);
+		addMarker({ lat: lat - 0.002, lng: lng }, map);
+		map.panTo({ lat: lat, lng: lng }, map);
+		document.getElementById('map').style.background = " #484848;"
+		if (true) {
+			map.data.overrideStyle(event.feature, { fillColor: "#555555", fillOpacity: 1 });
+			setTimeout(function () {
+				map.data.revertStyle();
+			}, 100);
+			console.log("lat:" + String(lat) + ", " + "lng:" + String(lng))
+			console.log(event.feature);
+			infowindow_grid.setPosition({ lat: lat + 0.002, lng: lng });//設在中間會擋住 pin
+			city_grid_ID = event.feature.i.ID
+			if (selector == 1) {
+				infowindow_grid.setContent("lat:" + String(lat).substr(0, 6) + "<br>" + "lng:" + String(lng).substr(0, 7) + "<br>" + "ID:" + event.feature.i.ID + "&emsp;" + "All_id:" + event.feature.i.All_id + "<br>位置:" + event.feature.i.area3)
+				infowindow_grid.open(map)
+			}
+			else {
+				placeMarkerAndPanTo(event.latLng, map);
+			}
+		}
+	});
+	map.addListener('click', function (event) {
+		addMarker(event.latLng, map);
+		// placeMarkerAndPanTo2(event.latLng, map);
+	});
+}
+function addMarker(location, map) {
+	// Add the marker at the clicked location, and add the next-available label
+	// from the array of alphabetical characters.
+	let marker = new google.maps.Marker({
+		position: location,
+		// label: labels[labelIndex++ % labels.length],
+		map: map,
+	});
+	markers.push(marker);
+}
+function deleteMarkers() {
+	markers.forEach(function (e) {
+		e.setMap(null);
+	});
+	markers = [];
+}
+
+
 
 
 function opensum() {
@@ -586,122 +718,6 @@ for (var i = 0; i < rad1.length; i++) {
 }
 
 
-function initMap() {                                            //map
-	geocoder = new google.maps.Geocoder();
-
-	map = new google.maps.Map(document.getElementById('map'), {
-		center: { lat: 23.037850, lng: 120.239751 },
-		// center: { lat: lat, lng: lng },
-		zoom: 11,
-		streetViewControl: false,
-		zoomControl: true
-	});
-
-	navigator.geolocation.getCurrentPosition(function (position) {
-		lat = position.coords.latitude;
-		lng = position.coords.longitude;
-		map.setZoom(15)
-		map.panTo({ lat: lat, lng: lng })
-		addMarker({ lat: lat, lng: lng }, map);
-	});
-
-	map.addListener("bounds_changed", () => {
-		searchBox.setBounds(map.getBounds());
-	});
-
-	const input = document.getElementById('pac-input')
-	const searchBox = new google.maps.places.SearchBox(input);
-	// map.controls[google.maps.ControlPosition.TOP_CENTER].push(input);
-
-	searchBox.addListener("places_changed", () => {
-		const places = searchBox.getPlaces();
-		console.log(places);
-		if (places.length == 0) return;
-		markers.forEach((marker) => { marker.setMap(null); });
-		markers = [];
-		// For each place, get the icon, name and location.
-		const bounds = new google.maps.LatLngBounds();
-		places.forEach((place) => {
-			if (!place.geometry || !place.geometry.location) {
-				console.log("Returned place contains no geometry");
-				return;
-			}
-			// const icon = {
-			// 	url: place.icon,
-			// 	size: new google.maps.Size(71, 71),
-			// 	origin: new google.maps.Point(0, 0),
-			// 	anchor: new google.maps.Point(17, 34),
-			// 	scaledSize: new google.maps.Size(25, 25),
-			// };
-			markers.push(
-				new google.maps.Marker({
-					map,
-					// icon,
-					title: place.name,
-					position: place.geometry.location,
-				})
-			);
-
-			if (place.geometry.viewport) {
-				bounds.union(place.geometry.viewport);
-			} else {
-				bounds.extend(place.geometry.location);
-			}
-		});
-		map.fitBounds(bounds);
-	});
-
-	infowindow_grid = new google.maps.InfoWindow()
-	map.data.addListener('click', function (event) {
-		deleteMarkers()
-		lat = event.feature.i.center.lat;
-		lng = event.feature.i.center.lng;
-		console.log(event.feature.i);
-		addMarker({ lat: lat - 0.002, lng: lng }, map);
-		map.panTo({ lat: lat, lng: lng }, map);
-		document.getElementById('map').style.background = " #484848;"
-		if (true) {
-			map.data.overrideStyle(event.feature, { fillColor: "#555555", fillOpacity: 1 });
-			setTimeout(function () {
-				map.data.revertStyle();
-			}, 100);
-			console.log("lat:" + String(lat) + ", " + "lng:" + String(lng))
-			console.log(event.feature);
-			infowindow_grid.setPosition({ lat: lat + 0.002, lng: lng });//設在中間會擋住 pin
-			city_grid_ID = event.feature.i.ID
-			if (selector == 1) {
-				infowindow_grid.setContent("lat:" + String(lat).substr(0, 6) + "<br>" + "lng:" + String(lng).substr(0, 7) + "<br>" + "ID:" + event.feature.i.ID + "&emsp;" + "All_id:" + event.feature.i.All_id + "<br>位置:" + event.feature.i.area3)
-				infowindow_grid.open(map)
-			}
-			else {
-				placeMarkerAndPanTo(event.latLng, map);
-			}
-		}
-	});
-	map.addListener('click', function (event) {
-		addMarker(event.latLng, map);
-		// placeMarkerAndPanTo2(event.latLng, map);
-	});
-}
-function addMarker(location, map) {
-	// Add the marker at the clicked location, and add the next-available label
-	// from the array of alphabetical characters.
-	let marker = new google.maps.Marker({
-		position: location,
-		// label: labels[labelIndex++ % labels.length],
-		map: map,
-	});
-	markers.push(marker);
-}
-function deleteMarkers() {
-	markers.forEach(function (e) {
-		e.setMap(null);
-	});
-	markers = [];
-}
-
-
-
 
 function selectWeight() {                                //預測
 	a = 0
@@ -1151,9 +1167,18 @@ function changeWeight(e) {
 }
 
 function openWeights() {
-	alert("opened")
-	console.log(document.querySelectorAll('.weight'));
-	document.querySelectorAll('.weight').forEach((weight) => { weight.innerText = 'hello' })
+	// console.log(document.querySelectorAll('.weight'));
+	console.log(document.querySelector('#weightSelect').style.display);
+	if (document.querySelector('#weightSelect').style.height == '25vh') {
+		document.querySelector('#weightSelect').style.height = '0'
+		document.querySelector('#weightSelect').style.opacity = '0'
+		document.querySelector('#weightSelect').style.transition = 'all 0.25s ease-out';
+	}
+	else {
+		document.querySelector('#weightSelect').style.height = '25vh'
+		document.querySelector('#weightSelect').style.opacity = '1'
+		document.querySelector('#weightSelect').style.transition = 'all 0.35s ease-in;';
+	}
 }
 
 function goPredict() {

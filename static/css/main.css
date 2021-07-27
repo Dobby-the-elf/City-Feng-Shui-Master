@@ -188,23 +188,27 @@ input[type="range"]::-webkit-slider-thumb {
 
 #weightSelect {
 	display: flex;
-	justify-content: space-evenly;
-	align-items: center;
+	justify-content: center;
+	/* align-items: center; */
+	align-content: center;
 	flex-direction: column;
 	background: #f2f2f2;
 	position: absolute;
 	width: 15%;
-	height: 25vh;
+	height: 0;
 	border-radius: 14px;
 	margin: 0;
 	top: 8vh;
 	left: 57vw;
+	font-size: 14px;
 	line-height: 50px;
 	z-index: 1;
+	transition: height 0.15s ease-out;
 }
-
 #weightSelect > div {
 	height: 15%;
+	width: 100%;
+	margin-left: 11%;
 	/* text-align: center; */
 	display: flex;
 	justify-content: flex-start;
