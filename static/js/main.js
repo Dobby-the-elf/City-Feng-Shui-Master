@@ -36,8 +36,8 @@ $(document).ready(function () {
 	// script.async = true;
 	// document.head.appendChild(script);
 
-	// drawRadar();
-	drawChart();
+	drawRadar();
+	// drawChart();
 
 	initListener();
 
@@ -51,7 +51,19 @@ $(document).ready(function () {
 	}, 1000);
 });
 
+
 function initListener() {
+	//----------------- for analysis types --------------------------
+	document.querySelectorAll('.type').forEach((type) => {
+		type.addEventListener('click', () => {
+			console.log(type.id % 60);
+			document.querySelectorAll('.type').forEach((typeInner) => {
+				typeInner.style.backgroundColor = '#fff';
+			})
+			type.style.backgroundColor = '#eee';
+		})
+	})
+	//--------------------- for weights -----------------------------
 	document.querySelector('#weightSelect').style.opacity = '0'
 	document.querySelectorAll('.weight').forEach((weight, i) => {
 		for (let j = 0; j < 5; j++) {
@@ -422,6 +434,13 @@ function geojsoncolor() {                                                 //顯�
 }
 
 function drawRadar() {
+	document.querySelectorAll('.type').forEach((type) => {
+		type.style.opacity = 0;
+	})
+	if (radarChart) {
+		radarChart.update();
+		return;
+	}
 	const data = {
 		labels: [
 			'價格',
@@ -441,7 +460,7 @@ function drawRadar() {
 			pointBackgroundColor: 'rgba(161, 196, 253,0)',
 			pointBorderColor: '#fff',
 			pointHoverBackgroundColor: '#fff',
-			pointHoverBorderColor: 'rgb(161, 196, 253)'
+			pointHoverBorderColor: 'rgb(161, 196, 253)',
 		}]
 	};
 	const config = {
@@ -451,7 +470,7 @@ function drawRadar() {
 			elements: {
 				line: {
 					borderWidth: 3
-				}
+				},
 			},
 			scales: {
 				r: {
@@ -459,7 +478,11 @@ function drawRadar() {
 					suggestedMax: 1,
 					ticks: {
 						display: false,
-					}
+						stepSize: 0.25,
+					},
+					angleLines: {
+						color: '#ccc'
+					},
 				},
 			},
 			plugins: {
@@ -476,6 +499,13 @@ function drawRadar() {
 }
 
 function drawChart() {
+	document.querySelectorAll('.type').forEach((type) => {
+		type.style.opacity = 1;
+	})
+	if (lineChart) {
+		lineChart.update();
+		return;
+	}
 	const data = {
 		labels: ['-12', '-6', '-3', '0', '+3', '+6', '+12'],
 		datasets: [{
@@ -592,9 +622,13 @@ function toggleCharts() {
 	if (document.querySelector('#analysis-image img').src.includes("/static/figma/analysis1")) {
 		document.querySelector('#analysis-image img').src = `../../static/figma/analysis2.svg`;
 		document.querySelector('#radar-container').style.opacity = '0'
+		document.querySelector('#line-chart-container').style.opacity = '1'
+		drawChart();
 	}
 	else {
 		document.querySelector('#analysis-image img').src = `../../static/figma/analysis1.svg`;
+		document.querySelector('#line-chart-container').style.opacity = '0'
+		document.querySelector('#radar-container').style.opacity = '1'
+		drawRadar();
 	}
-
 }
