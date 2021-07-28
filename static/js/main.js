@@ -1,7 +1,5 @@
 var grid = [];
 var map;
-var radarChart;
-var lineChart;
 var circlearea;
 var area
 var area_properties = []
@@ -20,10 +18,17 @@ var total_number;
 var note = 0
 mapclick = 0
 points_list.list = [];
+//---------------------------------------
+var radarChart;
+var lineChart;
+var chartType = 0;//記錄圖表類別
+var targetType = 0;//記錄六種類別
+let grid_current;
 let weights = [0, 0, 0, 0, 0, 0]
 let radarData = [0.5, 1, 0.5, 1, 0.5, 1]
-let lineData = [65, 59, 80, 81, 56, 55, 0]
-// let lineData = [0.5, 1, 1, 0.5, 1, 0.5, 1]
+let chartData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+// let chartData = [0.5, 1, 1, 0.5, 1, 0.5, 1]
 
 // document.getElementById('geojson').disabled=true;　
 // document.getElementById("latlng").style.height = (document.body.clientHeight - 470) + "px";
@@ -61,6 +66,8 @@ function initListener() {
 				typeInner.style.backgroundColor = '#fff';
 			})
 			type.style.backgroundColor = '#eee';
+			targetType = type.id % 60;
+			getChartData();
 		})
 	})
 	//--------------------- for weights -----------------------------
@@ -214,6 +221,7 @@ function initMap() {                                            //map
 
 	infowindow_grid = new google.maps.InfoWindow()
 	map.data.addListener('click', function (event) {
+		grid_current = event.feature.i.ID
 		deleteMarkers()
 		lat = event.feature.i.center.lat;
 		lng = event.feature.i.center.lng;
@@ -232,6 +240,11 @@ function initMap() {                                            //map
 			city_grid_ID = event.feature.i.ID
 			infowindow_grid.setContent("lat:" + String(lat).substr(0, 6) + "<br>" + "lng:" + String(lng).substr(0, 7) + "<br>" + "ID:" + event.feature.i.ID + "&emsp;" + "All_id:" + event.feature.i.All_id + "<br>位置:" + event.feature.i.area3)
 			infowindow_grid.open(map)
+		}
+		if (chartType === 0) {
+			getRadarData();
+		} else {
+			getChartData();
 		}
 	});
 	map.addListener('click', function (event) {
@@ -256,6 +269,45 @@ function deleteMarkers() {
 	});
 	markers = [];
 }
+
+function getRadarData() {
+	$.ajax({
+		url: "/get_radar_data",
+		data: {
+			"grid_id": grid_current
+		},
+		success: function (data) {
+			// console.log(data.eventData);
+			arr = data.eventData
+			radarData.forEach((dat, idx) => { radarData[idx] = arr[3 + idx] })
+			// console.log('new radar data: ', radarData)
+			drawRadar();
+		},
+		error: function (XMLHttpRequest, textStatus, errorThrown) {
+			alert(XMLHttpRequest.status + '\n' + XMLHttpRequest.readyState + '\n' + textStatus + '\n' + XMLHttpRequest.responseText);
+		}
+	});
+};
+
+
+function getChartData() {
+	$.ajax({
+		url: "/get_chart_data",
+		data: {
+			"grid_id": grid_current,
+			"chart_type": targetType
+		},
+		success: function (data) {
+			console.log(data.eventData);
+			arr = data.eventData
+			chartData.forEach((dat, idx) => { chartData[idx] = arr[idx] })
+			drawChart();
+		},
+		error: function (XMLHttpRequest, textStatus, errorThrown) {
+			alert(XMLHttpRequest.status + '\n' + XMLHttpRequest.readyState + '\n' + textStatus + '\n' + XMLHttpRequest.responseText);
+		}
+	});
+};
 
 function goPredict() {                                //預測
 	a = 0
@@ -507,10 +559,10 @@ function drawChart() {
 		return;
 	}
 	const data = {
-		labels: ['-12', '-6', '-3', '0', '+3', '+6', '+12'],
+		labels: ['-12', '', '', '-9', '', '', '-6', '', '', '-3', '', '', '0', '', '', '+3', '', '', '+6', '', '', '+9', '', '', '+12'],
 		datasets: [{
 			label: 'My First Dataset',
-			data: lineData,
+			data: chartData,
 			fill: false,
 			borderWidth: 3,
 			borderColor: 'rgba(171, 167, 249, 0.99)',
@@ -550,6 +602,7 @@ function drawChart() {
 				y: {
 					type: 'linear',
 					grace: '50%',
+					beginAtZero: true
 				}
 				// y: {
 				// 	max: 100,
@@ -620,12 +673,14 @@ function closeWeights() {
 
 function toggleCharts() {
 	if (document.querySelector('#analysis-image img').src.includes("/static/figma/analysis1")) {
+		chartType = 1;
 		document.querySelector('#analysis-image img').src = `../static/figma/analysis2.svg`;
 		document.querySelector('#radar-container').style.opacity = '0'
 		document.querySelector('#line-chart-container').style.opacity = '1'
 		drawChart();
 	}
 	else {
+		chartType = 0;
 		document.querySelector('#analysis-image img').src = `../static/figma/analysis1.svg`;
 		document.querySelector('#line-chart-container').style.opacity = '0'
 		document.querySelector('#radar-container').style.opacity = '1'

@@ -412,6 +412,34 @@ def get_grid():
     return jsonify(data_return)
 
 
+@app.route("/get_radar_data")  # 讀取fake
+def get_radar_data():
+    grid_id = json.loads(request.args.get("grid_id"))
+
+    events = pd.read_csv("static/data/event_n.csv")
+    event = events[events["grid_id"] == grid_id]
+    print(event.to_numpy())
+    event = event.to_numpy().tolist()
+    data_return = {"eventData": event[0]}
+    # print(data_return)
+    return jsonify(data_return)
+
+
+@app.route("/get_chart_data")  # 讀取fake
+def get_chart_data():
+    grid_id = json.loads(request.args.get("grid_id"))
+    chart_type = json.loads(request.args.get("chart_type"))
+    chart_type = str(int(chart_type) + 1)
+
+    events = pd.read_csv("line_chart/grid_{}/trend.csv".format(grid_id))
+    event = events["event{}_num".format(chart_type)]
+    # print(event.to_numpy())
+    event = event.to_numpy().tolist()
+    data_return = {"eventData": event}
+    # print(data_return)
+    return jsonify(data_return)
+
+
 @app.route("/get_sum")  # 讀取fake
 def get_sum():
     lat = request.args.get("lat")
