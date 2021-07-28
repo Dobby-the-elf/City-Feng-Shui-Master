@@ -31,10 +31,10 @@ let lineData = [65, 59, 80, 81, 56, 55, 0]
 // document.getElementById("time-indicator-container").style.margin = (p.clientwidth) / 14 + "px";
 
 $(document).ready(function () {
-	// let script = document.createElement('script');
-	// script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyCCYcEhvSf0iUKUyS-ntyEkW7K_uBmHWDY&libraries=visualization,places&callback=initMap";
-	// script.async = true;
-	// document.head.appendChild(script);
+	let script = document.createElement('script');
+	script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyCCYcEhvSf0iUKUyS-ntyEkW7K_uBmHWDY&libraries=visualization,places&callback=initMap";
+	script.async = true;
+	document.head.appendChild(script);
 
 	drawRadar();
 	// drawChart();

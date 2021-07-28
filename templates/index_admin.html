@@ -51,7 +51,11 @@
 		<img src="{{ url_for('static', filename='figma/xx.svg') }}">
 	</div>
 	<div id="info">
-		<div id="point-area" class='info-box'>90/100 適合你</div>
+		<div id="point-area" class='info-box'>
+			<div id="big-point">90</div>
+			<div id="small-point">/100 適合你</div>
+			<div id="point-time">現在</div>
+		</div>
 		<div id="position-area" class='info-box'>
 			<div id="position-title">位置</div>
 			<div id="position-latlng">
@@ -87,6 +91,10 @@
 		</div>
 		<div id="poem-area" class='info-box'>
 			<div id="poem-title">籤詩</div>
+			<div id="poem-icon"></div>
+			<div id="poem-content">
+				
+			</div>
 		</div>
 	</div>
 
@@ -96,6 +104,6 @@
 	<!-- <script async defer
 			src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDZ_ffMr_1VaSrstpoVAD99R0bjyq_lySM&libraries=visualization&callback=initMap"></script> -->
 </body>
-<script src="{{ url_for('static', filename='js/main.js') }}" type="text/javascript"></script>
+<!-- <script src="{{ url_for('static', filename='js/main.js') }}" type="text/javascript"></script> -->
 
 </html>
