@@ -70,7 +70,7 @@ function initListener() {
 			let image = document.createElement("img");
 			image.id = String(i) + String(j)
 			image.className = 'heart'
-			image.src = `../../static/figma/heart-line.svg`;
+			image.src = `../static/figma/heart-line.svg`;
 			image.style.marginLeft = "2%";
 			image.style.width = "20px";
 			image.style.height = "2.5vh";
@@ -81,7 +81,7 @@ function initListener() {
 	document.querySelector('#weightSelect').addEventListener('click', (e) => {
 		try {
 			if (e.target.src.includes("/static/figma/heart")) {
-				// e.target.src = "../../static/figma/heart-solid.svg"
+				// e.target.src = "../static/figma/heart-solid.svg"
 				// console.log(e.target.id % 10);
 				weights[parseInt(e.target.id / 10)] = 1 + e.target.id % 10
 				console.log(parseInt(e.target.id / 10));
@@ -89,10 +89,10 @@ function initListener() {
 				for (let i = 0; i < 5; i++) {
 					// console.log(e.target.parentNode.childNodes[i + 1]);
 					if (i <= e.target.id % 10) {
-						e.target.parentNode.childNodes[i + 1].src = "../../static/figma/heart-solid.svg";
+						e.target.parentNode.childNodes[i + 1].src = "../static/figma/heart-solid.svg";
 					}
 					else {
-						e.target.parentNode.childNodes[i + 1].src = "../../static/figma/heart-line.svg";
+						e.target.parentNode.childNodes[i + 1].src = "../static/figma/heart-line.svg";
 					}
 				}
 			}
@@ -106,10 +106,10 @@ function initListener() {
 					for (let i = 0; i < 5; i++) {
 						// console.log(e.target.parentNode.childNodes[i + 1]);
 						if (i <= e.target.id % 10) {
-							e.target.parentNode.childNodes[i + 1].src = "../../static/figma/heart-empty.svg";
+							e.target.parentNode.childNodes[i + 1].src = "../static/figma/heart-empty.svg";
 						}
 						else {
-							e.target.parentNode.childNodes[i + 1].src = "../../static/figma/heart-line.svg";
+							e.target.parentNode.childNodes[i + 1].src = "../static/figma/heart-line.svg";
 						}
 					}
 				}
@@ -126,10 +126,10 @@ function initListener() {
 			// console.log(e.target.id % 10);
 			for (let i = 0; i < 5; i++) {
 				if (i < weights[parseInt(e.target.id % 100)]) {
-					e.target.childNodes[i + 1].src = "../../static/figma/heart-solid.svg";
+					e.target.childNodes[i + 1].src = "../static/figma/heart-solid.svg";
 				}
 				else {
-					e.target.childNodes[i + 1].src = "../../static/figma/heart-line.svg";
+					e.target.childNodes[i + 1].src = "../static/figma/heart-line.svg";
 				}
 			}
 		})
@@ -620,13 +620,13 @@ function closeWeights() {
 
 function toggleCharts() {
 	if (document.querySelector('#analysis-image img').src.includes("/static/figma/analysis1")) {
-		document.querySelector('#analysis-image img').src = `../../static/figma/analysis2.svg`;
+		document.querySelector('#analysis-image img').src = `../static/figma/analysis2.svg`;
 		document.querySelector('#radar-container').style.opacity = '0'
 		document.querySelector('#line-chart-container').style.opacity = '1'
 		drawChart();
 	}
 	else {
-		document.querySelector('#analysis-image img').src = `../../static/figma/analysis1.svg`;
+		document.querySelector('#analysis-image img').src = `../static/figma/analysis1.svg`;
 		document.querySelector('#line-chart-container').style.opacity = '0'
 		document.querySelector('#radar-container').style.opacity = '1'
 		drawRadar();
