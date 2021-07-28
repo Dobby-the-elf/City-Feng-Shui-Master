@@ -1,2 +1,2 @@
 pipinstall: pip install -r requirements.txt
-web: python server.py
+web gunicorn server:app
