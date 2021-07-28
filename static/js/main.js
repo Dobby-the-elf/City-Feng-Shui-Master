@@ -22,7 +22,8 @@ mapclick = 0
 points_list.list = [];
 let weights = [0, 0, 0, 0, 0, 0]
 let radarData = [0.5, 1, 0.5, 1, 0.5, 1]
-let lineData = [65, 59, 80, 81, 56, 55, 40]
+let lineData = [65, 59, 80, 81, 56, 55, 0]
+// let lineData = [0.5, 1, 1, 0.5, 1, 0.5, 1]
 
 // document.getElementById('geojson').disabled=true;　
 // document.getElementById("latlng").style.height = (document.body.clientHeight - 470) + "px";
@@ -34,24 +35,37 @@ $(document).ready(function () {
 	// script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyCCYcEhvSf0iUKUyS-ntyEkW7K_uBmHWDY&libraries=visualization,places&callback=initMap";
 	// script.async = true;
 	// document.head.appendChild(script);
-	// document.querySelector('#weightSelect').style.opacity = '0'
-	// document.querySelectorAll('.weight').forEach((weight, i) => {
-	// 	for (let j = 0; j < 5; j++) {
-	// 		let image = document.createElement("img");
-	// 		image.id = String(i) + String(j)
-	// 		image.className = 'heart'
-	// 		image.src = `../../static/figma/heart-line.svg`;
-	// 		image.style.marginLeft = "2%";
-	// 		image.style.width = "20px";
-	// 		image.style.height = "2.5vh";
-	// 		// image.onmouseover = () => { console.log(image.id); }
-	// 		weight.appendChild(image)
-	// 	}
-	// })
+
 	// drawRadar();
 	drawChart();
 
-	//-----------------------------------------------------------------------------------------------------------
+	initListener();
+
+	// document.querySelectorAll('.heart')[0].addEventListener("mouseenter", function (event) {
+	// 	// highlight the mouseenter target
+	// 	console.log("hover");
+	// }, false);
+
+	setTimeout(function () {
+		// opensum();
+	}, 1000);
+});
+
+function initListener() {
+	document.querySelector('#weightSelect').style.opacity = '0'
+	document.querySelectorAll('.weight').forEach((weight, i) => {
+		for (let j = 0; j < 5; j++) {
+			let image = document.createElement("img");
+			image.id = String(i) + String(j)
+			image.className = 'heart'
+			image.src = `../../static/figma/heart-line.svg`;
+			image.style.marginLeft = "2%";
+			image.style.width = "20px";
+			image.style.height = "2.5vh";
+			// image.onmouseover = () => { console.log(image.id); }
+			weight.appendChild(image)
+		}
+	})
 	document.querySelector('#weightSelect').addEventListener('click', (e) => {
 		try {
 			if (e.target.src.includes("/static/figma/heart")) {
@@ -91,23 +105,6 @@ $(document).ready(function () {
 			catch { }
 		})
 	})
-	// document.querySelectorAll('.heart').forEach((heart) => {
-	// 	heart.addEventListener("mouseleave", (e) => {
-	// 		// console.log("hover");
-	// 		// console.log(e.target);
-	// 		// console.log(e.target.id % 10);
-	// 		for (let i = 0; i < 5; i++) {
-	// 			// console.log(e.target.parentNode.childNodes[i + 1]);
-	// 			if (i < weights[parseInt(e.target.id % 100)]) {
-	// 				e.target.parentNode.childNodes[i + 1].src = "../../static/figma/heart-solid.svg";
-	// 			}
-	// 			else {
-	// 				e.target.parentNode.childNodes[i + 1].src = "../../static/figma/heart-line.svg";
-	// 			}
-	// 		}
-	// 	})
-	// })
-
 	document.querySelectorAll('.weight').forEach((heart) => {
 		heart.addEventListener("mouseleave", (e) => {
 			// console.log("leave");
@@ -125,28 +122,7 @@ $(document).ready(function () {
 			}
 		})
 	})
-	//------------------------------------------------------------------------------------------------
-
-	// document.querySelectorAll('.heart')[0].addEventListener("mouseenter", function (event) {
-	// 	// highlight the mouseenter target
-	// 	console.log("hover");
-	// }, false);
-
-	// document.querySelector('#map:nth-child(3)').childNodes[1].style.opacity = "0.2";
-	if (note == 0) {
-		setTimeout(function () {
-			// document.querySelector('#map').childNodes[1].style.opacity = "0";
-			// opensum();
-		}, 3000);
-	}
-	else {
-		setTimeout(function () {
-			// opensum();
-		}, 1000);
-	}
-
-});
-
+}
 
 function initMap() {                                            //map
 	geocoder = new google.maps.Geocoder();
@@ -242,13 +218,8 @@ function initMap() {                                            //map
 			console.log(event.feature);
 			infowindow_grid.setPosition({ lat: lat + 0.002, lng: lng });//設在中間會擋住 pin
 			city_grid_ID = event.feature.i.ID
-			if (selector == 1) {
-				infowindow_grid.setContent("lat:" + String(lat).substr(0, 6) + "<br>" + "lng:" + String(lng).substr(0, 7) + "<br>" + "ID:" + event.feature.i.ID + "&emsp;" + "All_id:" + event.feature.i.All_id + "<br>位置:" + event.feature.i.area3)
-				infowindow_grid.open(map)
-			}
-			else {
-				placeMarkerAndPanTo(event.latLng, map);
-			}
+			infowindow_grid.setContent("lat:" + String(lat).substr(0, 6) + "<br>" + "lng:" + String(lng).substr(0, 7) + "<br>" + "ID:" + event.feature.i.ID + "&emsp;" + "All_id:" + event.feature.i.All_id + "<br>位置:" + event.feature.i.area3)
+			infowindow_grid.open(map)
 		}
 	});
 	map.addListener('click', function (event) {
@@ -511,7 +482,8 @@ function drawChart() {
 			label: 'My First Dataset',
 			data: lineData,
 			fill: false,
-			borderColor: 'rgb(75, 192, 192)',
+			borderWidth: 3,
+			borderColor: 'rgba(171, 167, 249, 0.99)',
 			tension: 0.1
 		}]
 	};
@@ -524,13 +496,39 @@ function drawChart() {
 					borderWidth: 3
 				}
 			},
-			// scales: {
-			// 	r: {
-			// 		ticks: {
-			// 			// display: false,
-			// 		}
-			// 	},
-			// },
+			scales: {
+				// xAxes: {
+				// 	title: {
+				// 		display: true,
+				// 		align: 'end',
+				// 		text: 'time',
+				// 		font: {
+				// 			size: 12
+				// 		}
+				// 	}
+				// },
+				// yAxes: {
+				// 	title: {
+				// 		display: true,
+				// 		align: 'end',
+				// 		text: '人口',
+				// 		font: {
+				// 			size: 12
+				// 		},
+				// 	}
+				// },
+				y: {
+					type: 'linear',
+					grace: '50%',
+				}
+				// y: {
+				// 	max: 100,
+				// 	min: 0,
+				// 	ticks: {
+				// 		stepSize: 20
+				// 	}
+				// }
+			},
 			plugins: {
 				legend: {
 					display: false,
@@ -590,7 +588,7 @@ function closeWeights() {
 	}
 }
 
-function toggleAnalysis() {
+function toggleCharts() {
 	if (document.querySelector('#analysis-image img').src.includes("/static/figma/analysis1")) {
 		document.querySelector('#analysis-image img').src = `../../static/figma/analysis2.svg`;
 		document.querySelector('#radar-container').style.opacity = '0'

@@ -27,7 +27,7 @@
 		</div>
 		<div id='weight-box' class='round-box'>
 			<img id='weight-adjust' src="{{ url_for('static', filename='figma/weight-adjust.svg') }}">
-			&nbsp;&nbsp;權重調整
+			&nbsp;&nbsp;&nbsp;權重調整
 			<button onclick="toggleWeights()"
 				style="outline: none;width:15px;border-width: 0;background-color: rgba(0,0,0,0);">
 				<img id='arrow' src="{{ url_for('static', filename='figma/arrow.svg') }}">
@@ -39,7 +39,7 @@
 		</div>
 	</div>
 	<div id="weightSelect">
-		<div class="weight" id='100' id='101'>價格&emsp;</div>
+		<div class="weight" id='100'>價格&emsp;</div>
 		<div class="weight" id='101'>人口&emsp;</div>
 		<div class="weight" id='102'>機能&emsp;</div>
 		<div class="weight" id='103'>安全&emsp;</div>
@@ -65,7 +65,7 @@
 		</div>
 		<div id="analysis-area" class='info-box'>
 			<div id="analysis-title">進階分析</div>
-			<div id="analysis-image" role="button" onclick="toggleAnalysis()">
+			<div id="analysis-image" role="button" onclick="toggleCharts()">
 				<img src="{{ url_for('static', filename='figma/analysis1.svg') }}">
 			</div>
 		</div>
@@ -73,6 +73,14 @@
 			<!-- <div id="radar-container">
 				<canvas id="radar"></canvas>
 			</div> -->
+			<div id="line-chart-types">
+				<div class="type">價格</div>
+				<div class="type">人口</div>
+				<div class="type">機能</div>
+				<div class="type">安全</div>
+				<div class="type">交通</div>
+				<div class="type">環境</div>
+			</div>
 			<div id="line-chart-container">
 				<canvas id="line-chart"></canvas>
 			</div>
