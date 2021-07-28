@@ -302,7 +302,7 @@ def save_update():
 
 @app.route("/get_grid")  # 讀取fake
 def get_grid():
-    type_event = request.args.get("mydata")
+    # type_event = request.args.get("mydata")
     weights = json.loads(request.args.get("myweights"))
     # print(type(weights))
     totalWeight = 0
@@ -332,7 +332,7 @@ def get_grid():
         "event5_num",
         "event6_num",
     ]
-    max_complain = []
+    # max_complain = []
     # for col in cols:
     #     event[col] = event[col].apply(lambda x: 0 if x < 0 else x)
     #     event[col] = event[col].apply(
@@ -360,7 +360,7 @@ def get_grid():
                 # for idx, level_index in enumerate(color_level):
                 #     color_level[idx] =color_level[idx] / max(color_level)
                 # print(color_level)
-                print(row1[collumns])
+                # print(row1[collumns])
         for level in color_level:
             # print(level)
             if level <= 1.0 / 7:
