@@ -23,7 +23,12 @@ var radarChart;
 var lineChart;
 var chartType = 0;//記錄圖表類別
 var targetType = 0;//記錄六種類別
+let timeline_extend = 0;
 let grid_current;
+let address_current;
+let selected_time = -1;
+let marker_lat = 23;
+let marker_lng = 120;
 let weights = [0, 0, 0, 0, 0, 0]
 let radarData = [0.5, 1, 0.5, 1, 0.5, 1]
 let chartData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -37,10 +42,42 @@ let chartData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 
 $(document).ready(function () {
 	let script = document.createElement('script');
-	script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyCCYcEhvSf0iUKUyS-ntyEkW7K_uBmHWDY&libraries=visualization,places&callback=initMap";
+	script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyCCYcEhvSf0iUKUyS-ntyEkW7K_uBmHWDY&libraries=visualization,places&callback=initMap&language=zh-TW";
 	script.async = true;
 	document.head.appendChild(script);
 
+	let before = document.querySelector('#before')
+	for (let i = 1000; i < 1011; i++) {
+		let frame = document.createElement("div");
+		frame.id = String(i)
+		frame.className = 'time-frame'
+		let dot = document.createElement("div");
+		if (i % 3 === 0) {
+			dot.style.width = '6px';
+			dot.style.height = '6px';
+			dot.style.borderRadius = '3px';
+		}
+		dot.className = 'time-dot'
+		frame.appendChild(dot)
+		// image.onmouseover = () => { console.log(image.id); }
+		before.appendChild(frame)
+	}
+	let after = document.querySelector('#after')
+	for (let i = 1011; i < 1022; i++) {
+		let frame = document.createElement("div");
+		frame.id = String(i)
+		frame.className = 'time-frame'
+		let dot = document.createElement("div");
+		if (i % 3 === 2) {
+			dot.style.width = '6px';
+			dot.style.height = '6px';
+			dot.style.borderRadius = '3px';
+		}
+		dot.className = 'time-dot'
+		frame.appendChild(dot)
+		// image.onmouseover = () => { console.log(image.id); }
+		after.appendChild(frame)
+	}
 	drawRadar();
 	// drawChart();
 
@@ -58,6 +95,71 @@ $(document).ready(function () {
 
 
 function initListener() {
+	//----------------- for extend timeline --------------------------
+	document.querySelector('#timeline-extend').addEventListener('click', (e) => {
+		// console.log(e.target);
+		id_check = (e.target.id || e.target.parentNode.id) % 1000
+		if (id_check >= 0 && id_check < 22) {
+			// console.log(typeof e.target.id == "object");
+			// console.log(typeof e.target.id == "string");
+			// console.log(e.target.id !== "");
+			console.log(id_check);
+			selected_time = id_check;
+			document.querySelectorAll('.time-frame').forEach((frame, idx) => {
+				frame.childNodes[0].style.backgroundColor = '#d2d4d6'
+			})
+			// if (e.target.id % 1000 >= 0 && e.target.id % 1000 < 22 && typeof (e.target.id) !== "") {
+			document.querySelectorAll('.time-frame')[id_check].childNodes[0].style.backgroundColor = '#6598FD';
+		}
+	})
+	document.querySelectorAll('.time-frame').forEach((time_frame) => {
+		time_frame.addEventListener('mouseenter', (e) => {
+			// document.querySelectorAll('.time-frame').forEach((frame, idx) => {
+			// 	if (idx !== selected_time) frame.childNodes[0].style.backgroundColor = '#d2d4d6'
+			// })
+			id_check = (e.target.id || e.target.parentNode.id) % 1000
+			if (id_check >= 0 && id_check < 22 && id_check !== selected_time) {
+				document.querySelectorAll('.time-frame')[id_check].childNodes[0].style.backgroundColor = '#A7A9AB';
+				document.querySelectorAll('.time-frame')[id_check].childNodes[0].style.width = '10px';
+				document.querySelectorAll('.time-frame')[id_check].childNodes[0].style.height = '10px';
+				document.querySelectorAll('.time-frame')[id_check].childNodes[0].style.borderRadius = '5px';
+
+			}
+			if (selected_time !== -1) {
+				document.querySelectorAll('.time-frame')[selected_time].childNodes[0].style.backgroundColor = '#6598FD';
+			}
+		});
+		time_frame.addEventListener('mouseleave', (e) => {
+			id_check = (e.target.id || e.target.parentNode.id) % 1000
+			if (id_check >= 0 && id_check < 22 && id_check !== selected_time) {
+				document.querySelectorAll('.time-frame')[id_check].childNodes[0].style.backgroundColor = '#d2d4d6';
+				if ((id_check + parseInt(id_check / 11)) % 3 === 2) {
+					document.querySelectorAll('.time-frame')[id_check].childNodes[0].style.width = '6px';
+					document.querySelectorAll('.time-frame')[id_check].childNodes[0].style.height = '6px';
+					document.querySelectorAll('.time-frame')[id_check].childNodes[0].style.borderRadius = '3px';
+				}
+				else {
+					document.querySelectorAll('.time-frame')[id_check].childNodes[0].style.height = '4px';
+					document.querySelectorAll('.time-frame')[id_check].childNodes[0].style.width = '4px';
+					document.querySelectorAll('.time-frame')[id_check].childNodes[0].style.borderRadius = '2px';
+				}
+			}
+		})
+	})
+
+	// document.querySelector('#timeline').addEventListener('click', () => {
+
+	// 	if (timeline_extend === 0) {
+	// 		timeline_extend = 1;
+	// 		document.querySelector('#timeline').src = '';
+	// 		document.querySelector('#timeline').style.height = '53vh';
+
+	// 	}
+	// 	else {
+	// 		timeline_extend = 0;
+	// 	}
+	// })
+
 	//----------------- for analysis types --------------------------
 	document.querySelectorAll('.type').forEach((type) => {
 		type.addEventListener('click', () => {
@@ -151,7 +253,7 @@ function initMap() {                                            //map
 		// center: { lat: lat, lng: lng },
 		zoom: 11,
 		streetViewControl: false,
-		zoomControl: true,
+		zoomControl: false,
 		zoomControlOptions: {
 			position: google.maps.ControlPosition.LEFT_BOTTOM,
 		},
@@ -179,14 +281,30 @@ function initMap() {                                            //map
 
 	const input = document.getElementById('pac-input')
 	const searchBox = new google.maps.places.SearchBox(input);
-	// map.controls[google.maps.ControlPosition.TOP_CENTER].push(input);
+	const input2 = document.getElementById('pac-input-simulate')
+	const searchBox2 = new google.maps.places.SearchBox(input2);
+	map.controls[google.maps.ControlPosition.TOP_LEFT].push(input2);
+
+	searchBox2.addListener("places_changed", () => {
+		const places = searchBox2.getPlaces();
+		// console.log(place[0].formatted_address);
+		address_current = places[0].formatted_address.substr(5).replace('台灣', '').replace('ed Road,', '').replace(/\b[7]{1}[0-9]{2}\b/i, '');
+		document.querySelector('#position-address-2').innerText = address_current + ' 附近';
+		// document.querySelector('#position-address-2').innerText = place + ' 附近';
+	})
 
 	searchBox.addListener("places_changed", () => {
 		const places = searchBox.getPlaces();
-		console.log(places);
+		// console.log(places[0].geometry.location.lat(), places[0].geometry.location.lng());
 		if (places.length == 0) return;
+		marker_lat = places[0].geometry.location.lat();
+		marker_lng = places[0].geometry.location.lng();
+
+		map.panTo({ lat: marker_lat, lng: marker_lng }, map);
+
 		markers.forEach((marker) => { marker.setMap(null); });
 		markers = [];
+
 		// For each place, get the icon, name and location.
 		const bounds = new google.maps.LatLngBounds();
 		places.forEach((place) => {
@@ -210,36 +328,63 @@ function initMap() {                                            //map
 				})
 			);
 
-			if (place.geometry.viewport) {
-				bounds.union(place.geometry.viewport);
-			} else {
-				bounds.extend(place.geometry.location);
-			}
+			// if (place.geometry.viewport) {
+			// 	bounds.union(place.geometry.viewport);
+			// } else {
+			// 	bounds.extend(place.geometry.location);
+			// }
 		});
-		map.fitBounds(bounds);
+		// map.fitBounds(bounds);
 	});
 
 	infowindow_grid = new google.maps.InfoWindow()
-	map.data.addListener('click', function (event) {
+	map.data.addListener('mouseover', function (event) {
 		grid_current = event.feature.i.ID
-		deleteMarkers()
+		// deleteMarkers()
 		lat = event.feature.i.center.lat;
 		lng = event.feature.i.center.lng;
-		console.log(event.feature.i);
-		addMarker({ lat: lat - 0.002, lng: lng }, map);
+		// console.log(event.feature.i);
+
+		// get the address
+		input2.value = String(lat) + ", " + String(lng)
+		google.maps.event.trigger(input2, 'focus', {});
+		google.maps.event.trigger(input2, 'keydown', { keyCode: 13 });
+		document.querySelector('#position-latlng-2').innerText = String(lat).substr(0, 6) + ", " + String(lng).substr(0, 7);
+		infowindow_grid.close()
+		map.data.revertStyle();
+
+		setTimeout(function () {
+			// console.log("lat:" + String(lat) + ", " + "lng:" + String(lng))
+			infowindow_grid.setPosition({ lat: lat + 0.0025, lng: lng });//設在中間會擋住 pin
+			city_grid_ID = event.feature.i.ID
+			let distance = Math.pow((lat - marker_lat), 2) + Math.pow((lng - marker_lng), 2);
+			distance = Math.pow(distance, 0.5) * 110
+			infowindow_grid.setContent("(" + String(lat).substr(0, 7) + ", " + String(lng).substr(0, 8) + ")<br>" + "ID: " + event.feature.i.ID + "&emsp;" + "All_id: " + event.feature.i.All_id + "<br>" + address_current + "<br>距標記處" + String(distance).substr(0, 4) + "km")
+			infowindow_grid.open(map)
+		}, 500);
+	});
+	map.data.addListener('click', function (event) {
+		document.querySelector("#info").style.opacity = 1;
+		grid_current = event.feature.i.ID
+		// deleteMarkers()
+		lat = event.feature.i.center.lat;
+		lng = event.feature.i.center.lng;
+		// console.log(event.feature.i);
+
+		// get the address
+		input2.value = String(lat) + ", " + String(lng)
+		google.maps.event.trigger(input2, 'focus', {});
+		google.maps.event.trigger(input2, 'keydown', { keyCode: 13 });
+		document.querySelector('#position-latlng-2').innerText = String(lat).substr(0, 6) + ", " + String(lng).substr(0, 7);
+
 		map.panTo({ lat: lat, lng: lng }, map);
 		document.getElementById('map').style.background = " #484848;"
 		if (true) {
+			console.log(event.feature);
 			map.data.overrideStyle(event.feature, { fillColor: "#555555", fillOpacity: 1 });
 			setTimeout(function () {
 				map.data.revertStyle();
-			}, 100);
-			console.log("lat:" + String(lat) + ", " + "lng:" + String(lng))
-			console.log(event.feature);
-			infowindow_grid.setPosition({ lat: lat + 0.002, lng: lng });//設在中間會擋住 pin
-			city_grid_ID = event.feature.i.ID
-			infowindow_grid.setContent("lat:" + String(lat).substr(0, 6) + "<br>" + "lng:" + String(lng).substr(0, 7) + "<br>" + "ID:" + event.feature.i.ID + "&emsp;" + "All_id:" + event.feature.i.All_id + "<br>位置:" + event.feature.i.area3)
-			infowindow_grid.open(map)
+			}, 500);
 		}
 		if (chartType === 0) {
 			getRadarData();
@@ -249,7 +394,7 @@ function initMap() {                                            //map
 	});
 	map.addListener('click', function (event) {
 		closeWeights();
-		addMarker(event.latLng, map);
+		// addMarker(event.latLng, map);
 		// placeMarkerAndPanTo2(event.latLng, map);
 	});
 }
