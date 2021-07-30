@@ -24,13 +24,14 @@ var lineChart;
 var chartType = 0;//記錄圖表類別
 var targetType = 0;//記錄六種類別
 let timeline_extend = 0;
-let grid_current;
+let grid_current = -1;
 let address_current;
-let selected_time = -1;
+let selected_time = 23;
 let marker_lat = 23;
-let marker_lng = 120;
+let marker_lng = 120.2;
 let weights = [0, 0, 0, 0, 0, 0]
 let radarData = [0.5, 1, 0.5, 1, 0.5, 1]
+let radarAvg = 0.2;
 let chartData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 // let chartData = [0.5, 1, 1, 0.5, 1, 0.5, 1]
@@ -42,10 +43,38 @@ let chartData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 
 $(document).ready(function () {
 	let script = document.createElement('script');
-	script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyCCYcEhvSf0iUKUyS-ntyEkW7K_uBmHWDY&libraries=visualization,places&callback=initMap&language=zh-TW";
+	script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyDie29bzCm_yNZZ2B-ieM_RqVU-w5eNZ4Y&libraries=visualization,places&callback=initMap&language=zh-TW";
 	script.async = true;
 	document.head.appendChild(script);
 
+	drawTimeDot();
+	drawRadar();
+	// drawChart();
+	document.querySelector("#info-xx").addEventListener('click', (e) => {
+		document.querySelector("#info").style.display = 'none';
+	})
+	document.querySelector("#infomation-container").addEventListener('click', (e) => {
+		document.querySelector("#info").style.display = 'flex';
+	})
+
+
+	initListener();
+
+	document.querySelectorAll(".color-container")[selected_time - 22].style.color = "#6598fd"
+	document.querySelectorAll(".color-container")[selected_time - 22].style.backgroundColor = "#f2f7ff"
+	document.querySelectorAll(".color-container")[selected_time - 22].style.fontWeight = "700"
+
+	// document.querySelectorAll('.heart')[0].addEventListener("mouseenter", function (event) {
+	// 	// highlight the mouseenter target
+	// 	console.log("hover");
+	// }, false);
+
+	setTimeout(function () {
+		// opensum();
+	}, 1000);
+});
+
+function drawTimeDot() {
 	let before = document.querySelector('#before')
 	for (let i = 1000; i < 1011; i++) {
 		let frame = document.createElement("div");
@@ -78,38 +107,66 @@ $(document).ready(function () {
 		// image.onmouseover = () => { console.log(image.id); }
 		after.appendChild(frame)
 	}
-	drawRadar();
-	// drawChart();
-
-	initListener();
-
-	// document.querySelectorAll('.heart')[0].addEventListener("mouseenter", function (event) {
-	// 	// highlight the mouseenter target
-	// 	console.log("hover");
-	// }, false);
-
-	setTimeout(function () {
-		// opensum();
-	}, 1000);
-});
+}
 
 
 function initListener() {
 	//----------------- for extend timeline --------------------------
+	document.querySelectorAll('.color-container').forEach((container) => {
+		container.addEventListener('mouseenter', (e) => {
+			id_check = (e.target.id || e.target.parentNode.id) % 1000
+			if (id_check >= 22 && id_check < 25 && id_check !== selected_time) {
+				document.querySelectorAll(".color-container")[id_check - 22].style.color = "#999"
+				document.querySelectorAll(".color-container")[id_check - 22].style.backgroundColor = "#f2f7ff"
+				document.querySelectorAll(".color-container")[id_check - 22].style.fontWeight = "400"
+			}
+		});
+		container.addEventListener('mouseleave', (e) => {
+			id_check = (e.target.id || e.target.parentNode.id) % 1000
+			if (id_check >= 22 && id_check < 25 && id_check !== selected_time) {
+				document.querySelectorAll(".color-container")[id_check - 22].style.color = "#A7A9AB;"
+				document.querySelectorAll(".color-container")[id_check - 22].style.backgroundColor = "rgba(0,0,0,0)"
+				document.querySelectorAll(".color-container")[id_check - 22].style.fontWeight = "400"
+			}
+		})
+	})
 	document.querySelector('#timeline-extend').addEventListener('click', (e) => {
 		// console.log(e.target);
 		id_check = (e.target.id || e.target.parentNode.id) % 1000
-		if (id_check >= 0 && id_check < 22) {
-			// console.log(typeof e.target.id == "object");
-			// console.log(typeof e.target.id == "string");
-			// console.log(e.target.id !== "");
+		if (id_check >= 0 && id_check < 25) {
 			console.log(id_check);
 			selected_time = id_check;
+			visual_time(id_check);
+			document.querySelectorAll(".color-container").forEach((container, idx) => {
+				container.style.color = "#A7A9AB"
+				container.style.backgroundColor = "rgba(0,0,0,0)"
+				container.style.fontWeight = "400"
+			})
 			document.querySelectorAll('.time-frame').forEach((frame, idx) => {
 				frame.childNodes[0].style.backgroundColor = '#d2d4d6'
+				if ((idx + parseInt(idx / 11)) % 3 === 2) {
+					document.querySelectorAll('.time-frame')[idx].childNodes[0].style.width = '6px';
+					document.querySelectorAll('.time-frame')[idx].childNodes[0].style.height = '6px';
+					document.querySelectorAll('.time-frame')[idx].childNodes[0].style.borderRadius = '3px';
+				}
+				else {
+					document.querySelectorAll('.time-frame')[idx].childNodes[0].style.height = '4px';
+					document.querySelectorAll('.time-frame')[idx].childNodes[0].style.width = '4px';
+					document.querySelectorAll('.time-frame')[idx].childNodes[0].style.borderRadius = '2px';
+				}
 			})
-			// if (e.target.id % 1000 >= 0 && e.target.id % 1000 < 22 && typeof (e.target.id) !== "") {
-			document.querySelectorAll('.time-frame')[id_check].childNodes[0].style.backgroundColor = '#6598FD';
+			if (id_check >= 22 && id_check < 25) {
+				document.querySelectorAll(".color-container")[id_check - 22].style.color = "#6598fd"
+				document.querySelectorAll(".color-container")[id_check - 22].style.backgroundColor = "#f2f7ff"
+				document.querySelectorAll(".color-container")[id_check - 22].style.fontWeight = "700"
+			}
+			else {
+				document.querySelectorAll('.time-frame')[id_check].childNodes[0].style.backgroundColor = '#6598FD';
+				document.querySelectorAll('.time-frame')[id_check].childNodes[0].style.width = '10px';
+				document.querySelectorAll('.time-frame')[id_check].childNodes[0].style.height = '10px';
+				document.querySelectorAll('.time-frame')[id_check].childNodes[0].style.borderRadius = '5px';
+			}
+			goPredict();
 		}
 	})
 	document.querySelectorAll('.time-frame').forEach((time_frame) => {
@@ -123,7 +180,6 @@ function initListener() {
 				document.querySelectorAll('.time-frame')[id_check].childNodes[0].style.width = '10px';
 				document.querySelectorAll('.time-frame')[id_check].childNodes[0].style.height = '10px';
 				document.querySelectorAll('.time-frame')[id_check].childNodes[0].style.borderRadius = '5px';
-
 			}
 			if (selected_time !== -1) {
 				document.querySelectorAll('.time-frame')[selected_time].childNodes[0].style.backgroundColor = '#6598FD';
@@ -147,20 +203,19 @@ function initListener() {
 		})
 	})
 
-	// document.querySelector('#timeline').addEventListener('click', () => {
+	document.querySelector('#timeline-extender').addEventListener('click', () => {
+		if (timeline_extend === 0) {
+			timelineExtend();
+		}
+		else {
+			timeline_extend = 0;
+			document.querySelector('#timeline').style.height = '5vh';
+			document.querySelector('#timeline-extend').style.height = '0';
+			document.querySelector('#timeline-extend').style.opacity = '0';
+		}
+	})
 
-	// 	if (timeline_extend === 0) {
-	// 		timeline_extend = 1;
-	// 		document.querySelector('#timeline').src = '';
-	// 		document.querySelector('#timeline').style.height = '53vh';
-
-	// 	}
-	// 	else {
-	// 		timeline_extend = 0;
-	// 	}
-	// })
-
-	//----------------- for analysis types --------------------------
+	//------------------------- for analysis types --------------------------
 	document.querySelectorAll('.type').forEach((type) => {
 		type.addEventListener('click', () => {
 			console.log(type.id % 60);
@@ -243,6 +298,22 @@ function initListener() {
 			}
 		})
 	})
+}
+function timelineExtend() {
+	timeline_extend = 1;
+	document.querySelector('#timeline').src = '';
+	document.querySelector('#timeline').style.height = '55vh';
+	document.querySelector('#timeline-extend').style.height = '55vh';
+	document.querySelector('#timeline-extend').style.opacity = '1'
+}
+
+function visual_time(id_check) {
+	console.log(id_check);
+	if (id_check < 11) document.querySelector("#point-time").innerText = String(11 - id_check) + "個月前";
+	else if (id_check == 22) document.querySelector("#point-time").innerText = "一年前";
+	else if (id_check == 23) document.querySelector("#point-time").innerText = "現在";
+	else if (id_check == 24) document.querySelector("#point-time").innerText = "一年後";
+	else document.querySelector("#point-time").innerText = String(id_check - 10) + "個月後";
 }
 
 function initMap() {                                            //map
@@ -359,12 +430,14 @@ function initMap() {                                            //map
 			city_grid_ID = event.feature.i.ID
 			let distance = Math.pow((lat - marker_lat), 2) + Math.pow((lng - marker_lng), 2);
 			distance = Math.pow(distance, 0.5) * 110
-			infowindow_grid.setContent("(" + String(lat).substr(0, 7) + ", " + String(lng).substr(0, 8) + ")<br>" + "ID: " + event.feature.i.ID + "&emsp;" + "All_id: " + event.feature.i.All_id + "<br>" + address_current + "<br>距標記處" + String(distance).substr(0, 4) + "km")
+			infowindow_grid.setContent("(" + String(lat).substr(0, 7) + ", " + String(lng).substr(0, 8) + ")<br>" + "ID: " + event.feature.i.ID + "&emsp;" + "All_id: " + event.feature.i.All_id + "<br>" + address_current + "<br>距標記處 " + String(distance).substr(0, 4) + "km")
 			infowindow_grid.open(map)
 		}, 500);
 	});
 	map.data.addListener('click', function (event) {
-		document.querySelector("#info").style.opacity = 1;
+		// document.querySelector("#info").style.opacity = 1;
+		document.querySelector("#info").style.display = 'flex';
+		document.querySelector("#info").style.transition = '0.15s ease-out;';
 		grid_current = event.feature.i.ID
 		// deleteMarkers()
 		lat = event.feature.i.center.lat;
@@ -386,6 +459,9 @@ function initMap() {                                            //map
 				map.data.revertStyle();
 			}, 500);
 		}
+		getPointData();
+		console.log(radarAvg);
+		document.querySelector("#big-point").innerText = 60 + parseInt((1 - radarAvg) * 40)
 		if (chartType === 0) {
 			getRadarData();
 		} else {
@@ -415,7 +491,32 @@ function deleteMarkers() {
 	markers = [];
 }
 
+function getPointData() {
+	if (grid_current === -1) return;
+	$.ajax({
+		url: "/get_radar_data",
+		data: {
+			"grid_id": grid_current
+		},
+		success: function (data) {
+			// console.log(data.eventData);
+			arr = data.eventData
+			radarData.forEach((dat, idx) => { radarData[idx] = arr[3 + idx] })
+			let sum = 0;
+			for (let i = 0; i < radarData.length; i++) {
+				sum += radarData[i]; //don't forget to add the base
+			}
+			radarAvg = sum / radarData.length;
+			// console.log('new radar data: ', radarData)
+		},
+		error: function (XMLHttpRequest, textStatus, errorThrown) {
+			alert(XMLHttpRequest.status + '\n' + XMLHttpRequest.readyState + '\n' + textStatus + '\n' + XMLHttpRequest.responseText);
+		}
+	});
+};
+
 function getRadarData() {
+	if (grid_current === -1) return;
 	$.ajax({
 		url: "/get_radar_data",
 		data: {
@@ -436,6 +537,7 @@ function getRadarData() {
 
 
 function getChartData() {
+	if (grid_current === -1) return;
 	$.ajax({
 		url: "/get_chart_data",
 		data: {
@@ -460,12 +562,19 @@ function goPredict() {                                //預測
 	cleanmap();
 	if (a == 0) {                                        //依城市
 		console.log('chosen weight is', weights);
+		let timing; // 0~24, backend needs 1~25, so its fine
+		if (selected_time < 11) timing = selected_time + 1;
+		else if (selected_time == 22) timing = 0;
+		else if (selected_time == 23) timing = 12;
+		else if (selected_time == 24) timing = 24;
+		else timing = selected_time + 2;
 
 		$.ajax({
 			url: "/get_grid",
 			data: {
 				// "mydata": $("#selectWeight").val(),
-				"myweights": JSON.stringify(weights)
+				"myweights": JSON.stringify(weights),
+				"timing": JSON.stringify(timing)
 			},
 			success: function (data) {
 				$('#loading').hide();
@@ -525,6 +634,13 @@ function goPredict() {                                //預測
 						strokeWeight: 0.2,
 					};
 				});
+				timelineExtend();
+				getPointData();
+				console.log(radarAvg);
+				document.querySelector("#big-point").innerText = 60 + parseInt((1 - radarAvg) * 40)
+				if (chartType === 0) {
+					getRadarData();
+				}
 				// document.getElementById('time-slider').value = 0;
 
 			},
