@@ -481,5 +481,5 @@ def get_grid1():
 
 if __name__ == "__main__":
     app.config["JSON_AS_ASCII"] = False
-    app.run(debug=True, port=8080)  # 執行我們的伺服器！
+    app.run(debug=True, port=process.env.PORT or 8080)  # 執行我們的伺服器！
 
