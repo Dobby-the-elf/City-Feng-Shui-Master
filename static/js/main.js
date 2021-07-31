@@ -88,8 +88,13 @@ function drawTimeDot() {
 		}
 		dot.className = 'time-dot'
 		frame.appendChild(dot)
-		// image.onmouseover = () => { console.log(image.id); }
 		before.appendChild(frame)
+		let indicator = document.createElement("div");
+		indicator.innerText = `${1011 - i}個月前`;
+		indicator.id = i + 1000;
+		indicator.className = "month-indicator";
+		indicator.style.top = `${1.68 * (i - 1000)}vh`;
+		document.querySelector("#indicator-month-container-1").appendChild(indicator)
 	}
 	let after = document.querySelector('#after')
 	for (let i = 1011; i < 1022; i++) {
@@ -104,8 +109,13 @@ function drawTimeDot() {
 		}
 		dot.className = 'time-dot'
 		frame.appendChild(dot)
-		// image.onmouseover = () => { console.log(image.id); }
 		after.appendChild(frame)
+		let indicator = document.createElement("div");
+		indicator.innerText = `${i - 1010}個月後`;
+		indicator.id = i + 1000;
+		indicator.className = "month-indicator";
+		indicator.style.top = `${1.66 * (i - 1011)}vh`;
+		document.querySelector("#indicator-month-container-2").appendChild(indicator)
 	}
 }
 
@@ -171,10 +181,10 @@ function initListener() {
 	})
 	document.querySelectorAll('.time-frame').forEach((time_frame) => {
 		time_frame.addEventListener('mouseenter', (e) => {
-			// document.querySelectorAll('.time-frame').forEach((frame, idx) => {
-			// 	if (idx !== selected_time) frame.childNodes[0].style.backgroundColor = '#d2d4d6'
-			// })
 			id_check = (e.target.id || e.target.parentNode.id) % 1000
+			document.querySelectorAll('.month-indicator').forEach((indicator, idx) => {
+				if (idx == id_check) indicator.style.opacity = 1;
+			})
 			if (id_check >= 0 && id_check < 22 && id_check !== selected_time) {
 				document.querySelectorAll('.time-frame')[id_check].childNodes[0].style.backgroundColor = '#A7A9AB';
 				document.querySelectorAll('.time-frame')[id_check].childNodes[0].style.width = '10px';
@@ -200,6 +210,9 @@ function initListener() {
 					document.querySelectorAll('.time-frame')[id_check].childNodes[0].style.borderRadius = '2px';
 				}
 			}
+			document.querySelectorAll('.month-indicator').forEach((indicator, idx) => {
+				indicator.style.opacity = 0;
+			})
 		})
 	})
 

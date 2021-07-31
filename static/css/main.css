@@ -10,7 +10,7 @@ body {
 	padding: 0;
 }
 body {
-	background: url(../images/img-1487062468-85551.jpg) center center fixed no-repeat;
+	/* background: url(../images/img-1487062468-85551.jpg) center center fixed no-repeat; */
 	background-size: cover;
 	margin: 0;
 	min-width: 284px;
@@ -122,7 +122,6 @@ input[type="range"]::-webkit-slider-thumb {
 	text-align: center;
 	text-decoration: none;
 	font-size: 16px;
-	transition-duration: 1s;
 }
 #searcher-container {
 	float: left;
@@ -225,7 +224,7 @@ input[type="range"]::-webkit-slider-thumb {
 	font-size: 14px;
 	line-height: 50px;
 	z-index: 100;
-	transition: height 0.15s ease-out;
+	transition: height 0.25s ease-in;
 }
 #weightSelect > div {
 	height: 15%;
@@ -459,7 +458,7 @@ input[type="range"]::-webkit-slider-thumb {
 	/* background: rgba(255, 255, 255, 0.3); */
 	position: fixed;
 	height: 82vh;
-	width: 3.6vw;
+	width: 52px;
 	margin: 0;
 	top: 10vh;
 	left: 2.4vw;
@@ -534,6 +533,23 @@ input[type="range"]::-webkit-slider-thumb {
 	display: flex;
 	justify-content: center;
 	flex-direction: row !important;
+}
+#timeline-extend > #before > #indicator-month-container-1,
+#timeline-extend > #after > #indicator-month-container-2 {
+	position: absolute;
+	height: 18.4vh;
+	width: 50px;
+	right: -36px;
+}
+#timeline-extend > #before > #indicator-month-container-1 > .month-indicator,
+#timeline-extend > #after > #indicator-month-container-2 > .month-indicator {
+	position: absolute;
+	width: 50px;
+	height: 22px;
+	border-radius: 7px;
+	background-color: #a7a9ab;
+	opacity: 0;
+	color: #fff;
 }
 #timeline-extend > #before > .time-frame > .time-dot,
 #timeline-extend > #after > .time-frame > .time-dot {
