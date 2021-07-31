@@ -415,7 +415,7 @@ def get_grid():
     return jsonify(data_return)
 
 
-@app.route("/get_radar_data")  # 讀取fake
+@app.route("/get_radar_data")
 def get_radar_data():
     grid_id = json.loads(request.args.get("grid_id"))
 
@@ -428,7 +428,7 @@ def get_radar_data():
     return jsonify(data_return)
 
 
-@app.route("/get_chart_data")  # 讀取fake
+@app.route("/get_chart_data")
 def get_chart_data():
     grid_id = json.loads(request.args.get("grid_id"))
     chart_type = json.loads(request.args.get("chart_type"))
