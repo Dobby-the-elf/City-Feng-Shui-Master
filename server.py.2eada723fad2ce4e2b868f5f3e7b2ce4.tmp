@@ -17,6 +17,7 @@ import configparser
 import time
 import math
 import numpy as np
+import os
 
 # config 初始化
 config = configparser.ConfigParser()
@@ -481,5 +482,6 @@ def get_grid1():
 
 if __name__ == "__main__":
     app.config["JSON_AS_ASCII"] = False
-    app.run(debug=True, port=process.env.PORT or 8080)  # 執行我們的伺服器！
+    port = int(os.environ.get("PORT", 5000))
+    app.run(debug=True, port=port or 8080)  # 執行我們的伺服器！
 
