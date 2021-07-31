@@ -365,17 +365,15 @@ function initMap() {                                            //map
 
 	const input = document.getElementById('pac-input')
 	const searchBox = new google.maps.places.SearchBox(input);
-	const input2 = document.getElementById('pac-input-simulate')
-	const searchBox2 = new google.maps.places.SearchBox(input2);
-	map.controls[google.maps.ControlPosition.TOP_LEFT].push(input2);
+	// const input2 = document.getElementById('pac-input-simulate')
+	// const searchBox2 = new google.maps.places.SearchBox(input2);
+	// map.controls[google.maps.ControlPosition.TOP_LEFT].push(input2);
 
-	searchBox2.addListener("places_changed", () => {
-		const places = searchBox2.getPlaces();
-		// console.log(place[0].formatted_address);
-		address_current = places[0].formatted_address.substr(5).replace('台灣', '').replace('ed Road,', '').replace(/\b[7]{1}[0-9]{2}\b/i, '');
-		document.querySelector('#position-address-2').innerText = address_current + ' 附近';
-		// document.querySelector('#position-address-2').innerText = place + ' 附近';
-	})
+	// searchBox2.addListener("places_changed", () => {
+	// 	const places = searchBox2.getPlaces();
+	// 	address_current = places[0].formatted_address.substr(5).replace('台灣', '').replace('ed Road,', '').replace(/\b[7]{1}[0-9]{2}\b/i, '');
+	// 	document.querySelector('#position-address-2').innerText = address_current + ' 附近';
+	// })
 
 	searchBox.addListener("places_changed", () => {
 		const places = searchBox.getPlaces();
@@ -430,9 +428,9 @@ function initMap() {                                            //map
 		// console.log(event.feature.i);
 
 		// get the address
-		input2.value = String(lat) + ", " + String(lng)
-		google.maps.event.trigger(input2, 'focus', {});
-		google.maps.event.trigger(input2, 'keydown', { keyCode: 13 });
+		// input2.value = String(lat) + ", " + String(lng)
+		// google.maps.event.trigger(input2, 'focus', {});
+		// google.maps.event.trigger(input2, 'keydown', { keyCode: 13 });
 		document.querySelector('#position-latlng-2').innerText = String(lat).substr(0, 6) + ", " + String(lng).substr(0, 7);
 		infowindow_grid.close()
 		map.data.revertStyle();
@@ -458,9 +456,9 @@ function initMap() {                                            //map
 		// console.log(event.feature.i);
 
 		// get the address
-		input2.value = String(lat) + ", " + String(lng)
-		google.maps.event.trigger(input2, 'focus', {});
-		google.maps.event.trigger(input2, 'keydown', { keyCode: 13 });
+		// input2.value = String(lat) + ", " + String(lng)
+		// google.maps.event.trigger(input2, 'focus', {});
+		// google.maps.event.trigger(input2, 'keydown', { keyCode: 13 });
 		document.querySelector('#position-latlng-2').innerText = String(lat).substr(0, 6) + ", " + String(lng).substr(0, 7);
 
 		map.panTo({ lat: lat, lng: lng }, map);
