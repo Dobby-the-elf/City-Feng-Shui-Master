@@ -252,7 +252,6 @@ function initListener() {
 			if (type.id % 60 == targetType) return;
 			type.style.backgroundColor = '#E5E5E5';
 			type.style.color = '#A7A9AB';
-			targetType = type.id % 60;
 		})
 	})
 	document.querySelectorAll('.type').forEach((type) => {
@@ -261,7 +260,6 @@ function initListener() {
 			console.log(type.id % 60);
 			type.style.backgroundColor = '#FFF';
 			type.style.color = '#A7A9AB';
-			targetType = type.id % 60;
 		})
 	})
 
@@ -1023,7 +1021,7 @@ function changeWeight(e) {
 function toggleWeights() {
 	// console.log(document.querySelectorAll('.weight'));
 	// console.log(document.querySelector('#weightSelect').style.display);
-	if (document.querySelector('#weightSelect').style.height == '25vh') {
+	if (document.querySelector('#weightSelect').style.height == 'calc(14vh + 100px)') {
 		document.querySelector('#arrow').style.transform = 'rotate(0deg)'
 		document.querySelector('#weightSelect').style.height = '0'
 		document.querySelector('#weightSelect').style.opacity = '0'
@@ -1031,7 +1029,7 @@ function toggleWeights() {
 	}
 	else {
 		document.querySelector('#arrow').style.transform = 'rotate(180deg)'
-		document.querySelector('#weightSelect').style.height = '25vh'
+		document.querySelector('#weightSelect').style.height = 'calc(14vh + 100px)'
 		document.querySelector('#weightSelect').style.opacity = '1'
 		document.querySelector('#weightSelect').style.transition = 'all 0.35s ease-in;';
 	}
@@ -1040,7 +1038,7 @@ function toggleWeights() {
 function closeWeights() {
 	// console.log(document.querySelectorAll('.weight'));
 	// console.log(document.querySelector('#weightSelect').style.display);
-	if (document.querySelector('#weightSelect').style.height == '25vh') {
+	if (document.querySelector('#weightSelect').style.height == 'calc(14vh + 100px)') {
 		document.querySelector('#arrow').style.transform = 'rotate(0deg)'
 		document.querySelector('#weightSelect').style.height = '0'
 		document.querySelector('#weightSelect').style.opacity = '0'
