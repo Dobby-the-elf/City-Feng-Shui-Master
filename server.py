@@ -311,6 +311,13 @@ def get_grid():
     totalWeight = 0
     for i, weight in enumerate(weights):
         weights[i] = int(weights[i])
+    temp=[0, 0, 0, 0, 0, 0]
+    for i, weight in enumerate(weights):
+        temp[(i+2)%6] = weights[i]
+    for i, weight in enumerate(weights):
+        weights[i]=temp[i]
+    for i, weight in enumerate(weights):
+        weights[i] = weights[i]-1
         totalWeight += weights[i]
     if totalWeight == 0:
         weights = [0.2, 0.2, 0.2, 0.2, 0.2, 0.2]
@@ -358,33 +365,50 @@ def get_grid():
             color_level.append(0.0)
             for idx, type_event in enumerate(
                 type_events
-            ):  # dim = 6 交通違規、自然環境、土地價格、人口分布、生活機能、公共安全
+            ):  # dim = 6 交通、環境、價格、人口、機能、安全
                 # gap = [0.8*max_complain[idx], 0.8*max_complain[idx], 0.8*max_complain[idx], 0.8*max_complain[idx], 0.8*max_complain[idx]]
                 # gap = [0.15,0.3,0.45,0.6,7.5]
                 # gap = list(map((lambda x: x*max_complain[idx]),gap))
                 collumns = type_event + "_num"
-                color_level[-1] += row1[collumns] * weights[idx] / sum(weights)
+                if(idx==4):
+                    color_level[-1] += float(row1[collumns]) * float(weights[idx]) / float(sum(weights))
+                else:
+                    color_level[-1] += (1.0-float(row1[collumns])) * float(weights[idx]) / float(sum(weights))
+                # print(color_level[-1])
+                # print("-----------------------------")
+
+
                 # -------------------------- 改成除以全部最大的值 -------------------------------
                 # for idx, level_index in enumerate(color_level):
                 #     color_level[idx] =color_level[idx] / max(color_level)
-                # print(color_level)
                 # print(row1[collumns])
+        # for level in color_level:
+        #     # print(level)
+        #     if level <= 1.0 / 10:
+        #         color_time.append("#BDF990")
+        #     elif level <= 2.0 / 10:
+        #         color_time.append("#C7F4A4")
+        #     elif level <= 3.0 / 10:
+        #         color_time.append("#D0EFB8")
+        #     elif level <= 4.0 / 10:
+        #         color_time.append("#D9EBCB")
+        #     else:
+        #         color_time.append("#E0E8DB")
+        
         for level in color_level:
             # print(level)
-            if level <= 1.0 / 7:
-                color_time.append("#EEEEEE")
-            elif level <= 2.0 / 7:
-                color_time.append("#f3fb19")  # 黃
-            elif level <= 3.0 / 7:
-                color_time.append("#f7a413")  # 橘黃
-            elif level <= 4.0 / 7:
-                color_time.append("#ef5e0e")  # 橘紅
-            elif level <= 5.0 / 7:
+            if level <= 1.0/5:
                 color_time.append("#ec513f")  # 紅
-            elif level <= 6.0 / 7:
-                color_time.append("#d93e41")  # 暗紅
+            elif level <= 2.0/5:
+                color_time.append("#ef5e0e")  # 橘紅
+            elif level <= 3.0/5:
+                color_time.append("#f7a413")  # 橘黃
+            elif level <= 4.0/5:
+                color_time.append("#f3fb19")  # 黃
             else:
-                color_time.append("#930509")  # 黑紅
+                color_time.append("#EEEEEE")
+
+
 
         feature_list.append(
             {

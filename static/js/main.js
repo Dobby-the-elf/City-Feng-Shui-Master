@@ -25,11 +25,12 @@ var chartType = 0;//記錄圖表類別
 var targetType = 0;//記錄六種類別
 let timeline_extend = 0;
 let grid_current = -1;
-let address_current;
+let current_address;
 let selected_time = 23;
 let marker_lat = 23;
 let marker_lng = 120.2;
-let weights = [3, 3, 3, 3, 3, 3]
+let weights = [1, 5, 1, 1, 1, 1]
+// let weights = [3, 3, 3, 3, 3, 3]
 let radarData = [0.5, 1, 0.5, 1, 0.5, 1]
 let radarAvg = 0.2;
 let chartData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -223,10 +224,10 @@ function initListener() {
 			timelineExtend();
 		}
 		else {
-			timeline_extend = 0;
-			document.querySelector('#timeline').style.height = '5vh';
-			document.querySelector('#timeline-extend').style.height = '0';
-			document.querySelector('#timeline-extend').style.opacity = '0';
+			// timeline_extend = 0;
+			// document.querySelector('#timeline').style.height = '5vh';
+			// document.querySelector('#timeline-extend').style.height = '0';
+			// document.querySelector('#timeline-extend').style.opacity = '0';
 		}
 	})
 
@@ -235,13 +236,35 @@ function initListener() {
 		type.addEventListener('click', () => {
 			console.log(type.id % 60);
 			document.querySelectorAll('.type').forEach((typeInner) => {
-				typeInner.style.backgroundColor = '#fff';
+				typeInner.style.backgroundColor = '#FFF';
+				typeInner.style.color = '#A7A9AB';
 			})
-			type.style.backgroundColor = '#eee';
+			type.style.backgroundColor = '#D2D4D6';
+			type.style.color = '#FFF';
 			targetType = type.id % 60;
 			getChartData();
 		})
 	})
+	document.querySelectorAll('.type').forEach((type) => {
+		type.addEventListener('mouseover', () => {
+			console.log(type.id % 60);
+			console.log(targetType);
+			if (type.id % 60 == targetType) return;
+			type.style.backgroundColor = '#E5E5E5';
+			type.style.color = '#A7A9AB';
+			targetType = type.id % 60;
+		})
+	})
+	document.querySelectorAll('.type').forEach((type) => {
+		type.addEventListener('mouseleave', () => {
+			if (type.id % 60 == targetType) return;
+			console.log(type.id % 60);
+			type.style.backgroundColor = '#FFF';
+			type.style.color = '#A7A9AB';
+			targetType = type.id % 60;
+		})
+	})
+
 	//--------------------- for weights -----------------------------
 	document.querySelector('#weightSelect').style.opacity = '0'
 	document.querySelectorAll('.weight').forEach((weight, i) => {
@@ -330,12 +353,12 @@ function initListener() {
 	// })
 }
 function timelineExtend() {
-	timeline_extend = 1;
+	if (timeline_extend === 0) document.querySelector('#timeline-extend').classList.add("extend-transform");
 	// document.querySelector('#timeline-extend').style.opacity = '1'
-	document.querySelector('#timeline-extend').classList.toggle("extend-transform");
 	document.querySelector('#timeline-extender').src = '';
 	document.querySelector('#timeline').style.height = '56vh';
 	document.querySelector('#timeline').style.marginBottom = '1.6vh';
+	timeline_extend = 1;
 	// document.querySelector('#timeline-extend').style.height = '56vh';
 }
 
@@ -390,8 +413,8 @@ function initMap() {                                            //map
 
 	// searchBox2.addListener("places_changed", () => {
 	// 	const places = searchBox2.getPlaces();
-	// 	address_current = places[0].formatted_address.substr(5).replace('台灣', '').replace('ed Road,', '').replace(/\b[7]{1}[0-9]{2}\b/i, '');
-	// 	document.querySelector('#position-address-2').innerText = address_current + ' 附近';
+	// 	current_address = places[0].formatted_address.substr(5).replace('台灣', '').replace('ed Road,', '').replace(/\b[7]{1}[0-9]{2}\b/i, '');
+	// 	document.querySelector('#position-address-2').innerText = current_address + ' 附近';
 	// })
 
 	searchBox.addListener("places_changed", () => {
@@ -440,11 +463,21 @@ function initMap() {                                            //map
 
 	infowindow_grid = new google.maps.InfoWindow()
 	map.data.addListener('mouseover', function (event) {
-		grid_current = event.feature.i.ID
 		// deleteMarkers()
 		lat = event.feature.i.center.lat;
 		lng = event.feature.i.center.lng;
 		// console.log(event.feature.i);
+
+		// map.data.setStyle(function (feature) {
+		// 	if (feature.getProperty('fill')[0] == "#EEEEEE") { opac = 0 }
+		// 	else { opac = 0.6 }
+		// 	return {
+		// 		fillColor: feature.getProperty('fill')[0],
+		// 		fillOpacity: opac,
+		// 		strokeWeight: 0, //grid thickness
+		// 		// strokeColor: color
+		// 	};
+		// });
 
 		// get the address
 		// input2.value = String(lat) + ", " + String(lng)
@@ -452,7 +485,7 @@ function initMap() {                                            //map
 		// google.maps.event.trigger(input2, 'keydown', { keyCode: 13 });
 		// document.querySelector('#position-latlng-2').innerText = String(lat).substr(0, 6) + ", " + String(lng).substr(0, 7);
 		infowindow_grid.close()
-		map.data.revertStyle();
+		// map.data.revertStyle();
 
 		setTimeout(function () {
 			// console.log("lat:" + String(lat) + ", " + "lng:" + String(lng))
@@ -460,10 +493,17 @@ function initMap() {                                            //map
 			city_grid_ID = event.feature.i.ID
 			let distance = Math.pow((lat - marker_lat), 2) + Math.pow((lng - marker_lng), 2);
 			distance = Math.pow(distance, 0.5) * 110
-			address_current = event.feature.i.address
-			infowindow_grid.setContent("(" + String(lat).substr(0, 7) + ", " + String(lng).substr(0, 8) + ")<br>" + "ID: " + event.feature.i.ID + "&emsp;" + "All_id: " + event.feature.i.All_id + "<br>" + address_current + "<br>距標記處 " + String(distance).substr(0, 4) + "km")
+			current_address = event.feature.i.address
+			infowindow_grid.setContent("(" + String(lat).substr(0, 7) + ", " + String(lng).substr(0, 8) + ")<br>" + "ID: " + event.feature.i.ID + "&emsp;" + "All_id: " + event.feature.i.All_id + "<br>" + current_address + "<br>距標記處 " + String(distance).substr(0, 4) + "km")
 			infowindow_grid.open(map)
 		}, 200);
+
+		console.log(grid_current);
+		console.log(event.feature.i.ID);
+		if (event.feature.i.ID == grid_current) return;
+		map.data.revertStyle();
+		map.data.overrideStyle(event.feature, { strokeWeight: 1.5, strokeOpacity: 1, strokeColor: "#484848" });
+
 	});
 	map.data.addListener('click', function (event) {
 		// document.querySelector("#info").style.opacity = 1;
@@ -479,19 +519,27 @@ function initMap() {                                            //map
 		// input2.value = String(lat) + ", " + String(lng)
 		// google.maps.event.trigger(input2, 'focus', {});
 		// google.maps.event.trigger(input2, 'keydown', { keyCode: 13 });
-		address_current = event.feature.i.address
+		current_address = event.feature.i.address
 		document.querySelector('#position-latlng-2').innerText = String(lat).substr(0, 6) + ", " + String(lng).substr(0, 7);
-		document.querySelector("#position-address-2").innerText = address_current + " 附近"
+		document.querySelector("#position-address-2").innerText = current_address + " 附近"
 
 		map.panTo({ lat: lat, lng: lng }, map);
 		document.getElementById('map').style.background = " #484848;"
-		if (true) {
-			console.log(event.feature);
-			map.data.overrideStyle(event.feature, { fillColor: 'rgba(191, 196, 200,0.5)', fillOpacity: 1 });
-			setTimeout(function () {
-				map.data.revertStyle();
-			}, 500);
-		}
+		map.setZoom(15);
+
+		console.log(event.feature);
+		map.data.revertStyle();
+		map.data.overrideStyle(event.feature, {
+			fillColor: 'rgba(191, 196, 200,0.5)', fillOpacity: 1,
+			strokeWeight: map.getZoom() / 5, strokeColor: "#5183E8"
+		});
+		setTimeout(function () {
+			map.data.revertStyle();
+			map.data.overrideStyle(event.feature, {
+				strokeWeight: map.getZoom() / 5, strokeColor: "#5183E8"
+			});
+		}, 150);
+
 		getPointData();
 		console.log(radarAvg);
 		document.querySelector("#big-point").innerText = 60 + parseInt((1 - radarAvg) * 40)
@@ -563,6 +611,9 @@ function getRadarData() {
 				radarData[(idx + 4) % 6] = arr[3 + idx]
 			}
 			)
+			radarData[0] = 1 - radarData[0]
+			radarData[1] = 1 - radarData[1]
+			radarData[5] = 1 - radarData[5]
 			console.log(radarData);
 			// console.log('new radar data: ', radarData)
 			drawRadar();
@@ -630,14 +681,21 @@ function goPredict() {                                //預測
 					});
 				});
 				map.fitBounds(bounds);
+				map.setZoom(13)
 				map.data.setStyle({ visible: true });
+				map.setCenter({ lat: marker_lat, lng: marker_lng }, map);
+				// map.setCenter({ lat: marker_lat, lng: marker_lng }, map);
+				if (marker_lat !== 23) addMarker({ lat: marker_lat, lng: marker_lng }, map)
 
-				map.data.addListener('mouseover', function (event) {
-					map.data.revertStyle();
-					map.data.overrideStyle(event.feature, { strokeWeight: 5, strokeOpacity: 1 });
-				});
+
+				// map.data.addListener('mouseover', function (event) {
+				// 	if (event.feature.i.ID == grid_current) return;
+				// 	map.data.revertStyle();
+				// 	map.data.overrideStyle(event.feature, { strokeWeight: 1.5, strokeOpacity: 1 });
+				// });
 
 				map.data.addListener('mouseout', function (event) {
+					if (event.feature.i.ID == grid_current) return;
 					map.data.revertStyle();
 				});
 
@@ -669,8 +727,9 @@ function goPredict() {                                //預測
 					else { opac = 0.6 }
 					return {
 						fillColor: feature.getProperty('fill')[0],
-						fillOpacity: opac,
-						strokeWeight: 0.2,
+						fillOpacity: opac, //opac
+						strokeWeight: 0.15, //grid thickness
+						strokeColor: "#9B9C9E"
 					};
 				});
 				timelineExtend();
@@ -756,34 +815,34 @@ function cleanmap() {
 	}
 }
 
-function geojsoncolor() {                                                 //顯示or取消分色圖
-	if (document.querySelector('#geojson').innerHTML == "顯示分色圖") {
-		map.data.setStyle({ visible: true });
-		map.data.setStyle(function (feature) {
-			if (feature.getProperty('fill')[$('#time-slider').val()] == "#EEEEEE") { opac = 0 }
-			else { opac = 0.6 }
-			return {
-				fillColor: feature.getProperty('fill')[$('#time-slider').val()],
-				fillOpacity: opac,
-				strokeWeight: 0.2
-			};
-		});
-		document.querySelector('#geojson').innerHTML = "關閉分色圖";
+// function geojsoncolor() {                                                 //顯示or取消分色圖
+// 	if (document.querySelector('#geojson').innerHTML == "顯示分色圖") {
+// 		map.data.setStyle({ visible: true });
+// 		map.data.setStyle(function (feature) {
+// 			if (feature.getProperty('fill')[$('#time-slider').val()] == "#EEEEEE") { opac = 0 }
+// 			else { opac = 0.6 }
+// 			return {
+// 				fillColor: feature.getProperty('fill')[$('#time-slider').val()],
+// 				fillOpacity: opac,
+// 				strokeWeight: 0.2
+// 			};
+// 		});
+// 		document.querySelector('#geojson').innerHTML = "關閉分色圖";
 
 
-	}
-	else {
-		document.querySelector('#geojson').innerHTML = "顯示分色圖";
-		//map.data.setStyle({visible: false});
-		map.data.setStyle(function (feature) {
-			return {
-				fillOpacity: 0,
-				strokeWeight: 0.2,
-			};
-		});
+// 	}
+// 	else {
+// 		document.querySelector('#geojson').innerHTML = "顯示分色圖";
+// 		//map.data.setStyle({visible: false});
+// 		map.data.setStyle(function (feature) {
+// 			return {
+// 				fillOpacity: 0,
+// 				strokeWeight: 0.2,
+// 			};
+// 		});
 
-	}
-}
+// 	}
+// }
 
 function drawRadar() {
 	document.querySelectorAll('.type').forEach((type) => {
@@ -864,7 +923,16 @@ function drawChart() {
 		datasets: [{
 			label: '',
 			data: chartData,
-			fill: false,
+			fill: true,
+			fillColor: ['rgba(171, 167, 249, 0.1)',],
+
+			backgroundColor: [
+				'rgba(171, 167, 249, 0.2)',
+			],
+			pointBackgroundColor: [
+				'rgba(171, 167, 249, 0.99)',
+			],
+
 			borderWidth: 3,
 			borderColor: 'rgba(171, 167, 249, 0.99)',
 			// pointRadius: '15px',
@@ -904,7 +972,11 @@ function drawChart() {
 				y: {
 					type: 'linear',
 					grace: '50%',
-					beginAtZero: true
+					beginAtZero: true,
+					ticks: {
+						maxTicksLimit: 5,
+						minTicksLimit: 4,
+					}
 				}
 				// y: {
 				// 	max: 100,
