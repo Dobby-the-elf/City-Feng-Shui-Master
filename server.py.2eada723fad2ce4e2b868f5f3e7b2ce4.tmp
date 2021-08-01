@@ -322,10 +322,14 @@ def get_grid():
     #     weights[i] = weight / max(weights) * gain / 4
     #     print(weights[i])
     # for location in [type_event]:
-    all_grid_df = pd.read_csv("static/data/City_grids/500/all.csv", encoding="utf-8")
-    grid_df = all_grid_df[
-        (all_grid_df["all_grid_id"] >= 15177) & (all_grid_df["all_grid_id"] <= 18199)
-    ]
+    
+    # all_grid_df = pd.read_csv("static/data/City_grids/500/all.csv", encoding="utf-8")
+    # grid_df = all_grid_df[
+    #     (all_grid_df["all_grid_id"] >= 15177) & (all_grid_df["all_grid_id"] <= 18199)
+    # ]
+    all_grid_df = pd.read_csv("static/data/City_grids/500/final.csv", encoding="utf-8")
+    grid_df = all_grid_df
+
     # event = pd.read_csv("static/data/event_n.csv")
     event = pd.read_csv("result_month/month_{}/event_n.csv".format(timing+1))
     cols = [
@@ -391,6 +395,7 @@ def get_grid():
                     "center": {"lat": row["Centroid_y"], "lng": row["Centroid_x"]},
                     "area2": row["area2"],
                     "area3": row["area3"],
+                    "address": row["address"],
                     "stroke": "#FF0000",
                     "stroke-width": 0,
                     "stroke-opacity": 0,
@@ -482,6 +487,6 @@ def get_grid1():
 
 if __name__ == "__main__":
     app.config["JSON_AS_ASCII"] = False
-    port = int(os.environ.get("PORT", 5000))
-    app.run(debug=True, host='0.0.0.0',port=port or 8080)  # 執行我們的伺服器！
+    port = int(os.environ.get("PORT", 8080))
+    app.run(debug=True, host='0.0.0.0',port=port)  # 執行我們的伺服器！
 

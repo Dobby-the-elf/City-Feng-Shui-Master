@@ -29,7 +29,7 @@ let address_current;
 let selected_time = 23;
 let marker_lat = 23;
 let marker_lng = 120.2;
-let weights = [0, 0, 0, 0, 0, 0]
+let weights = [3, 3, 3, 3, 3, 3]
 let radarData = [0.5, 1, 0.5, 1, 0.5, 1]
 let radarAvg = 0.2;
 let chartData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -56,7 +56,9 @@ $(document).ready(function () {
 	document.querySelector("#infomation-container").addEventListener('click', (e) => {
 		document.querySelector("#info").style.display = 'flex';
 	})
-
+	document.querySelector("#forecaster").addEventListener('click', (e) => {
+		closeWeights();
+	})
 
 	initListener();
 
@@ -247,8 +249,9 @@ function initListener() {
 			let image = document.createElement("img");
 			image.id = String(i) + String(j)
 			image.className = 'heart'
-			image.src = `../static/figma/heart-line.svg`;
-			image.style.marginLeft = "2%";
+			if (j < 3) image.src = `../static/figma/heart-solid.svg`;
+			else image.src = `../static/figma/heart-line.svg`;
+			image.style.marginLeft = "0.5vw";
 			image.style.width = "20px";
 			image.style.height = "2.5vh";
 			// image.onmouseover = () => { console.log(image.id); }
@@ -282,8 +285,26 @@ function initListener() {
 				if (e.target.src.includes("/static/figma/heart")) {
 					for (let i = 0; i < 5; i++) {
 						// console.log(e.target.parentNode.childNodes[i + 1]);
-						if (i <= e.target.id % 10) {
+						if (i < weights[parseInt(e.target.parentNode.id % 10)]) {
+							e.target.parentNode.childNodes[i + 1].src = "../static/figma/heart-solid.svg";
+						}
+						else if (i <= e.target.id % 10) {
 							e.target.parentNode.childNodes[i + 1].src = "../static/figma/heart-empty.svg";
+						}
+					}
+				}
+			}
+			catch { }
+		})
+	})
+	document.querySelectorAll('.heart').forEach((heart) => {
+		heart.addEventListener("mouseleave", (e) => {
+			try {
+				if (e.target.src.includes("/static/figma/heart")) {
+					for (let i = 0; i < 5; i++) {
+						// console.log(e.target.parentNode.childNodes[i + 1]);
+						if (i < weights[parseInt(e.target.parentNode.id % 100)]) {
+							e.target.parentNode.childNodes[i + 1].src = "../static/figma/heart-solid.svg";
 						}
 						else {
 							e.target.parentNode.childNodes[i + 1].src = "../static/figma/heart-line.svg";
@@ -294,30 +315,28 @@ function initListener() {
 			catch { }
 		})
 	})
-	document.querySelectorAll('.weight').forEach((heart) => {
-		heart.addEventListener("mouseleave", (e) => {
-			// console.log("leave");
-			console.log(e.target);
-			// console.log(e.target.childNodes[1 + weights[parseInt(e.target.id % 100)]], 999);
-			// e.target.childNodes[weights[parseInt(e.target.id / 100)]].click();
-			// console.log(e.target.id % 10);
-			for (let i = 0; i < 5; i++) {
-				if (i < weights[parseInt(e.target.id % 100)]) {
-					e.target.childNodes[i + 1].src = "../static/figma/heart-solid.svg";
-				}
-				else {
-					e.target.childNodes[i + 1].src = "../static/figma/heart-line.svg";
-				}
-			}
-		})
-	})
+	// document.querySelectorAll('.weight').forEach((heart) => {
+	// 	heart.addEventListener("mouseleave", (e) => {
+	// 		console.log(e.target);
+	// 		for (let i = 0; i < 5; i++) {
+	// 			if (i < weights[parseInt(e.target.id % 100)]) {
+	// 				e.target.childNodes[i + 1].src = "../static/figma/heart-solid.svg";
+	// 			}
+	// 			else {
+	// 				e.target.childNodes[i + 1].src = "../static/figma/heart-line.svg";
+	// 			}
+	// 		}
+	// 	})
+	// })
 }
 function timelineExtend() {
 	timeline_extend = 1;
-	document.querySelector('#timeline').src = '';
-	document.querySelector('#timeline').style.height = '55vh';
-	document.querySelector('#timeline-extend').style.height = '55vh';
-	document.querySelector('#timeline-extend').style.opacity = '1'
+	// document.querySelector('#timeline-extend').style.opacity = '1'
+	document.querySelector('#timeline-extend').classList.toggle("extend-transform");
+	document.querySelector('#timeline-extender').src = '';
+	document.querySelector('#timeline').style.height = '56vh';
+	document.querySelector('#timeline').style.marginBottom = '1.6vh';
+	// document.querySelector('#timeline-extend').style.height = '56vh';
 }
 
 function visual_time(id_check) {
@@ -431,7 +450,7 @@ function initMap() {                                            //map
 		// input2.value = String(lat) + ", " + String(lng)
 		// google.maps.event.trigger(input2, 'focus', {});
 		// google.maps.event.trigger(input2, 'keydown', { keyCode: 13 });
-		document.querySelector('#position-latlng-2').innerText = String(lat).substr(0, 6) + ", " + String(lng).substr(0, 7);
+		// document.querySelector('#position-latlng-2').innerText = String(lat).substr(0, 6) + ", " + String(lng).substr(0, 7);
 		infowindow_grid.close()
 		map.data.revertStyle();
 
@@ -441,9 +460,10 @@ function initMap() {                                            //map
 			city_grid_ID = event.feature.i.ID
 			let distance = Math.pow((lat - marker_lat), 2) + Math.pow((lng - marker_lng), 2);
 			distance = Math.pow(distance, 0.5) * 110
+			address_current = event.feature.i.address
 			infowindow_grid.setContent("(" + String(lat).substr(0, 7) + ", " + String(lng).substr(0, 8) + ")<br>" + "ID: " + event.feature.i.ID + "&emsp;" + "All_id: " + event.feature.i.All_id + "<br>" + address_current + "<br>距標記處 " + String(distance).substr(0, 4) + "km")
 			infowindow_grid.open(map)
-		}, 500);
+		}, 200);
 	});
 	map.data.addListener('click', function (event) {
 		// document.querySelector("#info").style.opacity = 1;
@@ -459,13 +479,15 @@ function initMap() {                                            //map
 		// input2.value = String(lat) + ", " + String(lng)
 		// google.maps.event.trigger(input2, 'focus', {});
 		// google.maps.event.trigger(input2, 'keydown', { keyCode: 13 });
+		address_current = event.feature.i.address
 		document.querySelector('#position-latlng-2').innerText = String(lat).substr(0, 6) + ", " + String(lng).substr(0, 7);
+		document.querySelector("#position-address-2").innerText = address_current + " 附近"
 
 		map.panTo({ lat: lat, lng: lng }, map);
 		document.getElementById('map').style.background = " #484848;"
 		if (true) {
 			console.log(event.feature);
-			map.data.overrideStyle(event.feature, { fillColor: "#555555", fillOpacity: 1 });
+			map.data.overrideStyle(event.feature, { fillColor: 'rgba(191, 196, 200,0.5)', fillOpacity: 1 });
 			setTimeout(function () {
 				map.data.revertStyle();
 			}, 500);
@@ -536,7 +558,12 @@ function getRadarData() {
 		success: function (data) {
 			// console.log(data.eventData);
 			arr = data.eventData
-			radarData.forEach((dat, idx) => { radarData[idx] = arr[3 + idx] })
+			radarData.forEach((dat, idx) => {
+				// data: [radarData[2], radarData[3], radarData[4], radarData[5], radarData[0], radarData[1]],
+				radarData[(idx + 4) % 6] = arr[3 + idx]
+			}
+			)
+			console.log(radarData);
 			// console.log('new radar data: ', radarData)
 			drawRadar();
 		},
@@ -553,7 +580,7 @@ function getChartData() {
 		url: "/get_chart_data",
 		data: {
 			"grid_id": grid_current,
-			"chart_type": targetType
+			"chart_type": (targetType + 2) % 6
 		},
 		success: function (data) {
 			console.log(data.eventData);
@@ -571,6 +598,7 @@ function goPredict() {                                //預測
 	a = 0
 	if (a == 1) { alert("請選擇區域選取方式"); return; }
 	cleanmap();
+	closeWeights();
 	if (a == 0) {                                        //依城市
 		console.log('chosen weight is', weights);
 		let timing; // 0~24, backend needs 1~25, so its fine
@@ -779,7 +807,7 @@ function drawRadar() {
 			data: radarData,
 			fill: true,
 			borderWidth: 0,
-			backgroundColor: 'rgba(161, 196, 253,0.68)',
+			backgroundColor: 'rgba(161, 196, 253,0.88)',
 			borderColor: 'rgb(161, 196, 253)',
 			pointBackgroundColor: 'rgba(161, 196, 253,0)',
 			pointBorderColor: '#fff',
@@ -798,6 +826,7 @@ function drawRadar() {
 			},
 			scales: {
 				r: {
+					startAngle: -30,
 					suggestedMin: 0,
 					suggestedMax: 1,
 					ticks: {
@@ -833,11 +862,12 @@ function drawChart() {
 	const data = {
 		labels: ['-12', '', '', '-9', '', '', '-6', '', '', '-3', '', '', '0', '', '', '+3', '', '', '+6', '', '', '+9', '', '', '+12'],
 		datasets: [{
-			label: 'My First Dataset',
+			label: '',
 			data: chartData,
 			fill: false,
 			borderWidth: 3,
 			borderColor: 'rgba(171, 167, 249, 0.99)',
+			// pointRadius: '15px',
 			tension: 0.1
 		}]
 	};
@@ -922,11 +952,13 @@ function toggleWeights() {
 	// console.log(document.querySelectorAll('.weight'));
 	// console.log(document.querySelector('#weightSelect').style.display);
 	if (document.querySelector('#weightSelect').style.height == '25vh') {
+		document.querySelector('#arrow').style.transform = 'rotate(0deg)'
 		document.querySelector('#weightSelect').style.height = '0'
 		document.querySelector('#weightSelect').style.opacity = '0'
 		document.querySelector('#weightSelect').style.transition = 'all 0.25s ease-out';
 	}
 	else {
+		document.querySelector('#arrow').style.transform = 'rotate(180deg)'
 		document.querySelector('#weightSelect').style.height = '25vh'
 		document.querySelector('#weightSelect').style.opacity = '1'
 		document.querySelector('#weightSelect').style.transition = 'all 0.35s ease-in;';
@@ -937,21 +969,24 @@ function closeWeights() {
 	// console.log(document.querySelectorAll('.weight'));
 	// console.log(document.querySelector('#weightSelect').style.display);
 	if (document.querySelector('#weightSelect').style.height == '25vh') {
+		document.querySelector('#arrow').style.transform = 'rotate(0deg)'
 		document.querySelector('#weightSelect').style.height = '0'
 		document.querySelector('#weightSelect').style.opacity = '0'
 		document.querySelector('#weightSelect').style.transition = 'all 0.25s ease-out';
 	}
 }
 
-function toggleCharts() {
-	if (document.querySelector('#analysis-image img').src.includes("/static/figma/analysis1")) {
+function toggleCharts(target) {
+	if (document.querySelector('#analysis-image img').src.includes("/static/figma/analysis1")
+		&& target.id == "analysis-2"
+	) {
 		chartType = 1;
 		document.querySelector('#analysis-image img').src = `../static/figma/analysis2.svg`;
 		document.querySelector('#radar-container').style.opacity = '0'
 		document.querySelector('#line-chart-container').style.opacity = '1'
 		drawChart();
 	}
-	else {
+	else if (target.id == "analysis-1") {
 		chartType = 0;
 		document.querySelector('#analysis-image img').src = `../static/figma/analysis1.svg`;
 		document.querySelector('#line-chart-container').style.opacity = '0'
