@@ -1,15 +1,32 @@
-@import url(https://fonts.googleapis.com/earlyaccess/notosanstc.css);
-@import url(https://fonts.googleapis.com/css?family=Righteous);
-@import url("https://cdn.jsdelivr.net/npm/taipei-sans-tc");
+/* @import url(https://fonts.googleapis.com/earlyaccess/notosanstc.css);
+@import url(https://fonts.googleapis.com/css?family=Righteous); */
+@import url("../font/TaipeiSansTCBeta-Bold.ttf");
+@import url("../font/TaipeiSansTCBeta-Light.ttf");
+@import url("../font/TaipeiSansTCBeta-Regular.ttf");
+@font-face {
+	font-family: "Taipei Sans TC Beta";
+	src: url("../font/TaipeiSansTCBeta-Regular.ttf");
+	font-weight: 500;
+}
+@font-face {
+	font-family: "Taipei Sans TC Beta";
+	src: url("../font/TaipeiSansTCBeta-Light.ttf");
+	font-weight: 300;
+}
+@font-face {
+	font-family: "Taipei Sans TC Beta";
+	src: url("../font/TaipeiSansTCBeta-Bold.ttf");
+	font-weight: 700;
+}
 * {
 	font-family: "Taipei Sans TC Beta";
-	font-style: "Taipei Sans TC Beta";
 }
 html,
 body {
 	height: 100%;
 	margin: 0;
 	padding: 0;
+	background-color: #a7a9ab;
 }
 body {
 	/* background: url(../images/img-1487062468-85551.jpg) center center fixed no-repeat; */
@@ -98,8 +115,8 @@ input[type="range"]::-webkit-slider-thumb {
 	float: left;
 	margin-left: 4%;
 	position: relative;
-	width: 7.2vh;
-	height: 5vh;
+	width: 8.6vh;
+	height: 6vh;
 	border-radius: 2.5vh;
 	/* border: 1.5px solid rgba(76, 76, 76, 0.2); */
 	/* box-sizing: border-box; */
@@ -117,7 +134,7 @@ input[type="range"]::-webkit-slider-thumb {
 	align-items: center;
 	flex-direction: row;
 	float: left;
-	margin-left: 1%;
+	/* margin-left: 1%; */
 	width: 14%;
 	/* display: inline-block; */
 	font-weight: 400;
@@ -162,7 +179,7 @@ input[type="range"]::-webkit-slider-thumb {
 	flex-direction: row;
 	margin-left: 1.5%;
 	float: left;
-	width: 15.6%;
+	width: calc(9% + 100px);
 	/* display: inline-block; */
 	cursor: pointer;
 	font-weight: 300;
@@ -184,11 +201,9 @@ input[type="range"]::-webkit-slider-thumb {
 }
 #weight-adjust {
 	margin-left: 1vw;
-	width: 2.6vh;
-	height: 2.6vh;
 }
 #arrow {
-	margin-left: 1vw;
+	margin-left: calc(3.6vw - 30px);
 	width: 1.6vh;
 	height: 1.6vh;
 	transition: all 0.35s ease-in;
@@ -230,7 +245,7 @@ input[type="range"]::-webkit-slider-thumb {
 	border-radius: 14px;
 	margin: 0;
 	top: 7.8vh;
-	right: calc(27.5vw - 124px);
+	right: calc(28.6vw - 124px);
 	font-size: 14px;
 	line-height: 50px;
 	z-index: 100;
@@ -362,7 +377,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 #analysis-image img {
 	margin-left: 10%;
-	width: 90%;
+	width: calc(110% - 30px);
 }
 #analysis-2,
 #analysis-1 {
@@ -383,31 +398,26 @@ input[type="range"]::-webkit-slider-thumb {
 	color: #78797a;
 }
 #line-chart {
-	margin-top: 0.5vh;
+	margin-top: 2vh;
 }
 #radar-container {
 	display: flex;
 	justify-content: space-around;
 	align-items: center;
 	flex-direction: column;
-	height: 100%;
-	width: 50%;
+	height: 23.7vh;
+	width: 66%;
 }
-/* #radar {
-	-ms-transform: rotate(30deg); 
-	-webkit-transform: rotate(30deg); 
-	transform: rotate(30deg);
-} */
 #line-chart-types {
 	display: flex;
-	justify-content: space-around;
+	justify-content: space-between;
 	align-items: center;
 	flex-direction: row;
 	position: absolute;
 	float: right;
 	font-size: 12px;
 	color: #999;
-	top: 31.2vh;
+	top: 32vh;
 	height: 2.4vh;
 	width: 21.5vw;
 }
@@ -499,8 +509,8 @@ input[type="range"]::-webkit-slider-thumb {
 	height: 82vh;
 	width: 52px;
 	margin: 0;
-	top: 10vh;
-	left: 1vw;
+	top: 9vh;
+	left: 1.5vw;
 	/* left: 34vw; */
 	border-radius: 20px;
 	z-index: 6;
@@ -509,6 +519,10 @@ input[type="range"]::-webkit-slider-thumb {
 	width: 100%;
 	height: 9vh;
 }
+/* #zoom:hover {
+	background: url(../../static/figma/zoom-hover.svg) center center fixed no-repeat;
+	z-index: 999;
+} */
 #target {
 	width: 100%;
 	height: 5vh;
@@ -548,6 +562,10 @@ input[type="range"]::-webkit-slider-thumb {
 #timeline-extend.extend-transform {
 	opacity: 1;
 	transition: opacity 0.8s;
+}
+#timeline-extend.shrink-transform {
+	opacity: 0;
+	transition: opacity 0.4s ease-in;
 }
 #timeline-extend > * {
 	display: flex;
@@ -621,8 +639,9 @@ input[type="range"]::-webkit-slider-thumb {
 	cursor: pointer;
 }
 #timeline-up {
-	margin-top: 2vh;
+	margin-top: 1.5vh;
 	cursor: pointer;
+	display: none;
 }
 /* ---------------------- google map style change ------------------------ */
 .gm-style .gm-style-iw {
