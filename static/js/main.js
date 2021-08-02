@@ -59,6 +59,8 @@ $(document).ready(function () {
 		document.querySelector("#info").style.display = 'flex';
 	})
 
+	document.querySelector("#infomation-container").click();
+
 	// document.querySelector("#line-chart-container canvas").style.transform = "scaleY(1.05)"
 
 	initListener();
@@ -229,10 +231,13 @@ function initListener() {
 				typeInner.style.backgroundColor = '#FFF';
 				typeInner.style.color = '#A7A9AB';
 			})
-			type.style.backgroundColor = '#D2D4D6';
+			type.style.backgroundColor = '#C0C0C0';
 			type.style.color = '#FFF';
 			targetType = type.id % 60;
 			getChartData();
+			if (targetType === 0) document.querySelector("#y-unit").innerText = "元 / 平方公尺";
+			else if (targetType === 1) document.querySelector("#y-unit").innerText = "人口數";
+			else document.querySelector("#y-unit").innerText = "";
 		})
 	})
 	document.querySelectorAll('.type').forEach((type) => {
@@ -240,7 +245,7 @@ function initListener() {
 			console.log(type.id % 60);
 			console.log(targetType);
 			if (type.id % 60 == targetType) return;
-			type.style.backgroundColor = '#E5E5E5';
+			type.style.backgroundColor = '#EBEDF0';
 			type.style.color = '#A7A9AB';
 		})
 	})
@@ -403,7 +408,7 @@ function initMap() {                                            //map
 		lng = position.coords.longitude;
 		map.setZoom(15)
 		map.panTo({ lat: lat, lng: lng })
-		addMarker({ lat: lat, lng: lng }, map);
+		firstMarker({ lat: lat, lng: lng }, map);
 	});
 
 	map.addListener("bounds_changed", () => {
@@ -562,6 +567,8 @@ function addMarker(location, map) {
 	let marker = new google.maps.Marker({
 		position: location,
 		// label: labels[labelIndex++ % labels.length],
+		// icon: "../../static/figma/position-dot.svg",
+		animation: google.maps.Animation.DROP,
 		map: map,
 	});
 	markers.push(marker);
@@ -661,7 +668,6 @@ function goPredict() {                                //預測
 			"timing": JSON.stringify(timing)
 		},
 		success: function (data) {
-			$('#loading').hide();
 			area_properties.length = 0
 			for (var i = 0; i < data.features.length; i++) {
 				map.data.addGeoJson(data.features[i]);
@@ -934,6 +940,9 @@ function drawChart() {
 		type: 'line',
 		data: data,
 		options: {
+			events: [],
+			responsive: true,
+			maintainAspectRatio: false,
 			elements: {
 				line: {
 					borderWidth: 3
@@ -966,7 +975,7 @@ function drawChart() {
 					beginAtZero: true,
 					ticks: {
 						maxTicksLimit: 5,
-						minTicksLimit: 4,
+						// minTicksLimit: 4,
 					}
 				}
 				// y: {
@@ -1047,6 +1056,8 @@ function toggleCharts(target) {
 		document.querySelector('#analysis-image img').src = `../static/figma/analysis2.svg`;
 		document.querySelector('#radar-container').style.opacity = '0'
 		document.querySelector('#line-chart-container').style.opacity = '1'
+		document.querySelector('#y-unit').style.opacity = '1'
+		document.querySelector('#x-unit').style.opacity = '1'
 		drawChart();
 	}
 	else if (target.id == "analysis-1") {
@@ -1054,6 +1065,48 @@ function toggleCharts(target) {
 		document.querySelector('#analysis-image img').src = `../static/figma/analysis1.svg`;
 		document.querySelector('#line-chart-container').style.opacity = '0'
 		document.querySelector('#radar-container').style.opacity = '1'
+		document.querySelector('#y-unit').style.opacity = '0'
+		document.querySelector('#x-unit').style.opacity = '0'
 		drawRadar();
 	}
+}
+
+function firstMarker(location, map) {
+	// Add the marker at the clicked location, and add the next-available label
+	// from the array of alphabetical characters.
+	let marker = new google.maps.Marker({
+		position: location,
+		// label: labels[labelIndex++ % labels.length],
+		// icon: "../../static/figma/position-dot.svg",
+		// animation: google.maps.Animation.DROP,
+		icon: {
+			path: google.maps.SymbolPath.CIRCLE,
+			scale: 8,
+			strokeColor: "#FFF",
+			strokeOpacity: 1,
+			fillColor: '#6598FD',
+			fillOpacity: 1,
+			strokeWeight: 2,
+		},
+		map: map,
+	});
+	let marker2 = new google.maps.Marker({
+		position: location,
+		icon: {
+			path: google.maps.SymbolPath.CIRCLE,
+			scale: 16,
+			fillColor: '#6598FD',
+			fillOpacity: 0.3,
+			strokeWeight: 0,
+		},
+		animation: google.maps.Animation.DROP,
+		map: map,
+	});
+	if (marker.category == 'supported-offices') {
+		marker.setZIndex(google.maps.Marker.MAX_ZINDEX - 1);
+	} else {
+		marker.setZIndex(google.maps.Marker.MAX_ZINDEX + 1);
+	}
+	marker.bindTo("position", marker2);
+	// markers.push(marker);
 }

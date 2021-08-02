@@ -322,6 +322,9 @@ def get_grid():
         weights[i] = weights[i] - 1
     if sum(weights) == 0.0:
         weights = [0.2, 0.2, 0.2, 0.2, 0.2, 0.2]
+    totalWeight = sum(weights)
+    for i, weight in enumerate(weights):
+        weights[i] = float(weights[i]) / float(totalWeight)
     print(weights)
 
     # gain = 2.0 + np.var(weights) / totalWeight
@@ -360,24 +363,21 @@ def get_grid():
     # print(max_complain)
     feature_list = []
     for index, row in grid_df.iterrows():  # 台南的各個區域 dim ~= 3000
-        color_level = []
+        # color_level = []
         color_time = []
         event_id = event[event["grid_id"] == row["grid_id"]]
         for index1, row1 in event_id.iterrows():  # 某區域在各個時間的4個事件數量 dim will be 1
             type_events = ["event1", "event2", "event3", "event4", "event5", "event6"]
-            color_level.append(0.0)
+            # color_level.append(0.0)
+            color_level = 0.0
             for idx, type_event in enumerate(type_events):  # dim = 6 交通、環境、價格、人口、機能、安全
                 # gap = list(map((lambda x: x*max_complain[idx]),gap))
                 collumns = type_event + "_num"
                 if idx == 4:
-                    color_level[-1] += row1[collumns] * weights[idx] / sum(weights)
+                    color_level += row1[collumns] * weights[idx]
                 else:
-                    color_level[-1] += (
-                        (1.0 - float(row1[collumns])) * weights[idx] / sum(weights)
-                    )
-            if index == 2177:
-                print(row)
-                print(color_level[-1])
+                    color_level += (1.0 - float(row1[collumns])) * weights[idx]
+                # print(color_level[-1])
                 # print("-----------------------------")
 
                 # -------------------------- 改成除以全部最大的值 -------------------------------
@@ -397,18 +397,18 @@ def get_grid():
         #     else:
         #         color_time.append("#E0E8DB")
 
-        for level in color_level:
-            # print(level)
-            if level <= 1.0 / 5:
-                color_time.append("#ec513f")  # 紅
-            elif level <= 2.0 / 5:
-                color_time.append("#ef5e0e")  # 橘紅
-            elif level <= 3.0 / 5:
-                color_time.append("#f7a413")  # 橘黃
-            elif level <= 4.0 / 5:
-                color_time.append("#f3fb19")  # 黃
-            else:
-                color_time.append("#EEEEEE")
+        # for level in color_level:
+        level = color_level
+        if level <= 1.0 / 5:
+            color_time.append("#ec513f")  # 紅
+        elif level <= 2.0 / 5:
+            color_time.append("#ef5e0e")  # 橘紅
+        elif level <= 3.0 / 5:
+            color_time.append("#f7a413")  # 橘黃
+        elif level <= 4.0 / 5:
+            color_time.append("#f3fb19")  # 黃
+        else:
+            color_time.append("#EEEEEE")
 
         feature_list.append(
             {
@@ -420,7 +420,7 @@ def get_grid():
                     # "area2": row["area2"],
                     # "area3": row["area3"],
                     "address": row["address"],
-                    "pts": color_level[-1],  # actually color_level only have 1 element
+                    "pts": color_level,  # actually color_level only have 1 element
                     # "stroke": "#FF0000",
                     # "stroke-width": 0,
                     "stroke-opacity": 0,
