@@ -13,11 +13,11 @@ var markers1 = []
 var markers_list = []
 var temp = []
 var ID_test
-var points_list = {};
+var points_list = [];
 var total_number;
 var note = 0
-mapclick = 0
-points_list.list = [];
+let mapclick = 0
+// points_list.list = [];
 //---------------------------------------
 var radarChart;
 var lineChart;
@@ -407,8 +407,8 @@ function visual_time(id_check) {
 	else document.querySelector("#point-time").innerText = String(id_check - 10) + "個月後";
 }
 
-function initMap() {                                            //map
-	geocoder = new google.maps.Geocoder();
+window.initMap = function () {                                            //map
+	let geocoder = new google.maps.Geocoder();
 
 	map = new google.maps.Map(document.getElementById('map'), {
 		center: { lat: 23.037850, lng: 120.239751 },
@@ -430,8 +430,8 @@ function initMap() {                                            //map
 	// addYourLocationButton(map, myMarker);
 
 	navigator.geolocation.getCurrentPosition(function (position) {
-		lat = position.coords.latitude;
-		lng = position.coords.longitude;
+		let lat = position.coords.latitude;
+		let lng = position.coords.longitude;
 		map.setZoom(15)
 		map.panTo({ lat: lat, lng: lng })
 		firstMarker({ lat: lat, lng: lng }, map);
@@ -497,7 +497,7 @@ function initMap() {                                            //map
 		// map.fitBounds(bounds);
 	});
 
-	infowindow_grid = new google.maps.InfoWindow()
+	let infowindow_grid = new google.maps.InfoWindow()
 	map.data.addListener('mouseover', function (event) {
 		// deleteMarkers()
 		lat = event.feature.i.center.lat;
@@ -543,7 +543,7 @@ function initMap() {                                            //map
 		map.data.overrideStyle(event.feature, { strokeWeight: map.getZoom() / 5, strokeOpacity: 1, strokeColor: "#484848" });
 
 	});
-	map.data.addListener('click', function (event) {
+	map.data.addListener('click', async function (event) {
 		// document.querySelector("#info").style.opacity = 1;
 		document.querySelector("#info").style.display = 'flex';
 		document.querySelector("#info").style.transition = '0.15s ease-out;';
@@ -582,11 +582,20 @@ function initMap() {                                            //map
 		}, 150);
 
 		document.querySelector("#big-point").innerText = 70 + parseInt((1 - event.feature.i.pts) * 30)
-		if (chartType === 0) {
-			getRadarData();
-		} else {
-			getChartData();
-		}
+
+		await getRadarData();
+		if (chartType === 0) drawRadar();
+		else getChartData();
+		console.log(Math.sqrt(event.feature.i.pts));
+		console.log(Math.floor(5 * (1 - Math.sqrt(event.feature.i.pts))));
+		document.querySelector("#poem-pic img").src = `../static/figma/籤詩${Math.floor(5 * (1 - event.feature.i.pts))}.svg`;
+
+		let poetry = poem(radarData)
+
+		poetry.forEach((para, idx) => {
+			if (idx === 6) document.querySelector(`#poem-summary`).innerText = "解：" + para
+			else document.querySelector(`#poem-content-${idx}`).innerText = para
+		})
 	});
 	map.addListener('click', function (event) {
 		closeWeights();
@@ -678,37 +687,38 @@ function doPan() {
 // 	});
 // };
 
-function getRadarData() {
+async function getRadarData() {
 	if (grid_current === -1) return;
-
-	$.ajax({
-		url: "/get_radar_data",
-		data: {
-			"grid_id": grid_current,
-			"timing": timing
-		},
-		success: function (data) {
-			// console.log(data.eventData);
-			arr = data.eventData
-			arr[0] = 1 - arr[0]
-			arr[1] = 1 - arr[1]
-			arr[5] = 1 - arr[5]
-			radarData.forEach((dat, idx) => {
-				// data: [radarData[2], radarData[3], radarData[4], radarData[5], radarData[0], radarData[1]],
-				radarData[(idx + 4) % 6] = arr[3 + idx]
-			})
-			radarData[3] = Math.sqrt(Math.sqrt(radarData[3]))
-			radarData[4] = Math.sqrt(Math.sqrt(radarData[4]))
-			radarData[5] = Math.sqrt(Math.sqrt(radarData[5]))
-			console.log(radarData);
-			// console.log('new radar data: ', radarData)
-			drawRadar();
-		},
-		error: function (XMLHttpRequest, textStatus, errorThrown) {
-			alert(XMLHttpRequest.status + '\n' + XMLHttpRequest.readyState + '\n' + textStatus + '\n' + XMLHttpRequest.responseText);
-		}
-	});
-};
+	return new Promise(function (resolve, reject) {
+		$.ajax({
+			url: "/get_radar_data",
+			data: {
+				"grid_id": grid_current,
+				"timing": timing
+			},
+			success: function (data) {
+				console.log(data.eventData);
+				arr = data.eventData
+				arr[0] = 1 - arr[0]
+				arr[1] = 1 - arr[1]
+				arr[5] = 1 - arr[5]
+				radarData.forEach((dat, idx) => {
+					// data: [radarData[2], radarData[3], radarData[4], radarData[5], radarData[0], radarData[1]],
+					radarData[(idx + 4) % 6] = arr[3 + idx]
+				})
+				radarData[3] = Math.sqrt(Math.sqrt(radarData[3]))
+				radarData[4] = Math.sqrt(Math.sqrt(radarData[4]))
+				radarData[5] = Math.sqrt(Math.sqrt(radarData[5]))
+				// console.log(radarData);
+				resolve();
+			},
+			error: function (XMLHttpRequest, textStatus, errorThrown) {
+				alert(XMLHttpRequest.status + '\n' + XMLHttpRequest.readyState + '\n' + textStatus + '\n' + XMLHttpRequest.responseText);
+				reject();
+			}
+		});
+	})
+}
 
 
 function getChartData() {
@@ -720,7 +730,7 @@ function getChartData() {
 			"chart_type": (targetType + 2) % 6
 		},
 		success: function (data) {
-			console.log(data.eventData);
+			// console.log(data.eventData);
 			arr = data.eventData
 			chartData.forEach((dat, idx) => { chartData[idx] = arr[idx] })
 			drawChart();
@@ -782,14 +792,13 @@ function goPredict() {                                //預測
 			var last_v = 4
 			for (var h = 0; h < area_properties.length; h++) {
 				if (area_properties[h].fill[0] == "#930509") {
-					points_list.list.push(
+					points_list.push(
 						{
 							latlng: "ID:" + area_properties[h].ID,
 							latlng1: "位置:" + area_properties[h].area3,
 							points: area_properties[h]
 						})
 				}
-
 			}
 
 			// showlist("#latlng");
@@ -811,12 +820,7 @@ function goPredict() {                                //預測
 				};
 			});
 			timelineExtend();
-
-			if (chartType === 0) {
-				getRadarData();
-			}
 			// document.getElementById('time-slider').value = 0;
-
 		},
 		error: function (XMLHttpRequest, textStatus, errorThrown) {
 			alert(XMLHttpRequest.status + '\n' + XMLHttpRequest.readyState + '\n' + textStatus + '\n' + XMLHttpRequest.responseText);
@@ -832,8 +836,8 @@ function goPredict() {                                //預測
 };
 
 function clearL() {
-	if (points_list.list != null) {
-		points_list.list.length = 0;
+	if (points_list != null) {
+		points_list.length = 0;
 	}
 }
 
@@ -1189,4 +1193,70 @@ function firstMarker(location, map) {
 	}
 	marker.bindTo("position", marker2);
 	// markers.push(marker);
+}
+
+function poem(levels) {
+	let price = [
+		['價低易居', '低價之處'],
+		['物美價廉', '價低CP高'],
+		['價平實，合情理', '中庸之價'],
+		['長安居大不易', '辛勤三十年，以有此屋盧'],
+		['連城之價', '長安居大不易']
+	]
+	let population = [
+		['人跡罕至', '萬徑人縱滅', '工作機會空乏'],
+		['工作機會較少', '錢少事多離家遠'],
+		['錢少事多離家遠', '人口適中，能動能靜'],
+		['人來人往', '熙熙攘攘', '人丁興旺'],
+		['人山人海', '車水馬龍', '人聲鼎沸'],
+	]
+	let living = [
+		['商店寥寥無幾', '地處偏僻處', '車行不易'],
+		['路遠迢迢', '商店較少'],
+		['城市蛋白處', '商店距離適中'],
+		['伴遊自逛皆宜', '各項設施皆善'],
+		['各項設施應有盡有', '條條大路通羅馬', '伴遊自逛皆宜']
+	]
+	let safety = [
+		['歹徒猖狂要小心', '動亂危安自保為重', '犯罪猖獗謹慎留意'],
+		['疑人疑事多注意', '地方欠安勿獨行'],
+		['歹事雖少，仍需自防', '治安平平'],
+		['守望相助善', '安定和諧', '平時相安事少'],
+		['守法守紀', '地緣安寧保太平', '家家平安']
+	]
+	let traffic_violation = [
+		['雜亂無章車多違法', '交通亂象頻發生', '肇禍傷亡多切要留心'],
+		['小心道路飛來橫禍', '事故稍多需留意'],
+		['上路需眼觀四處，耳聽八方', '路況平平，小心為上'],
+		['路上偶有違規，仍需注意', '路況善，少違規'],
+		['路況佳', '駕駛皆守法守紀', '道路烏托邦']
+	]
+	let pollution = [
+		['環境髒亂煞風景', '垃圾粉塵漫天飄', '攪擾爭鬧多打擾'],
+		['煙霧瀰漫常紫爆', '噪音稍多使煩心'],
+		['若有烏煙請戴口罩', '偶有人聲擾清夢'],
+		['僻靜之處能安心', '偶有瘴氣，仍需備好口罩'],
+		['萬籟俱寂靜無聲', '悄無聲息靜謐處', '環境優，一塵不染']
+	]
+	let summary = [
+		['大凶之地，勸你塊陶', '三十六計走為上策', '餓山餓水出刁民'],
+		['小凶之處，勿以久待', '勸離不勸留'],
+		['風水輪流轉，好壞自在人心', '知足常樂，能忍自安'],
+		['宜居好去處', '雖非臻至，猶善'],
+		['相看兩不厭，就是這了', '永保安康好風水', '海納百川，景氣和暢']
+	]
+
+	//return poem sentences
+	var poem = [];
+	levels.forEach((level, idx) => { levels[idx] = Math.floor(level * 6); })
+	levels.forEach((level, idx) => { if (levels[idx] == 6) levels[idx] = 5 })
+	// console.log(price[levels[0]]);
+	poem.push(price[levels[0]][Math.floor(Math.random() * price[levels[0]].length)]);
+	poem.push(population[levels[0]][Math.floor(Math.random() * population[levels[0]].length)]);
+	poem.push(living[levels[0]][Math.floor(Math.random() * living[levels[0]].length)]);
+	poem.push(safety[levels[0]][Math.floor(Math.random() * safety[levels[0]].length)]);
+	poem.push(traffic_violation[levels[0]][Math.floor(Math.random() * traffic_violation[levels[0]].length)]);
+	poem.push(pollution[levels[0]][Math.floor(Math.random() * pollution[levels[0]].length)]);
+	poem.push(summary[levels[0]][Math.floor(Math.random() * summary[levels[0]].length)]);
+	return poem;
 }

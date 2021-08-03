@@ -498,8 +498,8 @@ section {
 	font-weight: bold;
 }
 #poem-area {
-	height: 165px;
-	margin-top: 1vh;
+	height: 168px;
+	margin-top: 1.4vh;
 	flex-direction: row;
 }
 #poem-pic {
@@ -509,6 +509,7 @@ section {
 #poem-content {
 	width: 70%;
 	height: 156px;
+	font-size: 16px;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-around;
@@ -517,13 +518,15 @@ section {
 	font-size: 16px;
 	line-height: 20px;
 	color: #78797a;
+	overflow: visible;
 }
 #poem-summary {
 	font-size: 16px;
 	line-height: 20px;
 	width: 82%;
-	text-align: left;
+	text-align: right;
 	color: #78797a;
+	font-weight: 300;
 }
 /* ---------------------- side bar ------------------------ */
 #side-bar {
