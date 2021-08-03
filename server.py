@@ -178,7 +178,8 @@ def new_id():
                 "static/users.csv", encoding="utf-8", dtype=str
             )
             usersupdate_df.loc[len(usersupdate_df)] = [newid, newpw]
-            usersupdate_df.to_csv("static/users.csv", encoding="utf-8-sig", index=False)
+            usersupdate_df.to_csv("static/users.csv",
+                                  encoding="utf-8-sig", index=False)
             users.update({newid: {"password": newpw}})
             return "success"
         else:
@@ -307,14 +308,26 @@ def get_grid():
     weights = json.loads(request.args.get("myweights"))
     timing = json.loads(request.args.get("timing"))
     # print(timing)
+
+    EXECUTION_START_TIME = time.time()  # 計算執行時間
+
     # print(type(weights))
-    totalWeight = 0
     for i, weight in enumerate(weights):
         weights[i] = int(weights[i])
-        totalWeight += weights[i]
-    if totalWeight == 0:
+    temp = [0, 0, 0, 0, 0, 0]
+    for i, weight in enumerate(weights):
+        temp[(i + 2) % 6] = weights[i]
+    for i, weight in enumerate(weights):
+        weights[i] = temp[i]
+    for i, weight in enumerate(weights):
+        weights[i] = weights[i] - 1
+    if sum(weights) == 0.0:
         weights = [0.2, 0.2, 0.2, 0.2, 0.2, 0.2]
-        totalWeight = 1.2
+    totalWeight = sum(weights)
+    for i, weight in enumerate(weights):
+        weights[i] = float(weights[i]) / float(totalWeight)
+    print(weights)
+
     # gain = 2.0 + np.var(weights) / totalWeight
     # # gain = 1.6 + np.var(weights) / totalWeight
     # for i, weight in enumerate(weights):
@@ -322,16 +335,17 @@ def get_grid():
     #     weights[i] = weight / max(weights) * gain / 4
     #     print(weights[i])
     # for location in [type_event]:
-    
+
     # all_grid_df = pd.read_csv("static/data/City_grids/500/all.csv", encoding="utf-8")
     # grid_df = all_grid_df[
     #     (all_grid_df["all_grid_id"] >= 15177) & (all_grid_df["all_grid_id"] <= 18199)
     # ]
-    all_grid_df = pd.read_csv("static/data/City_grids/500/final.csv", encoding="utf-8")
+    all_grid_df = pd.read_csv(
+        "static/data/City_grids/500/final.csv", encoding="utf-8")
     grid_df = all_grid_df
 
     # event = pd.read_csv("static/data/event_n.csv")
-    event = pd.read_csv("result_month/month_{}/event_n.csv".format(timing+1))
+    event = pd.read_csv("result_month/month_{}/event_n.csv".format(timing + 1))
     cols = [
         "event1_num",
         "event2_num",
@@ -340,6 +354,7 @@ def get_grid():
         "event5_num",
         "event6_num",
     ]
+
     # max_complain = []
     # for col in cols:
     #     event[col] = event[col].apply(lambda x: 0 if x < 0 else x)
@@ -349,42 +364,77 @@ def get_grid():
     #     max_complain.append(max(event[col]))
     # print(max_complain)
     feature_list = []
+    drop_list = [
+        2864,
+        2826,
+        2788,
+        2678,
+        2486,
+        2306,
+        2018,
+        1667,
+        1604,
+        1539,
+        1474,
+        2641,
+        2441,
+        2442,
+        2122,
+        1961,
+        1786,
+    ]
     for index, row in grid_df.iterrows():  # 台南的各個區域 dim ~= 3000
-        color_level = []
+        try:
+            drop_list.index(index)
+            continue
+        except ValueError:
+            pass
+        # color_level = []
         color_time = []
         event_id = event[event["grid_id"] == row["grid_id"]]
         for index1, row1 in event_id.iterrows():  # 某區域在各個時間的4個事件數量 dim will be 1
-            type_events = ["event1", "event2", "event3", "event4", "event5", "event6"]
-            color_level.append(0.0)
-            for idx, type_event in enumerate(
-                type_events
-            ):  # dim = 6 交通違規、自然環境、土地價格、人口分布、生活機能、公共安全
-                # gap = [0.8*max_complain[idx], 0.8*max_complain[idx], 0.8*max_complain[idx], 0.8*max_complain[idx], 0.8*max_complain[idx]]
-                # gap = [0.15,0.3,0.45,0.6,7.5]
+            type_events = ["event1", "event2",
+                           "event3", "event4", "event5", "event6"]
+            # color_level.append(0.0)
+            color_level = 0.0
+            # dim = 6 交通、環境、價格、人口、機能、安全
+            for idx, type_event in enumerate(type_events):
                 # gap = list(map((lambda x: x*max_complain[idx]),gap))
                 collumns = type_event + "_num"
-                color_level[-1] += row1[collumns] * weights[idx] / sum(weights)
+                if idx == 4:
+                    color_level += row1[collumns] * weights[idx]
+                else:
+                    color_level += (1.0 - float(row1[collumns])) * weights[idx]
+                # print(color_level[-1])
+                # print("-----------------------------")
+
                 # -------------------------- 改成除以全部最大的值 -------------------------------
                 # for idx, level_index in enumerate(color_level):
                 #     color_level[idx] =color_level[idx] / max(color_level)
-                # print(color_level)
                 # print(row1[collumns])
-        for level in color_level:
-            # print(level)
-            if level <= 1.0 / 7:
-                color_time.append("#EEEEEE")
-            elif level <= 2.0 / 7:
-                color_time.append("#f3fb19")  # 黃
-            elif level <= 3.0 / 7:
-                color_time.append("#f7a413")  # 橘黃
-            elif level <= 4.0 / 7:
-                color_time.append("#ef5e0e")  # 橘紅
-            elif level <= 5.0 / 7:
-                color_time.append("#ec513f")  # 紅
-            elif level <= 6.0 / 7:
-                color_time.append("#d93e41")  # 暗紅
-            else:
-                color_time.append("#930509")  # 黑紅
+        level = color_level
+        if level <= 1.0 / 5:
+            color_time.append("#FFA67D")
+        elif level <= 2.0 / 5:
+            color_time.append("#FEC47E")
+        elif level <= 3.0 / 5:
+            color_time.append("#FEE77F")
+        elif level <= 4.0 / 5:
+            color_time.append("#EDFF85")
+        else:
+            color_time.append("#BFF899")
+
+        # level = color_level
+        # if level <= 1.0 / 5:
+        #     color_time.append("#ec513f")  # 紅
+        # elif level <= 2.0 / 5:
+        #     color_time.append("#ef5e0e")  # 橘紅
+        # elif level <= 3.0 / 5:
+        #     color_time.append("#f7a413")  # 橘黃
+        # elif level <= 4.0 / 5:
+        #     color_time.append("#f3fb19")  # 黃
+        # else:
+        #     color_time.append("#EEEEEE")
 
         feature_list.append(
             {
@@ -393,11 +443,12 @@ def get_grid():
                     "ID": int(row["grid_id"]),
                     "All_id": int(row["all_grid_id"]),
                     "center": {"lat": row["Centroid_y"], "lng": row["Centroid_x"]},
-                    "area2": row["area2"],
-                    "area3": row["area3"],
+                    # "area2": row["area2"],
+                    # "area3": row["area3"],
                     "address": row["address"],
-                    "stroke": "#FF0000",
-                    "stroke-width": 0,
+                    "pts": color_level,  # actually color_level only have 1 element
+                    # "stroke": "#FF0000",
+                    # "stroke-width": 0,
                     "stroke-opacity": 0,
                     "fill": color_time,
                     "fill-opacity": 0.6,
@@ -417,15 +468,21 @@ def get_grid():
             }
         )
 
-        data_return = {"type": "Feature", "features": feature_list}
+    EXECUTION_END_TIME = time.time()  # 計算執行時間
+    print("total execution time: {}".format(
+        EXECUTION_END_TIME - EXECUTION_START_TIME))
+    data_return = {"type": "Feature", "features": feature_list}
     return jsonify(data_return)
 
 
 @app.route("/get_radar_data")
 def get_radar_data():
     grid_id = json.loads(request.args.get("grid_id"))
+    timing = json.loads(request.args.get("timing"))
 
-    events = pd.read_csv("static/data/event_n.csv")
+    events = pd.read_csv(
+        "result_month/month_{}/event_n.csv".format(timing + 1))
+    # events = pd.read_csv("static/data/event_n.csv")
     event = events[events["grid_id"] == grid_id]
     print(event.to_numpy())
     event = event.to_numpy().tolist()
@@ -453,7 +510,8 @@ def get_chart_data():
 def get_sum():
     lat = request.args.get("lat")
     lng = request.args.get("lng")
-    all_grid_df = pd.read_csv("static/data/City_grids/500/all.csv", encoding="utf-8")
+    all_grid_df = pd.read_csv(
+        "static/data/City_grids/500/all.csv", encoding="utf-8")
     grid_df = all_grid_df[
         (all_grid_df["all_grid_id"] >= 15177)
         & (all_grid_df["all_grid_id"] <= 18199)
@@ -488,5 +546,4 @@ def get_grid1():
 if __name__ == "__main__":
     app.config["JSON_AS_ASCII"] = False
     port = int(os.environ.get("PORT", 8080))
-    app.run(debug=True, host='0.0.0.0',port=port)  # 執行我們的伺服器！
-
+    app.run(debug=True, host="0.0.0.0", port=port)  # 執行我們的伺服器！

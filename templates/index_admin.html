@@ -24,9 +24,11 @@
 <body>
 	<div id='header'>
 		<div id='avatar-container'>
-			<img src="../static/images/002.png" alt="city2" id="team-avatar">
+			<img src="../static/figma/Logo.svg" alt="city" id="team-avatar">
 		</div>
-		<div id='team-name'>城市風水師</div>
+		<div id='team-name'>城市風水師
+			<!-- &nbsp;&nbsp;<img src="../static/figma/city-master.svg" alt="照片去哪惹"> -->
+		</div>
 		<div id='searcher-container'>
 			<img src="../static/figma/searcher.svg">
 			<input id="pac-input" class="controls" type="text" placeholder="輸入地址/地標/區域">
@@ -36,7 +38,7 @@
 			&nbsp;&nbsp;權重調整
 			<!-- <button onclick="toggleWeights()"
 				style="outline: none;width:15px;border-width: 0;background-color: rgba(0,0,0,0);"> -->
-				<img id='arrow' src="../static/figma/arrow.svg">
+			<img id='arrow' src="../static/figma/arrow.svg">
 			<!-- </button> -->
 		</div>
 		<div id='forecaster' class='round-box' role="button" onclick="goPredict()">宜居地預測</div>
@@ -53,7 +55,7 @@
 		<div class="weight" id='105'>環境&emsp;</div>
 	</div>
 	<div id="map"></div>
-	<input id="pac-input-simulate" class="controls" type="text" placeholder="輸入地址/地標/區域">
+	<!-- <input id="pac-input-simulate" class="controls" type="text" placeholder="輸入地址/地標/區域"> -->
 
 	<div id="info">
 		<div id="info-xx">
@@ -68,11 +70,11 @@
 			<div id="position-title">位置</div>
 			<div id="position-latlng">
 				<div id="position-latlng-1">經緯度</div>
-				<div id="position-latlng-2">22.997, 120.217</div>
+				<div id="position-latlng-2">22.997, 120.212</div>
 			</div>
 			<div id="position-address">
 				<div id="position-address-1">地址</div>
-				<div id="position-address-2">台南市東區大學路1號 附近</div>
+				<div id="position-address-2">台南市東區成功路 附近</div>
 			</div>
 		</div>
 		<div id="analysis-area" class='info-box'>
@@ -96,22 +98,34 @@
 				<div class="type" id='65'>環境</div>
 			</div>
 			<div id="line-chart-container">
-				<canvas id="line-chart"></canvas>
+				<div id="line-chart-container-inner">
+					<canvas id="line-chart"></canvas>
+				</div>
+				<div id="y-unit">元 / 平方公尺</div>
 			</div>
+			<div id="x-unit">時間（月）</div>
 		</div>
+		<div id="poem-title">籤詩</div>
 		<div id="poem-area" class='info-box'>
-			<div id="poem-title">籤詩</div>
-			<div id="poem-icon"></div>
+			<div id="poem-pic">
+				<img id='' src="../static/figma/籤詩0.svg">
+			</div>
 			<div id="poem-content">
-
+				<div id="poem-content-1">==============</div>
+				<div id="poem-content-2">==============</div>
+				<div id="poem-content-3">==============</div>
+				<div id="poem-content-4">==============</div>
+				<div id="poem-content-5">==============</div>
+				<div id="poem-content-6">==============</div>
 			</div>
 		</div>
+		<div id="poem-summary">解： 風水輪流轉--好壞都總有一天等到你</div>
 	</div>
 
 	<div id="side-bar">
 		<div id="timeline">
 			<div id="timeline-extend">
-				<div id="timeline-blue">
+				<div id="timeline-blue" role="button" onclick="timelineShrink()">
 					<img src="../static/figma/timeline-blue.svg">
 				</div>
 				<div id="top">
@@ -129,29 +143,53 @@
 				<div id="bot">
 					<div class="color-container" id='1024'>一年後</div>
 				</div>
-				<div id="timeline-up">
+				<div id="timeline-up" role="button" onclick="timelineShrink()">
 					<img src="../static/figma/timeline-up.svg">
 				</div>
 			</div>
-			<img id="timeline-extender" src="../static/figma/timeline-extend.svg">
+			<div role="button" onclick="timelineExtend()">
+				<img id="timeline-extender" src="../static/figma/timeline-extender.svg">
+			</div>
 		</div>
 		<div id="indicator">
-			<img src="../static/figma/indicator-extend.svg">
+			<img src="../static/figma/indicator-extender.svg">
 		</div>
-		<div id="target">
+		<div id="target" onmouseover="enterTarget()" onmouseleave="leaveTarget()">
 			<img src="../static/figma/target-position.svg">
 		</div>
-		<div id="zoom">
+		<div id="zoom" onmouseleave="leaveZoom()">
 			<img src="../static/figma/zoom-control.svg">
+			<div id="plus" onmouseover="enterZoom(this)"></div>
+			<div id="minus" onmouseover="enterZoom(this)"></div>
 		</div>
 	</div>
-	<div class="load_mask">
-		<!-- Place at bottom of page -->
+	<div id="loading">
+		<div id="loading-xx">
+			<img src="../static/figma/xx.svg">
+		</div>
+		<img id="gif" src="../static/figma/loading.gif" alt="">
+		<div id="loading-letter">正在為您預測最適合的居住區域</div>
 	</div>
 	<!-- <script async defer
 			src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDZ_ffMr_1VaSrstpoVAD99R0bjyq_lySM&libraries=visualization&callback=initMap"></script> -->
 </body>
 <!-- <script src="../static/js/main.js') }}" type="text/javascript"></script> -->
 <script src="../static/js/main.js" type="text/javascript"></script>
+<script>
+	enterZoom = (e) => {
+		console.log(e);
+		if (e.id == "minus") document.querySelector("#zoom img").src = "../static/figma/zoom-minus.svg"
+		else document.querySelector("#zoom img").src = "../static/figma/zoom-hover.svg"
+	}
+	leaveZoom = () => {
+		document.querySelector("#zoom img").src = "../static/figma/zoom-control.svg"
+	}
+	enterTarget = () => {
+		document.querySelector("#target img").src = "../static/figma/target-position-hover.svg"
+	}
+	leaveTarget = () => {
+		document.querySelector("#target img").src = "../static/figma/target-position.svg"
+	}
+</script>
 
 </html>
