@@ -26,12 +26,13 @@ var targetType = 0;//記錄六種類別
 let timeline_extend = 0;
 let grid_current = -1;
 let current_address;
+let current_feature = -1;
 let selected_time = 23;
 let timing = 12;
 let marker_lat = 23;
 let marker_lng = 120.2;
-// let weights = [1, 5, 1, 1, 1, 1]
-let weights = [3, 3, 3, 3, 3, 3]
+let weights = [1, 5, 1, 1, 1, 1]
+// let weights = [3, 3, 3, 3, 3, 3]
 let radarData = [0.5, 1, 0.5, 1, 0.5, 1]
 // let radarAvg = 0.2;
 let chartData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -45,7 +46,7 @@ let chartData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 
 $(document).ready(function () {
 	let script = document.createElement('script');
-	script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyDie29bzCm_yNZZ2B-ieM_RqVU-w5eNZ4Y&libraries=visualization,places&callback=initMap&language=zh-TW";
+	// script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyDie29bzCm_yNZZ2B-ieM_RqVU-w5eNZ4Y&libraries=visualization,places&callback=initMap&language=zh-TW";
 	script.async = true;
 	document.head.appendChild(script);
 
@@ -55,11 +56,17 @@ $(document).ready(function () {
 	document.querySelector("#info-xx").addEventListener('click', (e) => {
 		document.querySelector("#info").style.display = 'none';
 	})
+	document.querySelector("#loading-xx").addEventListener('click', (e) => {
+		document.querySelector("#loading").style.display = 'none';
+	})
 	document.querySelector("#infomation-container").addEventListener('click', (e) => {
 		document.querySelector("#info").style.display = 'flex';
 	})
+	document.querySelector("#indicator img").addEventListener('click', (e) => {
+		indicatorToggle();
+	});
 
-	document.querySelector("#infomation-container").click();
+	// document.querySelector("#infomation-container").click();
 
 	// document.querySelector("#line-chart-container canvas").style.transform = "scaleY(1.05)"
 
@@ -347,6 +354,18 @@ function initListener() {
 	// 	})
 	// })
 }
+function indicatorToggle() {
+	if (document.querySelector("#indicator img").src.includes("/static/figma/indicator-extender")) {
+		timelineShrink();
+		document.querySelector("#indicator img").src = "../static/figma/indicator-extend.svg"
+		document.querySelector("#indicator").style.marginBottom = "31.6vh";
+	}
+	else {
+		timelineExtend();
+		document.querySelector("#indicator img").src = "../static/figma/indicator-extender.svg"
+		document.querySelector("#indicator").style.marginBottom = "3.6vh";
+	}
+}
 function timelineExtend() {
 	if (timeline_extend === 1) { return; }
 	document.querySelector("#timeline-up").style.display = 'block';
@@ -497,20 +516,24 @@ function initMap() {                                            //map
 		infowindow_grid.close()
 		// map.data.revertStyle();
 
-		setTimeout(function () {
-			// console.log("lat:" + String(lat) + ", " + "lng:" + String(lng))
-			infowindow_grid.setPosition({ lat: lat + 0.0025, lng: lng });//設在中間會擋住 pin
-			city_grid_ID = event.feature.i.ID
-			let distance = Math.pow((lat - marker_lat), 2) + Math.pow((lng - marker_lng), 2);
-			distance = Math.pow(distance, 0.5) * 110
-			current_address = event.feature.i.address
-			infowindow_grid.setContent("(" + String(lat).substr(0, 7) + ", " + String(lng).substr(0, 8) + ")<br>" + "ID: " + event.feature.i.ID + "&emsp;" + "All_id: " + event.feature.i.All_id + "<br>" + current_address + "<br>距標記處 " + String(distance).substr(0, 4) + "km")
-			infowindow_grid.open(map)
-		}, 200);
+		// setTimeout(function () {
+		infowindow_grid.setPosition({ lat: lat + 0.0025, lng: lng });//設在中間會擋住 pin
+		let distance = Math.pow((lat - marker_lat), 2) + Math.pow((lng - marker_lng), 2);
+		distance = Math.pow(distance, 0.5) * 110
+		infowindow_grid.setContent("(" + String(lat).substr(0, 7) + ", " + String(lng).substr(0, 8) + ")<br>" + "ID: " + event.feature.i.ID + "&emsp;" + "All_id: " + event.feature.i.All_id + "<br>" + event.feature.i.address + "<br>距標記處 " + String(distance).substr(0, 4) + "km")
+		infowindow_grid.open(map)
+		// }, 200);
 
+		console.log(event.feature)
 		if (event.feature.i.ID == grid_current) return;
 		map.data.revertStyle();
-		map.data.overrideStyle(event.feature, { strokeWeight: 1.5, strokeOpacity: 1, strokeColor: "#484848" });
+		if (current_feature !== -1) {
+			map.data.overrideStyle(current_feature, {
+				// fillColor: 'rgba(191, 196, 200,0.5)', fillOpacity: 1,
+				strokeWeight: map.getZoom() / 5, strokeColor: "#5183E8"
+			});
+		}
+		map.data.overrideStyle(event.feature, { strokeWeight: map.getZoom() / 5, strokeOpacity: 1, strokeColor: "#484848" });
 
 	});
 	map.data.addListener('click', function (event) {
@@ -529,13 +552,16 @@ function initMap() {                                            //map
 		// google.maps.event.trigger(input2, 'keydown', { keyCode: 13 });
 		current_address = event.feature.i.address
 		document.querySelector('#position-latlng-2').innerText = String(lat).substr(0, 6) + ", " + String(lng).substr(0, 7);
-		document.querySelector("#position-address-2").innerText = current_address + " 附近"
+		document.querySelector("#position-address-2").innerText = current_address.substr(0, 17) + " 附近"
 
-		map.panTo({ lat: lat, lng: lng }, map);
+		// map.panTo({ lat: lat, lng: lng }, map);
+		panTo(lat, lng);
 		document.getElementById('map').style.background = " #484848;"
-		map.setZoom(14);
+		setTimeout(function () {
+			map.setZoom(14);
+		}, 500);
 
-		console.log(event.feature);
+		current_feature = event.feature;
 		map.data.revertStyle();
 		map.data.overrideStyle(event.feature, {
 			fillColor: 'rgba(191, 196, 200,0.5)', fillOpacity: 1,
@@ -548,7 +574,7 @@ function initMap() {                                            //map
 			});
 		}, 150);
 
-		document.querySelector("#big-point").innerText = 60 + parseInt((1 - event.feature.i.pts) * 40)
+		document.querySelector("#big-point").innerText = 70 + parseInt((1 - event.feature.i.pts) * 30)
 		if (chartType === 0) {
 			getRadarData();
 		} else {
@@ -578,6 +604,46 @@ function deleteMarkers() {
 		e.setMap(null);
 	});
 	markers = [];
+}
+
+var panPath = [];   // An array of points the current panning action will use
+var panQueue = [];  // An array of subsequent panTo actions to take
+var STEPS = 6;     // The number of steps that each panTo action will undergo
+
+function panTo(newLat, newLng) {
+	if (panPath.length > 0) {
+		// We are already panning...queue this up for next move
+		panQueue.push([newLat, newLng]);
+	} else {
+		// Lets compute the points we'll use
+		panPath.push("LAZY SYNCRONIZED LOCK");  // make length non-zero - 'release' this before calling setTimeout
+		var curLat = map.getCenter().lat();
+		var curLng = map.getCenter().lng();
+		var dLat = (newLat - curLat) / STEPS;
+		var dLng = (newLng - curLng) / STEPS;
+
+		for (var i = 0; i < STEPS; i++) {
+			panPath.push([curLat + dLat * i, curLng + dLng * i]);
+		}
+		panPath.push([newLat, newLng]);
+		panPath.shift();      // LAZY SYNCRONIZED LOCK
+		setTimeout(doPan, 20);
+	}
+}
+
+function doPan() {
+	var next = panPath.shift();
+	if (next != null) {
+		// Continue our current pan action
+		map.panTo(new google.maps.LatLng(next[0], next[1]));
+		setTimeout(doPan, 20);
+	} else {
+		// We are finished with this pan - check if there are any queue'd up locations to pan to 
+		var queued = panQueue.shift();
+		if (queued != null) {
+			panTo(queued[0], queued[1]);
+		}
+	}
 }
 
 // function getPointData() {
@@ -624,6 +690,9 @@ function getRadarData() {
 				// data: [radarData[2], radarData[3], radarData[4], radarData[5], radarData[0], radarData[1]],
 				radarData[(idx + 4) % 6] = arr[3 + idx]
 			})
+			radarData[3] = Math.sqrt(Math.sqrt(radarData[3]))
+			radarData[4] = Math.sqrt(Math.sqrt(radarData[4]))
+			radarData[5] = Math.sqrt(Math.sqrt(radarData[5]))
 			console.log(radarData);
 			// console.log('new radar data: ', radarData)
 			drawRadar();
@@ -659,6 +728,7 @@ function goPredict() {                                //預測
 	closeWeights();
 	cleanmap();
 	console.log('chosen weight is', weights);
+	document.querySelector("#loading").style.display = 'block';
 
 	$.ajax({
 		url: "/get_grid",
@@ -668,6 +738,7 @@ function goPredict() {                                //預測
 			"timing": JSON.stringify(timing)
 		},
 		success: function (data) {
+			document.querySelector("#loading").style.display = 'none';
 			area_properties.length = 0
 			for (var i = 0; i < data.features.length; i++) {
 				map.data.addGeoJson(data.features[i]);
@@ -724,7 +795,7 @@ function goPredict() {                                //預測
 			}
 			map.data.setStyle(function (feature) {
 				if (feature.getProperty('fill')[0] == "#EEEEEE") { opac = 0 }
-				else { opac = 0.6 }
+				else { opac = 0.5 }
 				return {
 					fillColor: feature.getProperty('fill')[0],
 					fillOpacity: opac, //opac
@@ -875,6 +946,7 @@ function drawRadar() {
 		type: 'radar',
 		data: data,
 		options: {
+			events: [],
 			elements: {
 				line: {
 					borderWidth: 3
@@ -1099,7 +1171,7 @@ function firstMarker(location, map) {
 			fillOpacity: 0.3,
 			strokeWeight: 0,
 		},
-		animation: google.maps.Animation.DROP,
+		// animation: google.maps.Animation.DROP,
 		map: map,
 	});
 	if (marker.category == 'supported-offices') {

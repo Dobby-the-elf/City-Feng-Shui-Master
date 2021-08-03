@@ -145,11 +145,11 @@
 				</div>
 			</div>
 			<div role="button" onclick="timelineExtend()">
-				<img id="timeline-extender" src="../static/figma/timeline-extend.svg">
+				<img id="timeline-extender" src="../static/figma/timeline-extender.svg">
 			</div>
 		</div>
 		<div id="indicator">
-			<img src="../static/figma/indicator-extend.svg">
+			<img src="../static/figma/indicator-extender.svg">
 		</div>
 		<div id="target" onmouseover="enterTarget()" onmouseleave="leaveTarget()">
 			<img src="../static/figma/target-position.svg">
@@ -158,8 +158,12 @@
 			<img src="../static/figma/zoom-control.svg">
 		</div>
 	</div>
-	<div class="load_mask">
-		<!-- Place at bottom of page -->
+	<div id="loading">
+		<div id="loading-xx">
+			<img src="../static/figma/xx.svg">
+		</div>
+		<img id="gif" src="../static/figma/loading.gif" alt="">
+		<div id="loading-letter">正在為您預測最適合的居住區域</div>
 	</div>
 	<!-- <script async defer
 			src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDZ_ffMr_1VaSrstpoVAD99R0bjyq_lySM&libraries=visualization&callback=initMap"></script> -->

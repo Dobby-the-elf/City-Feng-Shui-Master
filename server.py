@@ -178,7 +178,8 @@ def new_id():
                 "static/users.csv", encoding="utf-8", dtype=str
             )
             usersupdate_df.loc[len(usersupdate_df)] = [newid, newpw]
-            usersupdate_df.to_csv("static/users.csv", encoding="utf-8-sig", index=False)
+            usersupdate_df.to_csv("static/users.csv",
+                                  encoding="utf-8-sig", index=False)
             users.update({newid: {"password": newpw}})
             return "success"
         else:
@@ -339,7 +340,8 @@ def get_grid():
     # grid_df = all_grid_df[
     #     (all_grid_df["all_grid_id"] >= 15177) & (all_grid_df["all_grid_id"] <= 18199)
     # ]
-    all_grid_df = pd.read_csv("static/data/City_grids/500/final.csv", encoding="utf-8")
+    all_grid_df = pd.read_csv(
+        "static/data/City_grids/500/final.csv", encoding="utf-8")
     grid_df = all_grid_df
 
     # event = pd.read_csv("static/data/event_n.csv")
@@ -362,15 +364,41 @@ def get_grid():
     #     max_complain.append(max(event[col]))
     # print(max_complain)
     feature_list = []
+    drop_list = [
+        2864,
+        2826,
+        2788,
+        2678,
+        2486,
+        2306,
+        2018,
+        1667,
+        1604,
+        1539,
+        1474,
+        2641,
+        2441,
+        2442,
+        2122,
+        1961,
+        1786,
+    ]
     for index, row in grid_df.iterrows():  # 台南的各個區域 dim ~= 3000
+        try:
+            drop_list.index(index)
+            continue
+        except ValueError:
+            pass
         # color_level = []
         color_time = []
         event_id = event[event["grid_id"] == row["grid_id"]]
         for index1, row1 in event_id.iterrows():  # 某區域在各個時間的4個事件數量 dim will be 1
-            type_events = ["event1", "event2", "event3", "event4", "event5", "event6"]
+            type_events = ["event1", "event2",
+                           "event3", "event4", "event5", "event6"]
             # color_level.append(0.0)
             color_level = 0.0
-            for idx, type_event in enumerate(type_events):  # dim = 6 交通、環境、價格、人口、機能、安全
+            # dim = 6 交通、環境、價格、人口、機能、安全
+            for idx, type_event in enumerate(type_events):
                 # gap = list(map((lambda x: x*max_complain[idx]),gap))
                 collumns = type_event + "_num"
                 if idx == 4:
@@ -384,31 +412,29 @@ def get_grid():
                 # for idx, level_index in enumerate(color_level):
                 #     color_level[idx] =color_level[idx] / max(color_level)
                 # print(row1[collumns])
-        # for level in color_level:
-        #     # print(level)
-        #     if level <= 1.0 / 10:
-        #         color_time.append("#BDF990")
-        #     elif level <= 2.0 / 10:
-        #         color_time.append("#C7F4A4")
-        #     elif level <= 3.0 / 10:
-        #         color_time.append("#D0EFB8")
-        #     elif level <= 4.0 / 10:
-        #         color_time.append("#D9EBCB")
-        #     else:
-        #         color_time.append("#E0E8DB")
-
-        # for level in color_level:
         level = color_level
         if level <= 1.0 / 5:
-            color_time.append("#ec513f")  # 紅
+            color_time.append("#FFA67D")
         elif level <= 2.0 / 5:
-            color_time.append("#ef5e0e")  # 橘紅
+            color_time.append("#FEC47E")
         elif level <= 3.0 / 5:
-            color_time.append("#f7a413")  # 橘黃
+            color_time.append("#FEE77F")
         elif level <= 4.0 / 5:
-            color_time.append("#f3fb19")  # 黃
+            color_time.append("#EDFF85")
         else:
-            color_time.append("#EEEEEE")
+            color_time.append("#BFF899")
+
+        # level = color_level
+        # if level <= 1.0 / 5:
+        #     color_time.append("#ec513f")  # 紅
+        # elif level <= 2.0 / 5:
+        #     color_time.append("#ef5e0e")  # 橘紅
+        # elif level <= 3.0 / 5:
+        #     color_time.append("#f7a413")  # 橘黃
+        # elif level <= 4.0 / 5:
+        #     color_time.append("#f3fb19")  # 黃
+        # else:
+        #     color_time.append("#EEEEEE")
 
         feature_list.append(
             {
@@ -443,7 +469,8 @@ def get_grid():
         )
 
     EXECUTION_END_TIME = time.time()  # 計算執行時間
-    print("total execution time: {}".format(EXECUTION_END_TIME - EXECUTION_START_TIME))
+    print("total execution time: {}".format(
+        EXECUTION_END_TIME - EXECUTION_START_TIME))
     data_return = {"type": "Feature", "features": feature_list}
     return jsonify(data_return)
 
@@ -453,7 +480,8 @@ def get_radar_data():
     grid_id = json.loads(request.args.get("grid_id"))
     timing = json.loads(request.args.get("timing"))
 
-    events = pd.read_csv("result_month/month_{}/event_n.csv".format(timing + 1))
+    events = pd.read_csv(
+        "result_month/month_{}/event_n.csv".format(timing + 1))
     # events = pd.read_csv("static/data/event_n.csv")
     event = events[events["grid_id"] == grid_id]
     print(event.to_numpy())
@@ -482,7 +510,8 @@ def get_chart_data():
 def get_sum():
     lat = request.args.get("lat")
     lng = request.args.get("lng")
-    all_grid_df = pd.read_csv("static/data/City_grids/500/all.csv", encoding="utf-8")
+    all_grid_df = pd.read_csv(
+        "static/data/City_grids/500/all.csv", encoding="utf-8")
     grid_df = all_grid_df[
         (all_grid_df["all_grid_id"] >= 15177)
         & (all_grid_df["all_grid_id"] <= 18199)
@@ -518,4 +547,3 @@ if __name__ == "__main__":
     app.config["JSON_AS_ASCII"] = False
     port = int(os.environ.get("PORT", 8080))
     app.run(debug=True, host="0.0.0.0", port=port)  # 執行我們的伺服器！
-
