@@ -1,0 +1,131 @@
+/* @import url(https://fonts.googleapis.com/earlyaccess/notosanstc.css);
+@import url(https://fonts.googleapis.com/css?family=Righteous); */
+@import url("../font/TaipeiSansTCBeta-Bold.ttf");
+@import url("../font/TaipeiSansTCBeta-Light.ttf");
+@import url("../font/TaipeiSansTCBeta-Regular.ttf");
+@font-face {
+	font-family: "Taipei Sans TC Beta";
+	src: url("../font/TaipeiSansTCBeta-Regular.ttf");
+	font-weight: 500;
+}
+@font-face {
+	font-family: "Taipei Sans TC Beta";
+	src: url("../font/TaipeiSansTCBeta-Light.ttf");
+	font-weight: 300;
+}
+@font-face {
+	font-family: "Taipei Sans TC Beta";
+	src: url("../font/TaipeiSansTCBeta-Bold.ttf");
+	font-weight: 700;
+}
+* {
+	font-family: "Taipei Sans TC Beta";
+}
+html,
+body {
+	max-height: 100vh;
+	max-width: 100vw;
+	margin: 0;
+	padding: 0;
+	background-color: #a7a9ab;
+	/* background: url(../images/img-1487062468-85551.jpg) center center fixed no-repeat; */
+	background-size: cover;
+	min-width: 284px;
+	color: #1e1e1e;
+}
+
+#map {
+	height: 100vh;
+	width: 100vw;
+}
+.nav-link {
+	position: absolute;
+	right: 0px;
+}
+#user {
+	position: absolute;
+	width: 170px;
+	right: 60px;
+}
+
+section {
+	margin: 0;
+	border: 0;
+	padding: 0;
+	display: block;
+	position: relative;
+	overflow: hidden;
+}
+/*=================header==================*/
+#header {
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	flex-direction: row;
+	background: #ffffff;
+	position: fixed;
+	height: 7vh;
+	margin: 0;
+	top: 0;
+	line-height: 50px;
+	z-index: 5;
+	width: 100%;
+	box-shadow: 0px 4px 17px -1px rgba(0, 0, 0, 0.1);
+}
+#header > div {
+	border-radius: 8px;
+	height: 65%;
+	/* top: 50%; */
+	/* transform: translate(0, 10%); */
+	/* display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column; */
+}
+#header > #avatar-container {
+	float: left;
+	margin-left: 4%;
+	position: relative;
+	width: 8.6vh;
+	height: 6vh;
+	border-radius: 2.5vh;
+	/* border: 1.5px solid rgba(76, 76, 76, 0.2); */
+	/* box-sizing: border-box; */
+}
+#team-avatar {
+	width: 100%;
+	height: 100%;
+	/* border: 1.5px solid rgba(76, 76, 76, 0.2); */
+	border-radius: 50%;
+	box-sizing: border-box;
+}
+#team-name {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: row;
+	float: left;
+	/* margin-left: 1%; */
+	width: 14%;
+	/* display: inline-block; */
+	font-weight: 400;
+	background-color: white;
+	text-align: center;
+	text-decoration: none;
+	font-size: 18px;
+}
+#page img {
+	width: 100vw;
+	position: absolute;
+	top: -2.5vw;
+}
+#button {
+	position: absolute;
+	left: 12vw;
+	bottom: calc(20vh + 120px);
+	width: 21%;
+	height: 15vh;
+	z-index: 100;
+	/* background-color: #999; */
+}
+/*=================header==================*/

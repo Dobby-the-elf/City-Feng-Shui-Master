@@ -32,8 +32,8 @@ let selected_time = 23;
 let timing = 12;
 let marker_lat = 23;
 let marker_lng = 120.2;
-let weights = [1, 5, 1, 1, 1, 1]
-// let weights = [3, 3, 3, 3, 3, 3]
+// let weights = [1, 5, 1, 1, 1, 1]
+let weights = [3, 3, 3, 3, 3, 3]
 let radarData = [0.5, 1, 0.5, 1, 0.5, 1]
 // let radarAvg = 0.2;
 let chartData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -66,8 +66,11 @@ $(document).ready(function () {
 	document.querySelector("#indicator img").addEventListener('click', (e) => {
 		indicatorToggle();
 	});
+	document.querySelector("#info").addEventListener('click', (e) => {
+		closeWeights();
+	})
 
-	document.querySelector("#infomation-container").click();
+	// document.querySelector("#infomation-container").click();
 
 	// document.querySelector("#line-chart-container canvas").style.transform = "scaleY(1.05)"
 
@@ -245,7 +248,7 @@ function initListener() {
 			getChartData();
 			if (targetType === 0) document.querySelector("#y-unit").innerText = "元 / 平方公尺";
 			else if (targetType === 1) document.querySelector("#y-unit").innerText = "人口數";
-			else if (targetType === 2) document.querySelector("#y-unit").innerText = "工商家數";
+			// else if (targetType === 2) document.querySelector("#y-unit").innerText = "工商家數";
 			else document.querySelector("#y-unit").innerText = "";
 		})
 	})

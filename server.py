@@ -117,12 +117,12 @@ def login():
     return render_template("login.html", error_code=err)
 
 
-@app.route("/logout")
-def logout():
-    userid_now = current_user.get_id()
-    logout_user()
+# @app.route("/logout")
+# def logout():
+#     userid_now = current_user.get_id()
+#     logout_user()
 
-    return redirect(url_for("login_page"))
+#     return redirect(url_for("login_page"))
 
 
 @app.route("/record")
@@ -135,9 +135,9 @@ def record_admin():
     return render_template("record_admin.html")
 
 
-@app.route("/login_page")  #
-def login_page():
-    return render_template("login.html")
+# @app.route("/login_page")  #
+# def login_page():
+#     return render_template("login.html")
 
 
 @app.route("/show_records")
@@ -165,6 +165,11 @@ def lndex():
 @app.route("/index_admin")
 def index_admin():
     return render_template("index_admin.html")
+
+
+@app.route("/login_page")
+def login_page():
+    return render_template("login_page.html")
 
 
 @app.route("/new_id", methods=["GET", "POST"])
