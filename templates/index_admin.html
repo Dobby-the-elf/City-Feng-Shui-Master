@@ -26,8 +26,8 @@
 		<div id='avatar-container'>
 			<img src="../static/figma/Logo.svg" alt="city" id="team-avatar">
 		</div>
-		<div id='team-name'>&nbsp;&nbsp;
-			<img src="../static/figma/city-master.svg" alt="照片去哪惹">
+		<div id='team-name'>城市風水師
+			<!-- &nbsp;&nbsp;<img src="../static/figma/city-master.svg" alt="照片去哪惹"> -->
 		</div>
 		<div id='searcher-container'>
 			<img src="../static/figma/searcher.svg">
@@ -105,18 +105,21 @@
 			</div>
 			<div id="x-unit">時間（月）</div>
 		</div>
+		<div id="poem-title">籤詩</div>
 		<div id="poem-area" class='info-box'>
-			<div id="poem-title">籤詩</div>
-			<div id="poem-pic"></div>
+			<div id="poem-pic">
+				<img id='' src="../static/figma/籤詩0.svg">
+			</div>
 			<div id="poem-content">
-				<div id="poem-content-1"></div>
-				<div id="poem-content-2"></div>
-				<div id="poem-content-3"></div>
-				<div id="poem-content-4"></div>
-				<div id="poem-content-5"></div>
-				<div id="poem-content-6"></div>
+				<div id="poem-content-1">==============</div>
+				<div id="poem-content-2">==============</div>
+				<div id="poem-content-3">==============</div>
+				<div id="poem-content-4">==============</div>
+				<div id="poem-content-5">==============</div>
+				<div id="poem-content-6">==============</div>
 			</div>
 		</div>
+		<div id="poem-summary">解： 風水輪流轉--好壞都總有一天等到你</div>
 	</div>
 
 	<div id="side-bar">
@@ -154,8 +157,10 @@
 		<div id="target" onmouseover="enterTarget()" onmouseleave="leaveTarget()">
 			<img src="../static/figma/target-position.svg">
 		</div>
-		<div id="zoom" onmouseover="enterZoom()" onmouseleave="leaveZoom()">
+		<div id="zoom" onmouseleave="leaveZoom()">
 			<img src="../static/figma/zoom-control.svg">
+			<div id="plus" onmouseover="enterZoom(this)"></div>
+			<div id="minus" onmouseover="enterZoom(this)"></div>
 		</div>
 	</div>
 	<div id="loading">
@@ -171,8 +176,10 @@
 <!-- <script src="../static/js/main.js') }}" type="text/javascript"></script> -->
 <script src="../static/js/main.js" type="text/javascript"></script>
 <script>
-	enterZoom = () => {
-		document.querySelector("#zoom img").src = "../static/figma/zoom-hover.svg"
+	enterZoom = (e) => {
+		console.log(e);
+		if (e.id == "minus") document.querySelector("#zoom img").src = "../static/figma/zoom-minus.svg"
+		else document.querySelector("#zoom img").src = "../static/figma/zoom-hover.svg"
 	}
 	leaveZoom = () => {
 		document.querySelector("#zoom img").src = "../static/figma/zoom-control.svg"

@@ -24,6 +24,7 @@ var lineChart;
 var chartType = 0;//記錄圖表類別
 var targetType = 0;//記錄六種類別
 let timeline_extend = 0;
+let indicator_extend = 0;
 let grid_current = -1;
 let current_address;
 let current_feature = -1;
@@ -46,7 +47,7 @@ let chartData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 
 $(document).ready(function () {
 	let script = document.createElement('script');
-	// script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyDie29bzCm_yNZZ2B-ieM_RqVU-w5eNZ4Y&libraries=visualization,places&callback=initMap&language=zh-TW";
+	script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyDie29bzCm_yNZZ2B-ieM_RqVU-w5eNZ4Y&libraries=visualization,places&callback=initMap&language=zh-TW";
 	script.async = true;
 	document.head.appendChild(script);
 
@@ -66,7 +67,7 @@ $(document).ready(function () {
 		indicatorToggle();
 	});
 
-	// document.querySelector("#infomation-container").click();
+	document.querySelector("#infomation-container").click();
 
 	// document.querySelector("#line-chart-container canvas").style.transform = "scaleY(1.05)"
 
@@ -244,6 +245,7 @@ function initListener() {
 			getChartData();
 			if (targetType === 0) document.querySelector("#y-unit").innerText = "元 / 平方公尺";
 			else if (targetType === 1) document.querySelector("#y-unit").innerText = "人口數";
+			else if (targetType === 2) document.querySelector("#y-unit").innerText = "工商家數";
 			else document.querySelector("#y-unit").innerText = "";
 		})
 	})
@@ -354,41 +356,43 @@ function initListener() {
 	// 	})
 	// })
 }
-function indicatorToggle() {
+function sleep(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}
+async function indicatorToggle() {
 	if (document.querySelector("#indicator img").src.includes("/static/figma/indicator-extender")) {
-		timelineShrink();
+		indicator_extend = 1;
+		if (timeline_extend === 1) { timelineShrink(); await sleep(500); }
+		document.querySelector("#indicator").style.height = "284px";
+		await sleep(500);
 		document.querySelector("#indicator img").src = "../static/figma/indicator-extend.svg"
-		document.querySelector("#indicator").style.marginBottom = "31.6vh";
 	}
 	else {
-		timelineExtend();
+		indicator_extend = 0;
 		document.querySelector("#indicator img").src = "../static/figma/indicator-extender.svg"
-		document.querySelector("#indicator").style.marginBottom = "3.6vh";
+		document.querySelector("#indicator").style.height = "59px";
 	}
 }
-function timelineExtend() {
+async function timelineExtend() {
 	if (timeline_extend === 1) { return; }
-	document.querySelector("#timeline-up").style.display = 'block';
-	document.querySelector('#timeline-extend').classList.add("extend-transform");
-	document.querySelector('#timeline-extend').classList.remove("shrink-transform");
+	if (indicator_extend === 1) { indicatorToggle(); await sleep(500); }
+	setTimeout(() => {
+		document.querySelector("#timeline-extend").style.display = 'flex';
+	}, 500)
+	// document.querySelector('#timeline-extend').classList.add("extend-transform");
+	// document.querySelector('#timeline-extend').classList.remove("shrink-transform");
 	// document.querySelector('#timeline-extend').style.opacity = '1'
 	document.querySelector('#timeline-extender').src = '';
 	document.querySelector('#timeline').style.height = '56vh';
-	document.querySelector('#timeline').style.marginBottom = '1.6vh';
 	timeline_extend = 1;
-	// document.querySelector('#timeline-extend').style.height = '56vh';
+	document.querySelector('#timeline-extend').style.height = '56vh';
 }
 function timelineShrink() {
 	if (timeline_extend === 0) { return; }
-	document.querySelector("#timeline-up").style.display = 'none';
-	document.querySelector('#timeline-extend').classList.add("shrink-transform");
-	document.querySelector('#timeline-extend').classList.remove("extend-transform");
-	// document.querySelector('#timeline-extend').style.opacity = '1'
-	document.querySelector('#timeline-extender').src = "../static/figma/timeline-extend.svg";
-	document.querySelector('#timeline').style.height = '0vh';
-	setTimeout(() => { document.querySelector('#timeline').style.marginBottom = '9vh'; }, 450);
 	timeline_extend = 0;
-	// document.querySelector('#timeline-extend').style.height = '56vh';
+	document.querySelector("#timeline-extend").style.display = 'none';
+	document.querySelector('#timeline-extender').src = "../static/figma/timeline-extender.svg";
+	document.querySelector('#timeline').style.height = '59px';
 }
 
 function visual_time(id_check) {
@@ -1015,6 +1019,7 @@ function drawChart() {
 			events: [],
 			responsive: true,
 			maintainAspectRatio: false,
+			pointRadius: 2,
 			elements: {
 				line: {
 					borderWidth: 3
