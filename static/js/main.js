@@ -748,6 +748,8 @@ async function getChartData() {
 					chartData.forEach((dat, idx) => { chartData[idx] = arr[idx] })
 				}
 				//------------------------------- add noise ------------------------------------
+				// let vary = Math.variance(chartData);
+				// alert(vary)
 				chartData.forEach((dat, idx) => {
 					if (idx >= 12) {
 						let ratio = Math.random() * 0.4;
@@ -961,6 +963,9 @@ function drawRadar() {
 	document.querySelectorAll('.type').forEach((type) => {
 		type.style.opacity = 0;
 	})
+	if (lineChart) {
+		lineChart.destory();
+	}
 	if (radarChart) {
 		// radarChart.data.datasets.data = radarData;
 		radarChart.update();

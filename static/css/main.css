@@ -382,7 +382,7 @@ section {
 
 #analysis-image img {
 	margin-left: 10%;
-	width: calc(110% - 30px);
+	width: calc(120% - 48px);
 }
 
 #analysis-2,
@@ -536,7 +536,7 @@ section {
 }
 
 #analysis-title {
-	width: 30%;
+	width: 85px;
 	height: 70%;
 	text-align: left;
 	font-size: 18px;
