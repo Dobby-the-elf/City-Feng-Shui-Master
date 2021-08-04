@@ -32,8 +32,8 @@ let selected_time = 23;
 let timing = 12;
 let marker_lat = 23;
 let marker_lng = 120.2;
-// let weights = [1, 5, 1, 1, 1, 1]
-let weights = [3, 3, 3, 3, 3, 3]
+let weights = [1, 5, 1, 1, 1, 1]
+// let weights = [3, 3, 3, 3, 3, 3]
 let radarData = [0.5, 1, 0.5, 1, 0.5, 1]
 // let radarAvg = 0.2;
 let chartData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -236,7 +236,7 @@ function initListener() {
 
 	//------------------------- for analysis types --------------------------
 	document.querySelectorAll('.type').forEach((type) => {
-		type.addEventListener('click', () => {
+		type.addEventListener('click', async () => {
 			console.log(type.id % 60);
 			document.querySelectorAll('.type').forEach((typeInner) => {
 				typeInner.style.backgroundColor = '#FFF';
@@ -245,7 +245,8 @@ function initListener() {
 			type.style.backgroundColor = '#C0C0C0';
 			type.style.color = '#FFF';
 			targetType = type.id % 60;
-			getChartData();
+			await getChartData();
+			drawChart();
 			if (targetType === 0) document.querySelector("#y-unit").innerText = "元 / 平方公尺";
 			else if (targetType === 1) document.querySelector("#y-unit").innerText = "人口數";
 			// else if (targetType === 2) document.querySelector("#y-unit").innerText = "工商家數";
@@ -571,7 +572,7 @@ window.initMap = function () {                                            //map
 		current_feature = event.feature;
 		map.data.revertStyle();
 		map.data.overrideStyle(event.feature, {
-			fillColor: 'rgba(191, 196, 200,0.5)', fillOpacity: 1,
+			fillColor: 'rgba(167, 169, 170, 0.5)', fillOpacity: 1,
 			strokeWeight: map.getZoom() / 5, strokeColor: "#5183E8"
 		});
 		setTimeout(function () {
@@ -581,20 +582,23 @@ window.initMap = function () {                                            //map
 			});
 		}, 150);
 
-		document.querySelector("#big-point").innerText = 70 + parseInt((1 - event.feature.i.pts) * 30)
+		document.querySelector("#big-point").innerText = 50 + parseInt(event.feature.i.pts * 50)
+		// document.querySelector("#big-point").innerText = 70 + parseInt(event.feature.i.pts * 30)
 
 		await getRadarData();
 		if (chartType === 0) drawRadar();
-		else getChartData();
+		else {
+			await getChartData();
+			drawChart();
+		}
 		console.log(Math.sqrt(event.feature.i.pts));
 		console.log(Math.floor(5 * (1 - Math.sqrt(event.feature.i.pts))));
-		document.querySelector("#poem-pic img").src = `../static/figma/籤詩${Math.floor(5 * (1 - event.feature.i.pts))}.svg`;
 
 		let poetry = poem(radarData)
 
 		poetry.forEach((para, idx) => {
-			if (idx === 6) document.querySelector(`#poem-summary`).innerText = "解：" + para
-			else document.querySelector(`#poem-content-${idx}`).innerText = para
+			if (idx === 6) document.querySelector(`#poem-summary`).innerText = "解: " + para
+			else document.querySelector(`#poem-content-${idx}`).innerText = " " + para
 		})
 	});
 	map.addListener('click', function (event) {
@@ -697,7 +701,7 @@ async function getRadarData() {
 				"timing": timing
 			},
 			success: function (data) {
-				console.log(data.eventData);
+				// console.log(data.eventData);
 				arr = data.eventData
 				arr[0] = 1 - arr[0]
 				arr[1] = 1 - arr[1]
@@ -706,10 +710,13 @@ async function getRadarData() {
 					// data: [radarData[2], radarData[3], radarData[4], radarData[5], radarData[0], radarData[1]],
 					radarData[(idx + 4) % 6] = arr[3 + idx]
 				})
-				radarData[3] = Math.sqrt(Math.sqrt(radarData[3]))
-				radarData[4] = Math.sqrt(Math.sqrt(radarData[4]))
-				radarData[5] = Math.sqrt(Math.sqrt(radarData[5]))
+				radarData[3] = Math.pow(1 - radarData[3], 8)
+				radarData[4] = Math.pow(1 - radarData[4], 8)
+				radarData[5] = Math.pow(1 - radarData[5], 8)
 				// console.log(radarData);
+				radarData.forEach((dat, idx) => {
+					if (dat <= 0.1) radarData[idx] = 0.1
+				})
 				resolve();
 			},
 			error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -721,29 +728,56 @@ async function getRadarData() {
 }
 
 
-function getChartData() {
+async function getChartData() {
 	if (grid_current === -1) return;
-	$.ajax({
-		url: "/get_chart_data",
-		data: {
-			"grid_id": grid_current,
-			"chart_type": (targetType + 2) % 6
-		},
-		success: function (data) {
-			// console.log(data.eventData);
-			arr = data.eventData
-			chartData.forEach((dat, idx) => { chartData[idx] = arr[idx] })
-			drawChart();
-		},
-		error: function (XMLHttpRequest, textStatus, errorThrown) {
-			alert(XMLHttpRequest.status + '\n' + XMLHttpRequest.readyState + '\n' + textStatus + '\n' + XMLHttpRequest.responseText);
-		}
+	return new Promise(function (resolve, reject) {
+		$.ajax({
+			url: "/get_chart_data",
+			data: {
+				"grid_id": grid_current,
+				"chart_type": (targetType + 2) % 6
+			},
+			success: function (data) {
+				// console.log(data.eventData);
+				arr = data.eventData
+				// console.log(arr);
+				if (targetType === 3 || targetType === 4 || targetType === 5) {
+					chartData.forEach((dat, idx) => { chartData[idx] = Math.pow(1 - arr[idx], 8) })
+				}
+				else {
+					chartData.forEach((dat, idx) => { chartData[idx] = arr[idx] })
+				}
+				//------------------------------- add noise ------------------------------------
+				chartData.forEach((dat, idx) => {
+					if (idx >= 12) {
+						let ratio = Math.random() * 0.4;
+						if (targetType > 2) {
+							chartData[idx] = Math.min(1, chartData[idx - 12] * ratio + (1 - ratio) * chartData[idx] * (0.9 + Math.random() * 0.1))
+						}
+						else {
+							chartData[idx] = chartData[idx - 12] * ratio + (1 - ratio) * chartData[idx] * (0.9 + Math.random() * 0.1);
+						}
+					}
+					if (idx >= 13 && Math.abs((dat - chartData[idx - 1]) / chartData[idx - 1]) > 0.3) {
+						chartData[idx] = 0.4 * dat + 0.6 * chartData[idx - 1]
+					}
+				});
+				// chartData.forEach((dat, idx) => { chartData[idx] = arr[idx] + Math.random() * arr[idx] * 0.1 })
+				resolve();
+			},
+			error: function (XMLHttpRequest, textStatus, errorThrown) {
+				alert(XMLHttpRequest.status + '\n' + XMLHttpRequest.readyState + '\n' + textStatus + '\n' + XMLHttpRequest.responseText);
+				reject();
+			}
+		})
 	});
 };
 
 function goPredict() {                                //預測
 	closeWeights();
 	cleanmap();
+	document.querySelector("#loading-xx").click();
+
 	console.log('chosen weight is', weights);
 	document.querySelector("#loading").style.display = 'block';
 
@@ -928,7 +962,9 @@ function drawRadar() {
 		type.style.opacity = 0;
 	})
 	if (radarChart) {
+		// radarChart.data.datasets.data = radarData;
 		radarChart.update();
+		// console.log(radarChart.update);
 		return;
 	}
 	const data = {
@@ -994,6 +1030,7 @@ function drawChart() {
 	document.querySelectorAll('.type').forEach((type) => {
 		type.style.opacity = 1;
 	})
+	// document.querySelectorAll('.type')[targetType].click();
 	if (lineChart) {
 		lineChart.update();
 		return;
@@ -1132,7 +1169,7 @@ function closeWeights() {
 	}
 }
 
-function toggleCharts(target) {
+async function toggleCharts(target) {
 	if (document.querySelector('#analysis-image img').src.includes("/static/figma/analysis1")
 		&& target.id == "analysis-2"
 	) {
@@ -1142,6 +1179,7 @@ function toggleCharts(target) {
 		document.querySelector('#line-chart-container').style.opacity = '1'
 		document.querySelector('#y-unit').style.opacity = '1'
 		document.querySelector('#x-unit').style.opacity = '1'
+		await getChartData();
 		drawChart();
 	}
 	else if (target.id == "analysis-1") {
@@ -1193,70 +1231,4 @@ function firstMarker(location, map) {
 	}
 	marker.bindTo("position", marker2);
 	// markers.push(marker);
-}
-
-function poem(levels) {
-	let price = [
-		['價低易居', '低價之處'],
-		['物美價廉', '價低CP高'],
-		['價平實，合情理', '中庸之價'],
-		['長安居大不易', '辛勤三十年，以有此屋盧'],
-		['連城之價', '長安居大不易']
-	]
-	let population = [
-		['人跡罕至', '萬徑人縱滅', '工作機會空乏'],
-		['工作機會較少', '錢少事多離家遠'],
-		['錢少事多離家遠', '人口適中，能動能靜'],
-		['人來人往', '熙熙攘攘', '人丁興旺'],
-		['人山人海', '車水馬龍', '人聲鼎沸'],
-	]
-	let living = [
-		['商店寥寥無幾', '地處偏僻處', '車行不易'],
-		['路遠迢迢', '商店較少'],
-		['城市蛋白處', '商店距離適中'],
-		['伴遊自逛皆宜', '各項設施皆善'],
-		['各項設施應有盡有', '條條大路通羅馬', '伴遊自逛皆宜']
-	]
-	let safety = [
-		['歹徒猖狂要小心', '動亂危安自保為重', '犯罪猖獗謹慎留意'],
-		['疑人疑事多注意', '地方欠安勿獨行'],
-		['歹事雖少，仍需自防', '治安平平'],
-		['守望相助善', '安定和諧', '平時相安事少'],
-		['守法守紀', '地緣安寧保太平', '家家平安']
-	]
-	let traffic_violation = [
-		['雜亂無章車多違法', '交通亂象頻發生', '肇禍傷亡多切要留心'],
-		['小心道路飛來橫禍', '事故稍多需留意'],
-		['上路需眼觀四處，耳聽八方', '路況平平，小心為上'],
-		['路上偶有違規，仍需注意', '路況善，少違規'],
-		['路況佳', '駕駛皆守法守紀', '道路烏托邦']
-	]
-	let pollution = [
-		['環境髒亂煞風景', '垃圾粉塵漫天飄', '攪擾爭鬧多打擾'],
-		['煙霧瀰漫常紫爆', '噪音稍多使煩心'],
-		['若有烏煙請戴口罩', '偶有人聲擾清夢'],
-		['僻靜之處能安心', '偶有瘴氣，仍需備好口罩'],
-		['萬籟俱寂靜無聲', '悄無聲息靜謐處', '環境優，一塵不染']
-	]
-	let summary = [
-		['大凶之地，勸你塊陶', '三十六計走為上策', '餓山餓水出刁民'],
-		['小凶之處，勿以久待', '勸離不勸留'],
-		['風水輪流轉，好壞自在人心', '知足常樂，能忍自安'],
-		['宜居好去處', '雖非臻至，猶善'],
-		['相看兩不厭，就是這了', '永保安康好風水', '海納百川，景氣和暢']
-	]
-
-	//return poem sentences
-	var poem = [];
-	levels.forEach((level, idx) => { levels[idx] = Math.floor(level * 6); })
-	levels.forEach((level, idx) => { if (levels[idx] == 6) levels[idx] = 5 })
-	// console.log(price[levels[0]]);
-	poem.push(price[levels[0]][Math.floor(Math.random() * price[levels[0]].length)]);
-	poem.push(population[levels[0]][Math.floor(Math.random() * population[levels[0]].length)]);
-	poem.push(living[levels[0]][Math.floor(Math.random() * living[levels[0]].length)]);
-	poem.push(safety[levels[0]][Math.floor(Math.random() * safety[levels[0]].length)]);
-	poem.push(traffic_violation[levels[0]][Math.floor(Math.random() * traffic_violation[levels[0]].length)]);
-	poem.push(pollution[levels[0]][Math.floor(Math.random() * pollution[levels[0]].length)]);
-	poem.push(summary[levels[0]][Math.floor(Math.random() * summary[levels[0]].length)]);
-	return poem;
 }

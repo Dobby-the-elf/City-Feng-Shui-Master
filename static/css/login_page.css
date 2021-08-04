@@ -1,26 +1,31 @@
 /* @import url(https://fonts.googleapis.com/earlyaccess/notosanstc.css);
 @import url(https://fonts.googleapis.com/css?family=Righteous); */
-@import url("../font/TaipeiSansTCBeta-Bold.ttf");
+/* @import url("../font/TaipeiSansTCBeta-Bold.ttf");
 @import url("../font/TaipeiSansTCBeta-Light.ttf");
-@import url("../font/TaipeiSansTCBeta-Regular.ttf");
+@import url("../font/TaipeiSansTCBeta-Regular.ttf"); */
+
 @font-face {
 	font-family: "Taipei Sans TC Beta";
 	src: url("../font/TaipeiSansTCBeta-Regular.ttf");
 	font-weight: 500;
 }
+
 @font-face {
 	font-family: "Taipei Sans TC Beta";
 	src: url("../font/TaipeiSansTCBeta-Light.ttf");
 	font-weight: 300;
 }
+
 @font-face {
 	font-family: "Taipei Sans TC Beta";
 	src: url("../font/TaipeiSansTCBeta-Bold.ttf");
 	font-weight: 700;
 }
+
 * {
 	font-family: "Taipei Sans TC Beta";
 }
+
 html,
 body {
 	max-height: 100vh;
@@ -38,10 +43,12 @@ body {
 	height: 100vh;
 	width: 100vw;
 }
+
 .nav-link {
 	position: absolute;
 	right: 0px;
 }
+
 #user {
 	position: absolute;
 	width: 170px;
@@ -56,6 +63,7 @@ section {
 	position: relative;
 	overflow: hidden;
 }
+
 /*=================header==================*/
 #header {
 	display: flex;
@@ -72,7 +80,8 @@ section {
 	width: 100%;
 	box-shadow: 0px 4px 17px -1px rgba(0, 0, 0, 0.1);
 }
-#header > div {
+
+#header>div {
 	border-radius: 8px;
 	height: 65%;
 	/* top: 50%; */
@@ -82,7 +91,8 @@ section {
   align-items: center;
   flex-direction: column; */
 }
-#header > #avatar-container {
+
+#header>#avatar-container {
 	float: left;
 	margin-left: 4%;
 	position: relative;
@@ -92,6 +102,7 @@ section {
 	/* border: 1.5px solid rgba(76, 76, 76, 0.2); */
 	/* box-sizing: border-box; */
 }
+
 #team-avatar {
 	width: 100%;
 	height: 100%;
@@ -99,6 +110,7 @@ section {
 	border-radius: 50%;
 	box-sizing: border-box;
 }
+
 #team-name {
 	display: flex;
 	justify-content: center;
@@ -114,11 +126,13 @@ section {
 	text-decoration: none;
 	font-size: 18px;
 }
+
 #page img {
 	width: 100vw;
 	position: absolute;
 	top: -2.5vw;
 }
+
 #button {
 	position: absolute;
 	left: 12vw;
@@ -126,6 +140,8 @@ section {
 	width: 21%;
 	height: 15vh;
 	z-index: 100;
+	cursor: pointer;
 	/* background-color: #999; */
 }
+
 /*=================header==================*/
