@@ -72,10 +72,10 @@ section {
 
 #button {
 	position: absolute;
-	left: 12vw;
-	bottom: calc(20vh + 120px);
+	left: 8vw;
+	bottom: calc(79vh - 27vw);
 	width: 21%;
-	height: 15vh;
+	height: 13vh;
 	z-index: 100;
 	cursor: pointer;
 	/* background-color: #999; */

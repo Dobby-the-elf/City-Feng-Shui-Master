@@ -96,7 +96,7 @@ section {
 	float: left;
 	margin-left: 4%;
 	position: relative;
-	width: 8.6vh;
+	width: 7.6vh;
 	height: 6vh;
 	border-radius: 2.5vh;
 	/* border: 1.5px solid rgba(76, 76, 76, 0.2); */
@@ -117,15 +117,14 @@ section {
 	align-items: center;
 	flex-direction: row;
 	float: left;
-	/* margin-left: 1%; */
-	width: 14%;
+	margin-left: 1%;
+	width: 13%;
 	font-weight: 400;
-	background-color: white;
 	text-align: center;
 	text-decoration: none;
-	font-size: 18px;
+	font-size: 20px;
 	letter-spacing: 0.18em;
-	background: url("../../static/figma/city-shadow.svg") center center fixed no-repeat;
+	background: url("../../static/figma/city-shadow.svg") no-repeat top / cover;
 }
 
 #searcher-container {
@@ -238,7 +237,7 @@ section {
 	border-radius: 14px;
 	margin: 0;
 	top: 7.8vh;
-	right: calc(28.6vw - 124px);
+	right: calc(28vw - 124px);
 	font-size: 14px;
 	line-height: 50px;
 	z-index: 100;
@@ -855,9 +854,9 @@ button.gm-control-active {
 
 .pac-container {
 	margin-top: 1vh !important;
-	width: calc(30vw - 20px) !important;
+	width: calc(30.7vw - 25px) !important;
 	/* width: 363px !important; */
-	margin-left: -46px !important;
+	margin-left: -51px !important;
 	border-radius: 10px;
 }
 
