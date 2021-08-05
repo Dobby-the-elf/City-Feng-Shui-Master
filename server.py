@@ -398,8 +398,7 @@ def get_grid():
         color_time = []
         event_id = event[event["grid_id"] == row["grid_id"]]
         for index1, row1 in event_id.iterrows():  # 某區域在各個時間的4個事件數量 dim will be 1
-            type_events = ["event1", "event2",
-                           "event3", "event4", "event5", "event6"]
+            type_events = ["event1", "event2","event3", "event4", "event5", "event6"]
             # color_level.append(0.0)
             color_level = 0.0
             # dim = 6 交通、環境、價格、人口、機能、安全

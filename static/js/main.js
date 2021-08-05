@@ -549,6 +549,7 @@ window.initMap = function () {                                            //map
 	});
 	map.data.addListener('click', async function (event) {
 		// document.querySelector("#info").style.opacity = 1;
+		closeWeights();
 		document.querySelector("#info").style.display = 'flex';
 		document.querySelector("#info").style.transition = '0.15s ease-out;';
 		grid_current = event.feature.i.ID
@@ -831,9 +832,9 @@ function goPredict() {                                //預測
 			area_properties.length = 0
 			for (var i = 0; i < data.features.length; i++) {
 				map.data.addGeoJson(data.features[i]);
-				area_properties.push(data.features[i].properties)
+				// area_properties.push(data.features[i].properties)
 			};
-			total_number = area_properties.length
+			// total_number = area_properties.length
 			var bounds = new google.maps.LatLngBounds();
 			map.data.forEach(function (feature) {
 				feature.getGeometry().forEachLatLng(function (latlng) {
@@ -848,18 +849,16 @@ function goPredict() {                                //預測
 			if (marker_lat !== 23) addMarker({ lat: marker_lat, lng: marker_lng }, map)
 
 			clearL();
-			var number_count = 0
-			var last_v = 4
-			for (var h = 0; h < area_properties.length; h++) {
-				if (area_properties[h].fill[0] == "#930509") {
-					points_list.push(
-						{
-							latlng: "ID:" + area_properties[h].ID,
-							latlng1: "位置:" + area_properties[h].area3,
-							points: area_properties[h]
-						})
-				}
-			}
+			// for (var h = 0; h < area_properties.length; h++) {
+			// 	if (area_properties[h].fill[0] == "#930509") {
+			// 		points_list.push(
+			// 			{
+			// 				latlng: "ID:" + area_properties[h].ID,
+			// 				latlng1: "位置:" + area_properties[h].area3,
+			// 				points: area_properties[h]
+			// 			})
+			// 	}
+			// }
 
 			// showlist("#latlng");
 			if (first == 0) {
@@ -885,15 +884,8 @@ function goPredict() {                                //預測
 		},
 		error: function (XMLHttpRequest, textStatus, errorThrown) {
 			alert(XMLHttpRequest.status + '\n' + XMLHttpRequest.readyState + '\n' + textStatus + '\n' + XMLHttpRequest.responseText);
-			// alert(XMLHttpRequest.readyState);
-			// alert(textStatus);
-			// alert(XMLHttpRequest.responseText);
 		}
 	});
-	// }
-	// else {
-	// 	alert("請選擇地區")
-	// }
 };
 
 function clearL() {
