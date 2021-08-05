@@ -61,8 +61,8 @@ function poem(levels) {
     }
     let radarAvg = Math.floor(sum / radarData.length);
 
-    console.log("level", levels);
-    console.log("avg", radarAvg);
+    // console.log("level", levels);
+    // console.log("avg", radarAvg);
 
     poem.push(price[levels[0]][Math.floor(Math.random() * price[levels[0]].length)]);
     poem.push(population[levels[1]][Math.floor(Math.random() * population[levels[1]].length)]);

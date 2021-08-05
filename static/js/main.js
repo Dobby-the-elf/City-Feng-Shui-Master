@@ -530,7 +530,8 @@ window.initMap = function () {                                            //map
 		infowindow_grid.setPosition({ lat: lat + 0.0025, lng: lng });//設在中間會擋住 pin
 		let distance = Math.pow((lat - marker_lat), 2) + Math.pow((lng - marker_lng), 2);
 		distance = Math.pow(distance, 0.5) * 110
-		infowindow_grid.setContent("(" + String(lat).substr(0, 7) + ", " + String(lng).substr(0, 8) + ")<br>" + "ID: " + event.feature.i.ID + "&emsp;" + "All_id: " + event.feature.i.All_id + "<br>" + event.feature.i.address + "<br>距標記處 " + String(distance).substr(0, 4) + "km")
+		infowindow_grid.setContent("(" + String(lat).substr(0, 7) + ", " + String(lng).substr(0, 8) + ")<br>" + event.feature.i.address + "<br>距標記處 " + String(distance).substr(0, 4) + "km")
+		// infowindow_grid.setContent("(" + String(lat).substr(0, 7) + ", " + String(lng).substr(0, 8) + ")<br>" + "ID: " + event.feature.i.ID + "&emsp;" + "All_id: " + event.feature.i.All_id + "<br>" + event.feature.i.address + "<br>距標記處 " + String(distance).substr(0, 4) + "km")
 		infowindow_grid.open(map)
 		// }, 200);
 
@@ -584,7 +585,7 @@ window.initMap = function () {                                            //map
 			});
 		}, 150);
 
-		document.querySelector("#big-point").innerText = 50 + parseInt(event.feature.i.pts * 50)
+		document.querySelector("#big-point").innerText = 50 + parseInt(event.feature.i.pts * 49)
 		// document.querySelector("#big-point").innerText = 70 + parseInt(event.feature.i.pts * 30)
 
 		await getRadarData();
@@ -593,8 +594,8 @@ window.initMap = function () {                                            //map
 			await getChartData();
 			drawChart();
 		}
-		console.log(Math.sqrt(event.feature.i.pts));
-		console.log(Math.floor(5 * (1 - Math.sqrt(event.feature.i.pts))));
+		// console.log(Math.sqrt(event.feature.i.pts));
+		// console.log(Math.floor(5 * (1 - Math.sqrt(event.feature.i.pts))));
 
 		let poetry = poem(radarData)
 
@@ -845,18 +846,6 @@ function goPredict() {                                //預測
 			map.setCenter({ lat: marker_lat, lng: marker_lng }, map);
 			// map.setCenter({ lat: marker_lat, lng: marker_lng }, map);
 			if (marker_lat !== 23) addMarker({ lat: marker_lat, lng: marker_lng }, map)
-
-
-			// map.data.addListener('mouseover', function (event) {
-			// 	if (event.feature.i.ID == grid_current) return;
-			// 	map.data.revertStyle();
-			// 	map.data.overrideStyle(event.feature, { strokeWeight: 1.5, strokeOpacity: 1 });
-			// });
-
-			map.data.addListener('mouseout', function (event) {
-				if (event.feature.i.ID == grid_current) return;
-				map.data.revertStyle();
-			});
 
 			clearL();
 			var number_count = 0
