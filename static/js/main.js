@@ -19,13 +19,15 @@ var note = 0
 let mapclick = 0
 // points_list.list = [];
 //---------------------------------------
-var radarChart;
-var lineChart;
-var chartType = 0;//記錄圖表類別
-var targetType = 0;//記錄六種類別
+let radarChart;
+let lineChart;
+let chartType = 0;//記錄圖表類別
+let targetType = 0;//記錄六種類別
 let timeline_extend = 0;
 let indicator_extend = 0;
 let grid_current = -1;
+let lat;
+let lng;
 let current_address;
 let current_feature = -1;
 let selected_time = 23;
@@ -237,7 +239,7 @@ function initListener() {
 	//------------------------- for analysis types --------------------------
 	document.querySelectorAll('.type').forEach((type) => {
 		type.addEventListener('click', async () => {
-			console.log(type.id % 60);
+			// console.log(type.id % 60);
 			document.querySelectorAll('.type').forEach((typeInner) => {
 				typeInner.style.backgroundColor = '#FFF';
 				typeInner.style.color = '#A7A9AB';
@@ -255,8 +257,8 @@ function initListener() {
 	})
 	document.querySelectorAll('.type').forEach((type) => {
 		type.addEventListener('mouseover', () => {
-			console.log(type.id % 60);
-			console.log(targetType);
+			// console.log(type.id % 60);
+			// console.log(targetType);
 			if (type.id % 60 == targetType) return;
 			type.style.backgroundColor = '#EBEDF0';
 			type.style.color = '#A7A9AB';
@@ -265,7 +267,7 @@ function initListener() {
 	document.querySelectorAll('.type').forEach((type) => {
 		type.addEventListener('mouseleave', () => {
 			if (type.id % 60 == targetType) return;
-			console.log(type.id % 60);
+			// console.log(type.id % 60);
 			type.style.backgroundColor = '#FFF';
 			type.style.color = '#A7A9AB';
 		})
@@ -702,7 +704,7 @@ async function getRadarData() {
 			},
 			success: function (data) {
 				// console.log(data.eventData);
-				arr = data.eventData
+				let arr = data.eventData
 				arr[0] = 1 - arr[0]
 				arr[1] = 1 - arr[1]
 				arr[5] = 1 - arr[5]
@@ -727,6 +729,37 @@ async function getRadarData() {
 	})
 }
 
+Math.seed = function (s) {
+	var mask = 0xffffffff;
+	var m_w = (123456789 + s) & mask;
+	var m_z = (987654321 - s) & mask;
+
+	// return function () {
+	m_z = (36969 * (m_z & 65535) + (m_z >>> 16)) & mask;
+	m_w = (18000 * (m_w & 65535) + (m_w >>> 16)) & mask;
+
+	var result = ((m_z << 16) + (m_w & 65535)) >>> 0;
+	result /= 4294967296;
+	return result;
+	// }
+}
+
+function variance(array) {
+	var mean2 = mean(array);
+	return mean(array.map(function (num) {
+		return Math.pow(num - mean2, 2);
+	}));
+}
+function mean(array) {
+	return sum(array) / array.length;
+}
+function sum(array) {
+	var num = 0;
+	for (var i = 0, l = array.length; i < l; i++) num += array[i];
+	return num;
+}
+// var myRandomFunction = Math.seed(1234);
+// var randomNumber = myRandomFunction();
 
 async function getChartData() {
 	if (grid_current === -1) return;
@@ -739,7 +772,7 @@ async function getChartData() {
 			},
 			success: function (data) {
 				// console.log(data.eventData);
-				arr = data.eventData
+				let arr = data.eventData
 				// console.log(arr);
 				if (targetType === 3 || targetType === 4 || targetType === 5) {
 					chartData.forEach((dat, idx) => { chartData[idx] = Math.pow(1 - arr[idx], 8) })
@@ -748,20 +781,22 @@ async function getChartData() {
 					chartData.forEach((dat, idx) => { chartData[idx] = arr[idx] })
 				}
 				//------------------------------- add noise ------------------------------------
-				// let vary = Math.variance(chartData);
-				// alert(vary)
+				let vary = Math.sqrt(variance(chartData.slice(0, 13)));
+				// console.log(Math.seed(grid_current));
 				chartData.forEach((dat, idx) => {
-					if (idx >= 12) {
-						let ratio = Math.random() * 0.4;
-						if (targetType > 2) {
-							chartData[idx] = Math.min(1, chartData[idx - 12] * ratio + (1 - ratio) * chartData[idx] * (0.9 + Math.random() * 0.1))
-						}
-						else {
-							chartData[idx] = chartData[idx - 12] * ratio + (1 - ratio) * chartData[idx] * (0.9 + Math.random() * 0.1);
-						}
+					if (idx < 13) return;
+					if (Math.abs((dat - chartData[idx - 1]) / chartData[idx - 1]) > 0.25) {
+						chartData[idx] = 0.2 * dat + 0.8 * chartData[idx - 1]
+						return;
 					}
-					if (idx >= 13 && Math.abs((dat - chartData[idx - 1]) / chartData[idx - 1]) > 0.3) {
-						chartData[idx] = 0.4 * dat + 0.6 * chartData[idx - 1]
+					let ratio = Math.seed(grid_current) * 0.4;
+					let ratio2 = Math.seed(grid_current + 15177) * 0.4;
+					let vary2 = (ratio - ratio2) * 7 * vary
+					if (targetType > 2) {
+						chartData[idx] = Math.min(1, chartData[idx - 12] * ratio + (1 - ratio) * chartData[idx] + vary2)
+					}
+					else {
+						chartData[idx] = chartData[idx - 12] * ratio + (1 - ratio) * chartData[idx] + vary2;
 					}
 				});
 				// chartData.forEach((dat, idx) => { chartData[idx] = arr[idx] + Math.random() * arr[idx] * 0.1 })
@@ -845,6 +880,7 @@ function goPredict() {                                //預測
 			else {
 				//document.getElementById('geojson').disabled=false;　// 變更欄位為可用
 			}
+			let opac;
 			map.data.setStyle(function (feature) {
 				if (feature.getProperty('fill')[0] == "#EEEEEE") { opac = 0 }
 				else { opac = 0.5 }
@@ -963,13 +999,9 @@ function drawRadar() {
 	document.querySelectorAll('.type').forEach((type) => {
 		type.style.opacity = 0;
 	})
-	if (lineChart) {
-		lineChart.destory();
-	}
-	if (radarChart) {
-		// radarChart.data.datasets.data = radarData;
-		radarChart.update();
-		// console.log(radarChart.update);
+	if (window.radarChart) {
+		// window.radarChart.destroy();
+		window.radarChart.update();
 		return;
 	}
 	const data = {
@@ -1016,6 +1048,15 @@ function drawRadar() {
 					angleLines: {
 						color: '#ccc'
 					},
+					grid: {
+						display: true,
+						drawBorder: true,
+						drawTicks: true,
+						color: function (context) {
+							if (context.tick.value == 0.75) { return '#78797A'; }
+							else return '#d2d4d6'
+						}
+					}
 				},
 			},
 			plugins: {
@@ -1025,10 +1066,11 @@ function drawRadar() {
 			}
 		},
 	};
-	radarChart = new Chart(
+	window.radarChart = new Chart(
 		document.getElementById('radar'),
 		config
 	);
+	console.log(window.radarChart);
 }
 
 function drawChart() {
@@ -1036,8 +1078,8 @@ function drawChart() {
 		type.style.opacity = 1;
 	})
 	// document.querySelectorAll('.type')[targetType].click();
-	if (lineChart) {
-		lineChart.update();
+	if (window.lineChart) {
+		window.lineChart.update();
 		return;
 	}
 	const data = {
@@ -1119,7 +1161,7 @@ function drawChart() {
 			}
 		},
 	};
-	lineChart = new Chart(
+	window.lineChart = new Chart(
 		document.getElementById('line-chart'),
 		config
 	);
@@ -1194,6 +1236,7 @@ async function toggleCharts(target) {
 		document.querySelector('#radar-container').style.opacity = '1'
 		document.querySelector('#y-unit').style.opacity = '0'
 		document.querySelector('#x-unit').style.opacity = '0'
+		await getRadarData();
 		drawRadar();
 	}
 }

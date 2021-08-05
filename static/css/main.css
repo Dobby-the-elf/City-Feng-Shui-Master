@@ -443,6 +443,7 @@ section {
 	width: 2.94vw;
 	border-radius: 1.47vw;
 	border: 1px solid #d2d4d6;
+	cursor: pointer;
 }
 
 .type:nth-child(1) {
