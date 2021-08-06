@@ -455,7 +455,7 @@ def get_grid():
                     # "area2": row["area2"],
                     # "area3": row["area3"],
                     "address": row["address"],
-                    "pts": color_level,  # actually color_level only have 1 element
+                    "pts": level,  # actually color_level only have 1 element
                     # "stroke": "#FF0000",
                     # "stroke-width": 0,
                     "stroke-opacity": 0,

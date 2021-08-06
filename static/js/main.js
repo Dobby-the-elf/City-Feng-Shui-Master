@@ -250,10 +250,10 @@ function initListener() {
 			targetType = type.id % 60;
 			await getChartData();
 			drawChart();
-			if (targetType === 0) document.querySelector("#y-unit").innerText = "元 / 平方公尺";
+			if (targetType === 0) document.querySelector("#y-unit").innerText = "萬元 / 平方公尺";
 			else if (targetType === 1) document.querySelector("#y-unit").innerText = "人口數";
 			// else if (targetType === 2) document.querySelector("#y-unit").innerText = "工商家數";
-			else document.querySelector("#y-unit").innerText = "";
+			else document.querySelector("#y-unit").innerText = "百分比";
 		})
 	})
 	document.querySelectorAll('.type').forEach((type) => {
@@ -529,7 +529,7 @@ window.initMap = function () {                                            //map
 		infowindow_grid.open(map)
 		// }, 200);
 
-		console.log(event.feature)
+		// console.log(event.feature)
 		if (event.feature.i.ID == grid_current) return;
 		map.data.revertStyle();
 		if (current_feature !== -1) {
@@ -580,7 +580,7 @@ window.initMap = function () {                                            //map
 			});
 		}, 150);
 
-		document.querySelector("#big-point").innerText = 50 + parseInt(event.feature.i.pts * 49)
+		document.querySelector("#big-point").innerText = 50 + Math.min(49, parseInt(event.feature.i.pts * 50))
 		// document.querySelector("#big-point").innerText = 70 + parseInt(event.feature.i.pts * 30)
 
 		await getRadarData();
@@ -842,7 +842,11 @@ function goPredict() {                                //預測
 			map.data.setStyle({ visible: true });
 			map.setCenter({ lat: marker_lat, lng: marker_lng }, map);
 			// map.setCenter({ lat: marker_lat, lng: marker_lng }, map);
-			if (marker_lat !== 23) addMarker({ lat: marker_lat, lng: marker_lng }, map)
+			if (marker_lat !== 23) {
+				setTimeout(() => {
+					addMarker({ lat: marker_lat, lng: marker_lng }, map)
+				}, 1000)
+			}
 
 			clearL();
 			// for (var h = 0; h < area_properties.length; h++) {
@@ -957,7 +961,6 @@ function cleanmap() {
 // 		});
 // 		document.querySelector('#geojson').innerHTML = "關閉分色圖";
 
-
 // 	}
 // 	else {
 // 		document.querySelector('#geojson').innerHTML = "顯示分色圖";
@@ -983,7 +986,7 @@ function drawRadar() {
 	}
 	const data = {
 		labels: [
-			'價格',
+			'地價',
 			'人口',
 			'機能',
 			'安全',
@@ -995,7 +998,7 @@ function drawRadar() {
 			data: radarData,
 			fill: true,
 			borderWidth: 0,
-			backgroundColor: 'rgba(161, 196, 253,0.88)',
+			backgroundColor: 'rgba(161, 196, 253,0.75)',
 			borderColor: 'rgb(161, 196, 253)',
 			pointBackgroundColor: 'rgba(161, 196, 253,0)',
 			pointBorderColor: '#fff',
@@ -1047,7 +1050,6 @@ function drawRadar() {
 		document.getElementById('radar'),
 		config
 	);
-	console.log(window.radarChart);
 }
 
 function drawChart() {
@@ -1116,9 +1118,15 @@ function drawChart() {
 				// },
 				y: {
 					type: 'linear',
-					grace: '50%',
+					grace: '10%',
 					beginAtZero: true,
 					ticks: {
+						callback: function (val) {
+							// Hide the label of every 2nd dataset
+							if (targetType === 0) return val / 10000;
+							if (targetType < 2) return val;
+							return val > 1 ? '' : val * 100;
+						},
 						maxTicksLimit: 5,
 						// minTicksLimit: 4,
 					}
