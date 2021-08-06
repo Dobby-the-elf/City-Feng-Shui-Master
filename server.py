@@ -18,6 +18,7 @@ import time
 import math
 import numpy as np
 import os
+import random
 
 # config 初始化
 config = configparser.ConfigParser()
@@ -350,7 +351,7 @@ def get_grid():
     grid_df = all_grid_df
 
     # event = pd.read_csv("static/data/event_n.csv")
-    event = pd.read_csv("result_month/month_{}/event_n.csv".format(timing + 1))
+    event = pd.read_csv(f"result_month/month_{timing + 1}/event_n.csv")
     cols = [
         "event1_num",
         "event2_num",
@@ -416,7 +417,11 @@ def get_grid():
                 # for idx, level_index in enumerate(color_level):
                 #     color_level[idx] =color_level[idx] / max(color_level)
                 # print(row1[collumns])
-        level = color_level
+        random.seed(index)
+        rand1 = random.random()
+        random.seed(index+15177)
+        rand2 = random.random()
+        level = color_level * ((rand1+rand2) * 0.2 + 0.8)
         if level <= 1.0 / 5:
             color_time.append("#FFA67D")
         elif level <= 2.0 / 5:

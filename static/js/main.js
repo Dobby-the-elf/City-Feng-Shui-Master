@@ -39,6 +39,7 @@ let weights = [3, 3, 3, 3, 3, 3]
 let radarData = [0.5, 1, 0.5, 1, 0.5, 1]
 // let radarAvg = 0.2;
 let chartData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+let infowindow_grid
 
 // let chartData = [0.5, 1, 1, 0.5, 1, 0.5, 1]
 
@@ -490,17 +491,11 @@ window.initMap = function () {                                            //map
 					position: place.geometry.location,
 				})
 			);
-
-			// if (place.geometry.viewport) {
-			// 	bounds.union(place.geometry.viewport);
-			// } else {
-			// 	bounds.extend(place.geometry.location);
-			// }
 		});
 		// map.fitBounds(bounds);
 	});
 
-	let infowindow_grid = new google.maps.InfoWindow()
+	infowindow_grid = new google.maps.InfoWindow()
 	map.data.addListener('mouseover', function (event) {
 		// deleteMarkers()
 		lat = event.feature.i.center.lat;
@@ -523,7 +518,6 @@ window.initMap = function () {                                            //map
 		// google.maps.event.trigger(input2, 'focus', {});
 		// google.maps.event.trigger(input2, 'keydown', { keyCode: 13 });
 		// document.querySelector('#position-latlng-2').innerText = String(lat).substr(0, 6) + ", " + String(lng).substr(0, 7);
-		infowindow_grid.close()
 		// map.data.revertStyle();
 
 		// setTimeout(function () {
@@ -607,6 +601,7 @@ window.initMap = function () {                                            //map
 	});
 	map.addListener('click', function (event) {
 		closeWeights();
+		infowindow_grid.close()
 		// addMarker(event.latLng, map);
 		// placeMarkerAndPanTo2(event.latLng, map);
 	});
@@ -815,7 +810,8 @@ async function getChartData() {
 function goPredict() {                                //預測
 	closeWeights();
 	cleanmap();
-	document.querySelector("#loading-xx").click();
+	infowindow_grid.close();
+	document.querySelector("#info-xx").click();
 
 	console.log('chosen weight is', weights);
 	document.querySelector("#loading").style.display = 'block';

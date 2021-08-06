@@ -64,13 +64,13 @@ function poem(levels) {
     // console.log("level", levels);
     // console.log("avg", radarAvg);
 
-    poem.push(price[levels[0]][Math.floor(Math.random() * price[levels[0]].length)]);
-    poem.push(population[levels[1]][Math.floor(Math.random() * population[levels[1]].length)]);
-    poem.push(living[levels[2]][Math.floor(Math.random() * living[levels[2]].length)]);
-    poem.push(safety[levels[3]][Math.floor(Math.random() * safety[levels[3]].length)]);
-    poem.push(traffic_violation[levels[4]][Math.floor(Math.random() * traffic_violation[levels[4]].length)]);
-    poem.push(pollution[levels[5]][Math.floor(Math.random() * pollution[levels[5]].length)]);
-    poem.push(summary[radarAvg][Math.floor(Math.random() * summary[radarAvg].length)]);
+    poem.push(price[levels[0]][Math.floor(Math.seed(grid_current) * price[levels[0]].length)]);
+    poem.push(population[levels[1]][Math.floor(Math.seed(grid_current) * population[levels[1]].length)]);
+    poem.push(living[levels[2]][Math.floor(Math.seed(grid_current) * living[levels[2]].length)]);
+    poem.push(safety[levels[3]][Math.floor(Math.seed(grid_current) * safety[levels[3]].length)]);
+    poem.push(traffic_violation[levels[4]][Math.floor(Math.seed(grid_current) * traffic_violation[levels[4]].length)]);
+    poem.push(pollution[levels[5]][Math.floor(Math.seed(grid_current) * pollution[levels[5]].length)]);
+    poem.push(summary[radarAvg][Math.floor(Math.seed(grid_current) * summary[radarAvg].length)]);
 
     document.querySelector("#poem-pic img").src = `../static/figma/籤詩${radarAvg}.svg`;
 
