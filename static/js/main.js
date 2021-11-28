@@ -34,8 +34,8 @@ let selected_time = 23;
 let timing = 12;
 let marker_lat = 23;
 let marker_lng = 120.2;
-// let weights = [1, 5, 1, 1, 1, 1]
-let weights = [3, 3, 3, 3, 3, 3]
+let weights = [1, 5, 1, 1, 1, 1]
+// let weights = [3, 3, 3, 3, 3, 3]
 let radarData = [0.5, 1, 0.5, 1, 0.5, 1]
 // let radarAvg = 0.2;
 let chartData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -50,7 +50,7 @@ let infowindow_grid
 
 $(document).ready(function () {
 	let script = document.createElement('script');
-	script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyDie29bzCm_yNZZ2B-ieM_RqVU-w5eNZ4Y&libraries=visualization,places&callback=initMap&language=zh-TW";
+	script.src = "https://maps.googleapis.com/maps/api/js?key=[your_API_key]&libraries=visualization,places&callback=initMap&language=zh-TW";
 	script.async = true;
 	document.head.appendChild(script);
 

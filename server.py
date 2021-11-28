@@ -351,7 +351,7 @@ def get_grid():
     grid_df = all_grid_df
 
     # event = pd.read_csv("static/data/event_n.csv")
-    event = pd.read_csv(f"result_month/month_{timing + 1}/event_n.csv")
+    event = pd.read_csv(f"result_month_attempt/month_{timing + 1}/event_n.csv")
     cols = [
         "event1_num",
         "event2_num",
@@ -399,7 +399,8 @@ def get_grid():
         color_time = []
         event_id = event[event["grid_id"] == row["grid_id"]]
         for index1, row1 in event_id.iterrows():  # 某區域在各個時間的4個事件數量 dim will be 1
-            type_events = ["event1", "event2","event3", "event4", "event5", "event6"]
+            type_events = ["event1", "event2",
+                           "event3", "event4", "event5", "event6"]
             # color_level.append(0.0)
             color_level = 0.0
             # dim = 6 交通、環境、價格、人口、機能、安全
@@ -421,7 +422,8 @@ def get_grid():
         rand1 = random.random()
         random.seed(index+15177)
         rand2 = random.random()
-        level = color_level * ((rand1+rand2) * 0.2 + 0.8)
+        level = color_level
+        # level = color_level * ((rand1+rand2) * 0.2 + 0.8)
         if level <= 1.0 / 5:
             color_time.append("#FFA67D")
         elif level <= 2.0 / 5:
