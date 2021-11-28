@@ -89,7 +89,7 @@ $(document).ready(function () {
 		menu.toggleClass('menu--open');
 	});
 	let script = document.createElement('script');
-	script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyCCYcEhvSf0iUKUyS-ntyEkW7K_uBmHWDY&libraries=visualization,places&callback=initMap";
+	script.src = "https://maps.googleapis.com/maps/api/js?key=[your_API_key]&libraries=visualization,places&callback=initMap";
 	script.async = true;
 	document.head.appendChild(script);
 	// document.querySelector('#weightSelect').style.opacity = '0'
